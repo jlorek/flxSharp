@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -35,7 +36,7 @@ namespace fliXNA_xbox
                 _font = Font;
 
             _regen = true;
-            allowCollisions = NONE;
+            AllowCollisions = None;
             calcFrame();
             _scale = 0;
             //_numLines = 0;
@@ -51,7 +52,7 @@ namespace fliXNA_xbox
             //base.draw(spriteBatch);
             if (visible)
             {
-                Vector2 pos = new Vector2(x, y);
+                Vector2 pos = new Vector2(X, Y);
                 Vector2 orig = new Vector2(0,0);
                 Single rot = 0;
                 FlxG.spriteBatch.DrawString(

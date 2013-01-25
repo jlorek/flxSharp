@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -278,8 +279,8 @@ namespace fliXNA_xbox
 		 */
 		public FlxSound proximity(FlxObject Source, FlxObject Target, float Radius)
 		{
-            x = Source.x;
-			y = Source.y;
+            x = Source.X;
+			y = Source.Y;
             _target = Target;
             _source = Source;
 			_radius = Radius;

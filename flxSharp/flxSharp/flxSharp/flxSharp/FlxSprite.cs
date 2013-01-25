@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using fliXNA_xbox;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
     public class FlxSprite : FlxObject
     {
@@ -62,7 +56,7 @@ namespace fliXNA_xbox
             _animated = false;
 
             finished = false;
-            _facing = RIGHT;
+            _facing = Right;
             _flipped = 0;
             _curAnim = null;
             _curFrame = 0;
@@ -76,7 +70,7 @@ namespace fliXNA_xbox
                 Graphic = ImgDefault;
             loadGraphic(Graphic);
 
-            angle = 0f;
+            Angle = 0f;
 
             camX = camY = 0;
             oX = X;
@@ -125,17 +119,17 @@ namespace fliXNA_xbox
                 else
                     Width = (uint)Graphic.Width;
             }
-            frameWidth = width = Width;
+            frameWidth = base.Width = Width;
             if (Height == 0)
             {
                 if (Animated)
-                    Height = (uint)width;
+                    Height = (uint)base.Width;
                 else
                     Height = (uint)Graphic.Height;
             }
-            frameHeight = height = Height;
+            frameHeight = base.Height = Height;
             resetHelpers();
-            sourceRect = new FlxRect(0, 0, width, height);
+            sourceRect = new FlxRect(0, 0, base.Width, base.Height);
             return this;
         }
 
@@ -151,8 +145,8 @@ namespace fliXNA_xbox
             color = color * alpha;
             sourceRect = new FlxRect(0, 0, Width, Height);
             resetHelpers();
-            frameWidth = width = Width;
-            frameHeight = height = Height;
+            frameWidth = base.Width = Width;
+            frameHeight = base.Height = Height;
             return this;
         }
 
@@ -180,7 +174,7 @@ namespace fliXNA_xbox
                 alpha = FlxG.random();
             }
 
-            if ((velocity.x != 0) || (velocity.y != 0))
+            if ((Velocity.x != 0) || (Velocity.y != 0))
                 moving = true;
             else
                 moving = false;
@@ -194,7 +188,7 @@ namespace fliXNA_xbox
 
         public Vector2 getVec2()
         {
-            return new Vector2(x - offset.x, y - offset.y);
+            return new Vector2(X - offset.x, Y - offset.y);
         }
 
         public override void draw()
@@ -215,10 +209,10 @@ namespace fliXNA_xbox
                 {
                     continue;
                 }
-                _point.x = x - (int)(camera.scroll.x * scrollFactor.x) - offset.x;
-                _point.y = y - (int)(camera.scroll.y * scrollFactor.y) - offset.y;
-                _point.x += (_point.x > 0) ? 0.0000001f : -0.0000001f;
-                _point.y += (_point.y > 0) ? 0.0000001f : -0.0000001f;
+                _tagPoint.x = X - (int)(camera.scroll.x * ScrollFactor.x) - offset.x;
+                _tagPoint.y = Y - (int)(camera.scroll.y * ScrollFactor.y) - offset.y;
+                _tagPoint.x += (_tagPoint.x > 0) ? 0.0000001f : -0.0000001f;
+                _tagPoint.y += (_tagPoint.y > 0) ? 0.0000001f : -0.0000001f;
                 if (visible)
                 {
                     base.draw();
@@ -228,7 +222,7 @@ namespace fliXNA_xbox
                         if (_animated)
                             sourceRect = new FlxRect(frameWidth * _curIndex, 0, frameWidth, frameHeight);
                         Rectangle rect = new Rectangle((int)sourceRect.x, (int)sourceRect.y, (int)sourceRect.width, (int)sourceRect.height);
-                        FlxG.spriteBatch.Draw(texture, getVec2(), rect, _color * alpha, angle, new Vector2(), scale.getVec2(), SpriteEffects.None, 0f);
+                        FlxG.spriteBatch.Draw(texture, getVec2(), rect, _color * alpha, Angle, new Vector2(), scale.getVec2(), SpriteEffects.None, 0f);
                     }
                 }
             }
@@ -335,22 +329,22 @@ namespace fliXNA_xbox
             }
         }
 
-        override public bool onScreen(FlxCamera Camera = null)
+        override public bool onScreen(FlxCamera camera = null)
         {
-            if (Camera == null)
-                Camera = FlxG.camera;
-            getScreenXY(_point, Camera);
-            _point.x = _point.x - offset.x;
-            _point.y = _point.y - offset.y;
+            if (camera == null)
+                camera = FlxG.camera;
+            getScreenXY(_tagPoint, camera);
+            _tagPoint.x = _tagPoint.x - offset.x;
+            _tagPoint.y = _tagPoint.y - offset.y;
 
             float halfWidth = frameWidth / 2;
             float halfHeight = frameHeight / 2;
             float absScaleX = (scale.x > 0) ? scale.x : -scale.x;
             float absScaleY = (scale.y > 0) ? scale.y : -scale.y;
             float radius = (float)Math.Sqrt(halfWidth * halfWidth + halfHeight * halfHeight) * ((absScaleX >= absScaleY) ? absScaleX : absScaleY);
-            _point.x += halfWidth;
-            _point.y += halfHeight;
-            return ((_point.x + radius > 0) && (_point.x - radius < Camera.width) && (_point.y + radius > 0) && (_point.y - radius < Camera.height));
+            _tagPoint.x += halfWidth;
+            _tagPoint.y += halfHeight;
+            return ((_tagPoint.x + radius > 0) && (_tagPoint.x - radius < camera.width) && (_tagPoint.y + radius > 0) && (_tagPoint.y - radius < camera.height));
         }
 
         public int frame
@@ -371,20 +365,20 @@ namespace fliXNA_xbox
             {
                 scale.x += value.x;
                 scale.y += value.y;
-                width *= scale.x;
-                height *= scale.y;
+                Width *= scale.x;
+                Height *= scale.y;
                 centerOffsets();
             }
         }
 
         public void centerOffsets(bool AdjustPosition = false)
         {
-            offset.x = (frameWidth - width) * 0.5f;
-            offset.y = (frameHeight - height) * 0.5f;
+            offset.x = (frameWidth - Width) * 0.5f;
+            offset.y = (frameHeight - Height) * 0.5f;
             if (AdjustPosition)
             {
-                x += offset.x;
-                y += offset.y;
+                X += offset.x;
+                Y += offset.y;
             }
         }
 
@@ -393,8 +387,8 @@ namespace fliXNA_xbox
         /// </summary>
         public float rotation
         {
-            get { return angle; }
-            set { angle += value; }
+            get { return Angle; }
+            set { Angle += value; }
         }
         
     }

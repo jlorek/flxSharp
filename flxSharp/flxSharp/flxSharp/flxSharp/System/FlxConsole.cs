@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -25,7 +26,7 @@ namespace fliXNA_xbox
             bg.makeGraphic(FlxG.graphicsDevice.Viewport.Width - 160, FlxG.graphicsDevice.Viewport.Height - 80, FlxColor.WHITE * 0.45f);
             bg.alpha = 0.5f;
             add(bg);
-            scrollFactor.x = scrollFactor.y = 0;
+            ScrollFactor.x = ScrollFactor.y = 0;
             visible = false;
             text = new FlxText(100, 60, FlxG.graphicsDevice.Viewport.Width - 160, "internal console is a work in progress", FlxG.defaultFont);
             text.setFormat(FlxColor.WHITE);

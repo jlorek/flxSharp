@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -178,12 +179,12 @@ namespace fliXNA_xbox
 						else if(basic is FlxObject)
 						{
 							_object = basic as FlxObject;
-                            if(_object.exists && Convert.ToBoolean(_object.allowCollisions))
+                            if(_object.exists && Convert.ToBoolean(_object.AllowCollisions))
 							{
-								_objectLeftEdge = _object.x;
-								_objectTopEdge = _object.y;
-								_objectRightEdge = _object.x + _object.width;
-								_objectBottomEdge = _object.y + _object.height;
+								_objectLeftEdge = _object.X;
+								_objectTopEdge = _object.Y;
+								_objectRightEdge = _object.X + _object.Width;
+								_objectBottomEdge = _object.Y + _object.Height;
 								addObject();
 							}
 						}
@@ -193,12 +194,12 @@ namespace fliXNA_xbox
 			else
 			{
 				_object = ObjectOrGroup as FlxObject;
-				if(_object.exists && Convert.ToBoolean(_object.allowCollisions) )
+				if(_object.exists && Convert.ToBoolean(_object.AllowCollisions) )
 				{
-					_objectLeftEdge = _object.x;
-					_objectTopEdge = _object.y;
-					_objectRightEdge = _object.x + _object.width;
-					_objectBottomEdge = _object.y + _object.height;
+					_objectLeftEdge = _object.X;
+					_objectTopEdge = _object.Y;
+					_objectRightEdge = _object.X + _object.Width;
+					_objectBottomEdge = _object.Y + _object.Height;
 					addObject();
 				}
 			}
@@ -330,7 +331,7 @@ namespace fliXNA_xbox
 						_iterator = _headB;
 					else
 						_iterator = iterator.next;
-					if(	_object.exists && (_object.allowCollisions > 0) &&
+					if(	_object.exists && (_object.AllowCollisions > 0) &&
 						(_iterator != null) && (_iterator.Object != null) &&
 						_iterator.Object.exists && overlapNode())
 					{
@@ -360,31 +361,31 @@ namespace fliXNA_xbox
 			FlxObject checkObject;
 			while(_iterator != null)
 			{
-				if(!_object.exists || (_object.allowCollisions <= 0))
+				if(!_object.exists || (_object.AllowCollisions <= 0))
 					break;
 				
 				checkObject = _iterator.Object;
-				if((_object == checkObject) || !checkObject.exists || (checkObject.allowCollisions <= 0))
+				if((_object == checkObject) || !checkObject.exists || (checkObject.AllowCollisions <= 0))
 				{
 					_iterator = _iterator.next;
 					continue;
 				}
 				
 				//calculate bulk hull for _object
-				_objectHullX = (_object.x < _object.last.x)?_object.x:_object.last.x;
-				_objectHullY = (_object.y < _object.last.y)?_object.y:_object.last.y;
-				_objectHullWidth = _object.x - _object.last.x;
-				_objectHullWidth = _object.width + ((_objectHullWidth>0)?_objectHullWidth:-_objectHullWidth);
-				_objectHullHeight = _object.y - _object.last.y;
-				_objectHullHeight = _object.height + ((_objectHullHeight>0)?_objectHullHeight:-_objectHullHeight);
+				_objectHullX = (_object.X < _object.Last.x)?_object.X:_object.Last.x;
+				_objectHullY = (_object.Y < _object.Last.y)?_object.Y:_object.Last.y;
+				_objectHullWidth = _object.X - _object.Last.x;
+				_objectHullWidth = _object.Width + ((_objectHullWidth>0)?_objectHullWidth:-_objectHullWidth);
+				_objectHullHeight = _object.Y - _object.Last.y;
+				_objectHullHeight = _object.Height + ((_objectHullHeight>0)?_objectHullHeight:-_objectHullHeight);
 				
 				//calculate bulk hull for checkObject
-				_checkObjectHullX = (checkObject.x < checkObject.last.x)?checkObject.x:checkObject.last.x;
-				_checkObjectHullY = (checkObject.y < checkObject.last.y)?checkObject.y:checkObject.last.y;
-				_checkObjectHullWidth = checkObject.x - checkObject.last.x;
-				_checkObjectHullWidth = checkObject.width + ((_checkObjectHullWidth>0)?_checkObjectHullWidth:-_checkObjectHullWidth);
-                _checkObjectHullHeight = checkObject.y - checkObject.last.y;
-				_checkObjectHullHeight = checkObject.height + ((_checkObjectHullHeight>0)?_checkObjectHullHeight:-_checkObjectHullHeight);
+				_checkObjectHullX = (checkObject.X < checkObject.Last.x)?checkObject.X:checkObject.Last.x;
+				_checkObjectHullY = (checkObject.Y < checkObject.Last.y)?checkObject.Y:checkObject.Last.y;
+				_checkObjectHullWidth = checkObject.X - checkObject.Last.x;
+				_checkObjectHullWidth = checkObject.Width + ((_checkObjectHullWidth>0)?_checkObjectHullWidth:-_checkObjectHullWidth);
+                _checkObjectHullHeight = checkObject.Y - checkObject.Last.y;
+				_checkObjectHullHeight = checkObject.Height + ((_checkObjectHullHeight>0)?_checkObjectHullHeight:-_checkObjectHullHeight);
 				
 				//check for intersection of the two hulls
 				if(	(_objectHullX + _objectHullWidth > _checkObjectHullX) &&

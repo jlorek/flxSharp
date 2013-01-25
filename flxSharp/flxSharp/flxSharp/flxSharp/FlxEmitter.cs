@@ -1,144 +1,171 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using System;
+using fliXNA_xbox;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
+    /// <summary>
+    /// <code>FlxEmitter</code> is a lightweight particle emitter.
+    /// It can be used for one-time explosions or for
+    /// continuous fx like rain and fire.  <code>FlxEmitter</code>
+    /// is not optimized or anything; all it does is launch
+    /// <code>FlxParticle</code> objects out at set intervals
+    /// by setting their positions and velocities accordingly.
+    /// It is easy to use and relatively efficient,
+    /// relying on <code>FlxGroup</code>'s RECYCLE POWERS.
+    /// </summary>
     public class FlxEmitter : FlxGroup
 	{
-		/**
-		 * The X position of the top left corner of the emitter in world space.
-		 */
-		//public var x:Number;
-		/**
-		 * The Y position of the top left corner of emitter in world space.
-		 */
-		//public var y:Number;
-		/**
-		 * The width of the emitter.  Particles can be randomly generated from anywhere within this box.
-		 */
-		//public var width:Number;
-		/**
-		 * The height of the emitter.  Particles can be randomly generated from anywhere within this box.
-		 */
-		//public var height:Number;
-		/**
-		 * The minimum possible velocity of a particle.
-		 * The default value is (-100,-100).
-		 */
-		public FlxPoint minParticleSpeed;
-		/**
-		 * The maximum possible velocity of a particle.
-		 * The default value is (100,100).
-		 */
-		public FlxPoint maxParticleSpeed;
-		/**
-		 * The X and Y drag component of particles launched from the emitter.
-		 */
-		public FlxPoint particleDrag;
-		/**
-		 * The minimum possible angular velocity of a particle.  The default value is -360.
-		 * NOTE: rotating particles are more expensive to draw than non-rotating ones!
-		 */
-		public float minRotation;
-		/**
-		 * The maximum possible angular velocity of a particle.  The default value is 360.
-		 * NOTE: rotating particles are more expensive to draw than non-rotating ones!
-		 */
-		public float maxRotation;
-		/**
-		 * Sets the <code>acceleration.y</code> member of each particle to this value on launch.
-		 */
-		public float gravity;
-		/**
-		 * Determines whether the emitter is currently emitting particles.
-		 * It is totally safe to directly toggle this.
-		 */
-		public bool on;
-		/**
-		 * How often a particle is emitted (if emitter is started with Explode == false).
-		 */
-		public float frequency;
-		/**
-		 * How long each particle lives once it is emitted.
-		 * Set lifespan to 'zero' for particles to live forever.
-		 */
-		public float lifespan;
-		/**
-		 * How much each particle should bounce.  1 = full bounce, 0 = no bounce.
-		 */
-		public float bounce;
-		/**
-		 * Set your own particle class type here.
-		 * Default is <code>FlxParticle</code>.
-		 */
-		public Object particleClass;
-		/**
-		 * Internal helper for deciding how many particles to launch.
-		 */
-		protected uint _quantity;
-		/**
-		 * Internal helper for the style of particle emission (all at once, or one at a time).
-		 */
-		protected bool _explode;
-		/**
-		 * Internal helper for deciding when to launch particles or kill them.
-		 */
-		protected float _timer;
-		/**
-		 * Internal counter for figuring out how many particles to launch.
-		 */
-		protected uint _counter;
-		/**
-		 * Internal point object, handy for reusing for memory mgmt purposes.
-		 */
-		//protected FlxPoint _point;
+        /// <summary>
+        /// The X position of the top left corner of the emitter in world space.
+        /// Already inherited by FlxObject.
+        /// </summary>
+		//public new float x { get; set; }
+		
+        /// <summary>
+        /// The Y position of the top left corner of emitter in world space.
+        /// Already inherited by FlxObject.
+        /// </summary>
+        //public new float y { get; set; }
 
-        protected FlxObject target;
-		/**
-		 * Creates a new <code>FlxEmitter</code> object at a specific position.
-		 * Does NOT automatically generate or attach particles!
-		 * 
-		 * @param	X		The X position of the emitter.
-		 * @param	Y		The Y position of the emitter.
-		 * @param	Size	Optional, specifies a maximum capacity for this emitter.
-		 */
-		public FlxEmitter(float X=0, float Y=0, uint Size=0, FlxObject Target=null) : base(Size)
+        /// <summary>
+        /// The width of the emitter.  Particles can be randomly generated from anywhere within this box.
+        /// Already inherited by FlxObject.
+        /// </summary>
+		//public new float width { get; set; }
+
+        /// <summary>
+        /// The height of the emitter.  Particles can be randomly generated from anywhere within this box.
+        /// Already inherited by FlxObject.
+        /// </summary>
+        //public new float height { get; set; }
+
+        /// <summary>
+        /// The minimum possible velocity of a particle.
+        /// The default value is (-100,-100).
+        /// </summary>
+        public FlxPoint minParticleSpeed;
+
+        /// <summary>
+        /// The maximum possible velocity of a particle.
+        /// The default value is (100,100).
+        /// </summary>
+        public FlxPoint maxParticleSpeed;
+
+        /// <summary>
+        /// The X and Y drag component of particles launched from the emitter.
+        /// </summary>
+		public FlxPoint particleDrag;
+
+        /// <summary>
+        /// The minimum possible angular velocity of a particle.  The default value is -360.
+        /// NOTE: rotating particles are more expensive to draw than non-rotating ones!
+        /// </summary>
+        public float minRotation;
+
+        /// <summary>
+        /// The maximum possible angular velocity of a particle.  The default value is 360.
+        /// NOTE: rotating particles are more expensive to draw than non-rotating ones!
+        /// </summary>
+        public float maxRotation;
+
+        /// <summary>
+        /// Sets the <code>acceleration.y</code> member of each particle to this value on launch.
+        /// </summary>
+		public float gravity;
+
+        /// <summary>
+        /// Determines whether the emitter is currently emitting particles.
+        /// It is totally safe to directly toggle this.
+        /// </summary>
+		public bool on;
+
+        /// <summary>
+        /// How often a particle is emitted (if emitter is started with Explode == false).
+        /// </summary>
+		public float frequency;
+
+        /// <summary>
+        /// How long each particle lives once it is emitted.
+        /// Set lifespan to 'zero' for particles to live forever.
+        /// </summary>
+		public float lifespan;
+
+        /// <summary>
+        /// How much each particle should bounce.  1 = full bounce, 0 = no bounce.
+        /// </summary>
+		public float bounce;
+
+        /// <summary>
+        /// Set your own particle class type here.
+        /// Default is <code>FlxParticle</code>.
+        /// </summary>
+		public Object particleClass;
+
+        /// <summary>
+        /// Internal helper for deciding how many particles to launch.
+        /// </summary>
+		protected uint _quantity;
+
+        /// <summary>
+        /// Internal helper for the style of particle emission (all at once, or one at a time).
+        /// </summary>
+		protected bool _explode;
+
+        /// <summary>
+        /// Internal helper for deciding when to launch particles or kill them.
+        /// </summary>
+		protected float _timer;
+
+        /// <summary>
+        /// Internal counter for figuring out how many particles to launch.
+        /// </summary>
+		protected uint _counter;
+
+        /// <summary>
+        /// Internal counter for figuring out how many particles to launch.
+        /// </summary>
+		protected FlxPoint _point;
+
+		/// <summary>
+        /// Creates a new <code>FlxEmitter</code> object at a specific position.
+        /// Does NOT automatically generate or attach particles!
+		/// </summary>
+        /// <param name="X">The X position of the emitter.</param>
+        /// <param name="Y">The Y position of the emitter.</param>
+        /// <param name="size">Optional, specifies a maximum capacity for this emitter.</param>
+		public FlxEmitter(float X=0, float Y=0, uint size=0) : base(size)
 		{
-			//super(Size);
-			x = X;
-			y = Y;
-			width = 0;
-			height = 0;
-			minParticleSpeed = new FlxPoint(-100,-100);
+			((FlxObject) this).X = X;
+			((FlxObject) this).Y = Y;
+
+			Width = 0;
+			Height = 0;
+			
+            minParticleSpeed = new FlxPoint(-100,-100);
 			maxParticleSpeed = new FlxPoint(100,100);
+
 			minRotation = -360;
 			maxRotation = 360;
-			gravity = 0;
+			
+            gravity = 0;
 			particleClass = null;
 			particleDrag = new FlxPoint();
+
 			frequency = 0.1f;
 			lifespan = 3;
-			bounce = 0;
-			_quantity = 0;
+            bounce = 0;
+			
+            _quantity = 0;
 			_counter = 0;
 			_explode = true;
 			on = false;
 			_point = new FlxPoint();
-            target = Target;
 		}
 
-		/**
-		 * Clean up memory.
-		 */
+        /// <summary>
+        /// Clean up memory.
+        /// </summary>
 		override public void destroy()
 		{
 			minParticleSpeed = null;
@@ -146,21 +173,50 @@ namespace fliXNA_xbox
 			particleDrag = null;
 			particleClass = null;
 			_point = null;
+
 			base.destroy();
 		}
 
         /// <summary>
-        /// Create the particles to be used
+        /// This function generates a new array of particle sprites to attach to the emitter.
         /// </summary>
-        /// <param name="Graphics">Texture for the particles - can be one square or a spritesheet.  Set Multiple to true if it is a spritesheet and it will automatically create the particles as long as each frame on the spritesheet is square</param>
+        /// <param name="graphics">Texture for the particles - can be one square or a spritesheet.  Set Multiple to true if it is a spritesheet and it will automatically create the particles as long as each frame on the spritesheet is square</param>
         /// <param name="Multiple">Whether or not the Texture contains multiple sprites for particles</param>
         /// <param name="Quantity">The number of particles to generate</param>
         /// <param name="Rotation">The amount of rotation in degrees per frame, so keep this number low</param>
         /// <param name="Collide">The collidability of the particle, 1 = Full and 0 = None</param>
-        /// <returns>FlxEmitter</returns>
-		public FlxEmitter makeParticles(Texture2D Graphic, bool Multiple=false, uint Quantity = 50, float Rotation = 1f, float Collide = 0.8f)
-		{
+        /// <returns>This FlxEmitter instance (nice for chaining stuff together, if you're into that).</returns>
+		//public FlxEmitter makeParticles(Texture2D graphics, bool Multiple=false, uint Quantity = 50, float Rotation = 1f, float Collide = 0.8f)
+		public FlxEmitter makeParticles(Texture2D graphics, uint Quantity = 50, uint BakedRotations = 0, bool Multiple = false, float Collide = 0.8f)
+        {
 			maxSize = Quantity;
+
+            if (Multiple || BakedRotations > 0)
+            {
+                throw new NotSupportedException();
+            }
+
+            for (int i = 0; i < Quantity; ++i)
+            {
+                var particle = new FlxParticle();
+                particle.loadGraphic(graphics);
+
+                if (Collide > 0)
+                {
+                    particle.Width = particle.Width * Collide;
+                    particle.Height = particle.Height * Collide;
+                    particle.centerOffsets();
+                }
+                else
+                {
+                    particle.AllowCollisions = FlxObject.None;
+                }
+
+                particle.exists = false;
+                this.add(particle);
+            }
+
+            /*
 			FlxParticle particle;
 			uint i = 0;
 			while(i < Quantity)
@@ -182,22 +238,16 @@ namespace fliXNA_xbox
                 add(particle);
 				i++;
 			}
+            */
+
 			return this;
 		}
 
-		/**
-		 * Called automatically by the game loop, decides when to launch particles and when to "die".
-		 */
+        /// <summary>
+        /// Called automatically by the game loop, decides when to launch particles and when to "die".
+        /// </summary>
 		override public void update()
 		{
-
-            if (target != null)
-            {
-                FlxPoint t = target.getMidpoint();
-                x = t.x;
-                y = t.y;
-            }
-
 			if(on)
 			{
 				if(_explode)
@@ -216,11 +266,12 @@ namespace fliXNA_xbox
 				}
 				else
 				{
-					_timer += FlxG.elapsed;
+					_timer = _timer + FlxG.elapsed;
 					while((frequency > 0) && (_timer > frequency) && on)
 					{
-						_timer -= frequency;
+						_timer = _timer - frequency;
 						emitParticle();
+
 						if((_quantity > 0) && (++_counter >= _quantity))
 						{
 							on = false;
@@ -229,26 +280,26 @@ namespace fliXNA_xbox
 					}
 				}
 			}
+
 			base.update();
 		}
 
-		/**
-		 * Call this function to turn off all the particles and the emitter.
-		 */
+        /// <summary>
+        /// Call this function to turn off all the particles and the emitter.
+        /// </summary>
 		override public void kill()
 		{
 			on = false;
 			base.kill();
 		}
 
-		/**
-		 * Call this function to start emitting particles.
-		 * 
-		 * @param	Explode		Whether the particles should all burst out at once.
-		 * @param	Lifespan	How long each particle lives once emitted. 0 = forever.
-		 * @param	Frequency	Ignored if Explode is set to true. Frequency is how often to emit a particle. 0 = never emit, 0.1 = 1 particle every 0.1 seconds, 5 = 1 particle every 5 seconds.
-		 * @param	Quantity	How many particles to launch. 0 = "all of the particles".
-		 */
+        /// <summary>
+        /// Call this function to start emitting particles.
+        /// </summary>
+        /// <param name="Explode">Whether the particles should all burst out at once.</param>
+        /// <param name="Lifespan">How long each particle lives once emitted. 0 = forever.</param>
+        /// <param name="Frequency">Ignored if Explode is set to true. Frequency is how often to emit a particle. 0 = never emit, 0.1 = 1 particle every 0.1 seconds, 5 = 1 particle every 5 seconds.</param>
+        /// <param name="Quantity">How many particles to launch. 0 = "all of the particles".</param>
 		public void start(bool Explode=true, float Lifespan=0, float Frequency=0.1f, uint Quantity=0)
 		{
 			revive();
@@ -264,91 +315,118 @@ namespace fliXNA_xbox
 			_timer = 0;
 		}
 
-		/**
-		 * This function can be used both internally and externally to emit the next particle.
-		 */
+        /// <summary>
+        /// This function can be used both internally and externally to emit the next particle.
+        /// </summary>
 		public void emitParticle()
 		{
-			FlxParticle particle = recycle(typeof(FlxBasic)) as FlxParticle;
-            particle.minSpeed = minParticleSpeed;
-            particle.maxSpeed = maxParticleSpeed;
-			particle.lifespan = lifespan;
-			particle.elasticity = bounce;
-            
-            if (target != null)
+			var particle = recycle(typeof(FlxBasic)) as FlxParticle;
+
+            if (particle == null)
             {
-                FlxPoint t = target.getMidpoint();
-                particle.reset(t.x, t.y);
+                throw new Exception("RecyclingWTFException");
+            }
+
+            particle.Lifespan = lifespan;
+            particle.Elasticity = bounce;
+            particle.reset(X - ((int)particle.Width >> 1) + FlxG.random() * Width, Y - ((int)particle.Height >> 1) + FlxG.random() * Height);
+            particle.visible = true;
+
+            // jlorek: revisit
+
+            if (minParticleSpeed.x != maxParticleSpeed.x)
+            {
+                particle.Velocity.x = minParticleSpeed.x + FlxG.random()*(maxParticleSpeed.x - minParticleSpeed.x);
             }
             else
             {
-                particle.reset(x - (Convert.ToInt32(particle.width) >> 1) + FlxG.random() * width, y - (Convert.ToInt32(particle.height) >> 1) + FlxG.random() * height);                
+                particle.Velocity.x = minParticleSpeed.x;                
+            }
+
+            if (minParticleSpeed.y != maxParticleSpeed.y)
+            {
+                particle.Velocity.y = minParticleSpeed.y + FlxG.random()*(maxParticleSpeed.y - minParticleSpeed.y);
+            }
+            else
+            {
+                particle.Velocity.y = minParticleSpeed.y;                
+            }
+
+            particle.Acceleration.y = gravity;
+
+            if (minRotation != maxRotation)
+            {
+                particle.AngularVelocity = minRotation + FlxG.random()*(maxRotation - minRotation);
+            }
+            else
+            {
+                particle.AngularVelocity = minRotation;                
+            }
+
+            if (particle.AngularVelocity != 0)
+            {
+                particle.Angle = FlxG.random() * 360 - 180;                
             }
 
 			particle.visible = true;
-			particle.drag.x = particleDrag.x;
-			particle.drag.y = particleDrag.y;
+			particle.Drag.x = particleDrag.x;
+			particle.Drag.y = particleDrag.y;
 			particle.onEmit();
 		}
 
-		/**
-		 * A more compact way of setting the width and height of the emitter.
-		 * 
-		 * @param	Width	The desired width of the emitter (particles are spawned randomly within these dimensions).
-		 * @param	Height	The desired height of the emitter.
-		 */
+        /// <summary>
+        /// A more compact way of setting the width and height of the emitter.
+        /// </summary>
+        /// <param name="Width">The desired width of the emitter (particles are spawned randomly within these dimensions).</param>
+        /// <param name="Height">The desired height of the emitter.</param>
 		public void setSize(uint Width, uint Height)
 		{
-			width = Width;
-			height = Height;
+			((FlxObject) this).Width = Width;
+			((FlxObject) this).Height = Height;
 		}
 
-		/**
-		 * A more compact way of setting the X velocity range of the emitter.
-		 * 
-		 * @param	Min		The minimum value for this range.
-		 * @param	Max		The maximum value for this range.
-		 */
+        /// <summary>
+        /// A more compact way of setting the X velocity range of the emitter.
+        /// </summary>
+        /// <param name="Min">The minimum value for this range.</param>
+        /// <param name="Max">The maximum value for this range.</param>
 		public void setXSpeed(float Min=0, float Max=0)
 		{
 			minParticleSpeed.x = Min;
 			maxParticleSpeed.x = Max;
 		}
 
-		/**
-		 * A more compact way of setting the Y velocity range of the emitter.
-		 * 
-		 * @param	Min		The minimum value for this range.
-		 * @param	Max		The maximum value for this range.
-		 */
+        /// <summary>
+        /// A more compact way of setting the Y velocity range of the emitter.
+        /// </summary>
+        /// <param name="Min">The minimum value for this range.</param>
+        /// <param name="Max">The maximum value for this range.</param>
 		public void setYSpeed(float Min=0, float Max=0)
 		{
 			minParticleSpeed.y = Min;
 			maxParticleSpeed.y = Max;
 		}
 
-		/**
-		 * A more compact way of setting the angular velocity constraints of the emitter.
-		 * 
-		 * @param	Min		The minimum value for this range.
-		 * @param	Max		The maximum value for this range.
-		 */
+        /// <summary>
+        /// A more compact way of setting the angular velocity constraints of the emitter.
+        /// </summary>
+        /// <param name="Min">The minimum value for this range.</param>
+        /// <param name="Max">The maximum value for this range.</param>
 		public void setRotation(float Min=0, float Max=0)
 		{
 			minRotation = Min;
 			maxRotation = Max;
 		}
 
-		/**
-		 * Change the emitter's midpoint to match the midpoint of a <code>FlxObject</code>.
-		 * 
-		 * @param	Object		The <code>FlxObject</code> that you want to sync up with.
-		 */
-		public void at(FlxObject Object)
+        /// <summary>
+        /// Change the emitter's midpoint to match the midpoint of a <code>FlxObject</code>.
+        /// </summary>
+        /// <param name="flxObject">The <code>FlxObject</code> that you want to sync up with.</param>
+		public void at(FlxObject flxObject)
 		{
-			Object.getMidpoint(_point);
-			x = _point.x - (Convert.ToInt32(width)>>1);
-			y = _point.y - (Convert.ToInt32(height)>>1);
+			flxObject.getMidpoint(_point);
+			X = _point.x - (Convert.ToInt32(Width)>>1);
+			Y = _point.y - (Convert.ToInt32(Height)>>1);
 		}
 	}
 }

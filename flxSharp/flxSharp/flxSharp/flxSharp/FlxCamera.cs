@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -87,20 +88,20 @@ namespace fliXNA_xbox
                 {
                     //FlxG.log("deadzone is not null");
                     float edge;
-                    float targetX = FlxU.ceil(target.x + ((target.x > 0) ? 0.0000001f : -0.0000001f));
-                    float targetY = FlxU.ceil(target.y + ((target.y > 0) ? 0.0000001f : -0.0000001f));
+                    float targetX = FlxU.ceil(target.X + ((target.X > 0) ? 0.0000001f : -0.0000001f));
+                    float targetY = FlxU.ceil(target.Y + ((target.Y > 0) ? 0.0000001f : -0.0000001f));
 
                     edge = targetX - deadzone.x;
                     if (scroll.x > edge)
                         scroll.x = edge;
-                    edge = targetX + target.width - deadzone.x - deadzone.width;
+                    edge = targetX + target.Width - deadzone.x - deadzone.width;
                     if (scroll.x < edge)
                         scroll.x = edge;
 
                     edge = targetY - deadzone.y;
                     if (scroll.y > edge)
                         scroll.y = edge;
-                    edge = targetY + target.height - deadzone.y - deadzone.height;
+                    edge = targetY + target.Height - deadzone.y - deadzone.height;
                     if (scroll.y < edge)
                         scroll.y = edge;
 
@@ -280,7 +281,7 @@ namespace fliXNA_xbox
             get
             {
                 if(target!=null)
-                    return Matrix.CreateTranslation(-target.x, -target.y, 0) * Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.x, -scroll.y, 0) * Matrix.CreateTranslation(target.x, target.y, 0);
+                    return Matrix.CreateTranslation(-target.X, -target.Y, 0) * Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.x, -scroll.y, 0) * Matrix.CreateTranslation(target.X, target.Y, 0);
                 else
                     return Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.x, -scroll.y, 0);
             }

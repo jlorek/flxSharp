@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -26,24 +27,24 @@ namespace fliXNA_xbox
         public FlxTile(FlxTilemap Tilemap, int Tx, int Ty, int Index, int Width, int Height, Boolean Visible, uint AllowCollisions)
             : base(0, 0, Width, Height)
         {
-            immovable = true;
-            moves = false;
+            Immovable = true;
+            Moves = false;
             callback = null;
 
-            if (width > height)
-                tileSize = width;
+            if (base.Width > base.Height)
+                tileSize = base.Width;
             else
-                tileSize = height;
+                tileSize = base.Height;
 
             tilemap = Tilemap;
             tileGraphic = tilemap.tileGraphic;
             index = Index;
             visible = Visible;
-            allowCollisions = AllowCollisions;
+            base.AllowCollisions = AllowCollisions;
 
             mapIndex = 0;
 
-            tileGraphicSectionToDraw = new Rectangle((int)index * (int)tileSize, 0, (int)width, (int)height);
+            tileGraphicSectionToDraw = new Rectangle((int)index * (int)tileSize, 0, (int)base.Width, (int)base.Height);
             drawPosition = new Vector2(Tx * Width, Ty * Height);
 
             //if(Convert.ToBoolean(allowCollisions))

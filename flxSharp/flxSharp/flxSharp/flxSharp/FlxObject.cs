@@ -1,247 +1,254 @@
-﻿using System;
-using System.Collections;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+using fliXNA_xbox;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
+    /// <summary>
+    /// This is the base class for most of the display objects (<code>FlxSprite</code>, <code>FlxText</code>, etc).
+    /// It includes some basic attributes about game objects, including retro-style flickering,
+    /// basic state information, sizes, scrolling, and basic physics and motion.
+    /// </summary>
     public class FlxObject : FlxBasic
     {
         /// <summary>
-        /// Generic value for "left" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>
+        /// Generic value for "left" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint LEFT = 0x0001;
+        public const uint Left = 0x0001;
 
         /// <summary>
-        /// Generic value for "right" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>
+        /// Generic value for "right" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint RIGHT = 0x0010;
+        public const uint Right = 0x0010;
 
         /// <summary>
-        /// Generic value for "up" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>
+        /// Generic value for "up" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint UP = 0x0100;
+        public const uint Up = 0x0100;
 
         /// <summary>
-        /// Generic value for "down" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>
+        /// Generic value for "down" used by <code>facing</code>, <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint DOWN = 0x1000;
+        public const uint Down = 0x1000;
 
         /// <summary>
-        /// Special-case constant meaning no collisions, used mainly by <code>allowCollisions</code>, and <code>touching</code>
+        /// Special-case constant meaning no collisions, used mainly by <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint NONE = 0;
+        public const uint None = 0;
 
         /// <summary>
-        /// Special-case constant meaning up, used mainly by <code>allowCollisions</code>, and <code>touching</code>
+        /// Special-case constant meaning up, used mainly by <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint CEILING = UP;
+        public const uint Ceiling = Up;
 
         /// <summary>
-        /// Special-case constant meaning down, used mainly by <code>allowCollisions</code>, and <code>touching</code>
+        /// Special-case constant meaning down, used mainly by <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint FLOOR = DOWN;
+        public const uint Floor = Down;
 
         /// <summary>
-        /// Special-case constant meaning only the left and right sides, used mainly by <code>allowCollisions</code>, and <code>touching</code>
+        /// Special-case constant meaning only the left and right sides, used mainly by <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint WALL = LEFT | RIGHT;
+        public const uint Wall = Left | Right;
 
         /// <summary>
-        /// Special-case constant meaning any direction, used mainly by <code>allowCollisions</code>, and <code>touching</code>
+        /// Special-case constant meaning any direction, used mainly by <code>allowCollisions</code>, and <code>touching</code>.
         /// </summary>
-        public const uint ANY = LEFT | RIGHT | UP | DOWN;
+        public const uint Any = Left | Right | Up | Down;
 
         /// <summary>
-        /// Handy constant used during collision resolution (see <code>separateX()</code> and <code>separateY()</code>)
+        /// Handy constant used during collision resolution (see <code>separateX()</code> and <code>separateY()</code>).
         /// </summary>
-        public const float OVERLAP_BIAS = 4;
+        public const float OverlapBias = 4;
 
         /// <summary>
         /// Path behavior controls: move from start of the path to the end then stop.
         /// </summary>
-        public const uint PATH_FORWARD = 0x000000;
+        public const uint PathForward = 0x000000;
 
         /// <summary>
         /// Path behavior controls: move from end of the path to the start then stop.
         /// </summary>
-        public const uint PATH_BACKWARD = 0x000001;
+        public const uint PathBackward = 0x000001;
 
         /// <summary>
-        /// Path behavior controls: move from start of the path to the end then directly back to start, and start over
+        /// Path behavior controls: move from start of the path to the end then directly back to start, and start over.
         /// </summary>
-        public const uint PATH_LOOP_FORWARD = 0x000010;
+        public const uint PathLoopForward = 0x000010;
 
         /// <summary>
-        /// Path behavior controls: move from end of the path to the start then directly back to end, and start over
+        /// Path behavior controls: move from end of the path to the start then directly back to end, and start over.
         /// </summary>
-        public const uint PATH_LOOP_BACKWARD = 0x000100;
+        public const uint PathLoopBackward = 0x000100;
 
         /// <summary>
-        /// Path behavior controls: move from start of the path to the end then directly back to start, over and over
+        /// Path behavior controls: move from start of the path to the end then directly back to start, over and over.
         /// </summary>
-        public const uint PATH_YOYO = 0x001000;
+        public const uint PathYoyo = 0x001000;
 
         /// <summary>
-        /// Path behavior controls: ignores any vertical component to the path data, only follows side to side
+        /// Path behavior controls: ignores any vertical component to the path data, only follows side to side.
         /// </summary>
-        public const uint PATH_HORIZONTAL_ONLY = 0x010000;
+        public const uint PathHorizontalOnly = 0x010000;
 
         /// <summary>
-        /// Path behavior controls: ignores any horizontal component to the path data, only follows up and down
+        /// Path behavior controls: ignores any horizontal component to the path data, only follows up and down.
         /// </summary>
-        public const uint PATH_VERTICAL_ONLY = 0x100000;
+        public const uint PathVerticalOnly = 0x100000;
 
         /// <summary>
-        /// X position of the upper left corner of this object in world space
+        /// X position of the upper left corner of this object in world space.
         /// </summary>
-        public float x;
+        public float X { get; set; }
 
         /// <summary>
-        /// Y position of the upper left corner of this object in world space
+        /// Y position of the upper left corner of this object in world space.
         /// </summary>
-        public float y;
+        public float Y { get; set; }
 
         /// <summary>
-        /// The width of this object
+        /// The width of this object.
         /// </summary>
-        public float width;
+        public float Width { get; set; }
 
         /// <summary>
-        /// The height of this object
+        /// The height of this object.
         /// </summary>
-        public float height;
+        public float Height { get; set; }
 
         /// <summary>
-        /// Whether this object will move/alter position after a collision
+        /// Whether this object will move/alter position after a collision.
         /// </summary>
-        public bool immovable;
+        public bool Immovable { get; set; }
 
         /// <summary>
-        /// The bounciness of this object, Only affects collisions.  Default is 0, or "not bouncy at all."
+        /// Basic speed of this object.
         /// </summary>
-        public float elasticity;
+        public FlxPoint Velocity;
 
         /// <summary>
-        /// Virtual mass of this object.  Defauly value is 1.  Currently only used with <code>elasticity</code> during collision resolution.
+        /// Virtual mass of this object.
+        /// Currently only used with <code>elasticity</code> during collision resolution.
         /// Change at your own risk; effects seem crazy unpredictable so far!
+        /// Defauly value is 1.
         /// </summary>
-        public float mass;
+        public float Mass { get; set; }
 
         /// <summary>
-        /// Basic speed of this object
+        /// The bounciness of this object, Only affects collisions.
+        /// Default is 0, or "not bouncy at all."
         /// </summary>
-        public FlxPoint velocity;
-
-        /// <summary>
-        /// Max speed of this object
-        /// </summary>
-        public FlxPoint maxVelocity;
+        public float Elasticity { get; set; }
 
         /// <summary>
         /// How fast the speed of this object is changing.
         /// Useful for smooth movement and gravity
         /// </summary>
-        public FlxPoint acceleration;
+        public FlxPoint Acceleration;
 
         /// <summary>
-        /// This is like deceleration that is only applied when acceleration is not affecting the sprite.
+        /// This is like deceleration that is only applied
+        /// when acceleration is not affecting the sprite.
         /// </summary>
-        public FlxPoint drag;
+        public FlxPoint Drag;
 
         /// <summary>
-        /// The angle of the sprite, used for rotation
+        /// If you are using <code>acceleration</code>, you can use <code>MaxVelocity</code> with it
+        /// to cap the speed automatically (very useful!).
         /// </summary>
-        public float angle;
+        public FlxPoint MaxVelocity;
 
         /// <summary>
-        /// How fast you want the sprite to spin
+        /// Set the angle of a sprite to rotate it.
+        /// WARNING: rotating sprites decreases rendering
+        /// performance for this sprite by a factor of 10x!
+        /// 
+        /// flx# - This performance impact references FlashFlixel.
         /// </summary>
-        public float angularVelocity;
+        public float Angle { get; set; }
 
         /// <summary>
-        /// How fast the spin should change
+        /// How fast you want the sprite to spin.
         /// </summary>
-        public float angularAcceleration;
+        public float AngularVelocity { get; set; }
 
         /// <summary>
-        /// Like <code>drag</code> but for spinning
+        /// How fast the spin should change.
         /// </summary>
-        public float angularDrag;
+        public float AngularAcceleration { get; set; }
 
         /// <summary>
-        /// Use in conjunction with <code>angularAcceleration</code> fir fluid spin speed control
+        /// Like <code>Drag</code> but for spinning.
         /// </summary>
-        public float maxAngular;
+        public float AngularDrag { get; set; }
+
+        /// <summary>
+        /// Use in conjunction with <code>AngularAcceleration</code> for fluid spin speed control.
+        /// </summary>
+        public float MaxAngular { get; set; }
 
         /// <summary>
         /// Should always represent (0,0) - useful for different things, for avoideing unnecessary <code>new</code> calls
         /// </summary>
-        protected static FlxPoint _pZero = new FlxPoint();
+        protected static FlxPoint PZero = new FlxPoint();
 
         /// <summary>
-        /// How much this object is affected by the camera subsystem.
-        /// 0 means it never moves, like a HUD element or background graphic.
-        /// 1 means it scrolls along at the same speed as the foreground layer.
-        /// (1,1) by default.
+        /// A point that can store numbers from 0 to 1 (for X and Y independently)
+        /// that governs how much this object is affected by the camera subsystem.
+        /// 0 means it never moves, like a HUD element or far background graphic.
+        /// 1 means it scrolls along a the same speed as the foreground layer.
+        /// scrollFactor is initialized as (1,1) by default.
         /// 
-        /// CURRENTLY NOT IMPLEMENTED
+        /// flx# - CURRENTLY NOT IMPLEMENTED
         /// </summary>
-        public FlxPoint scrollFactor;
+        public FlxPoint ScrollFactor;
 
         /// <summary>
-        /// Internal helper for Retro-styled flickering
+        /// Internal helper for Retro-styled flickering.
         /// </summary>
         protected bool _flicker;
 
         /// <summary>
-        /// Internal helper for Retro-styled flickering
+        /// Internal helper for Retro-styled flickering.
         /// </summary>
         protected float _flickerTimer;
 
         /// <summary>
-        /// Handy for storing health percentage or armor points or whatever
+        /// Handy for storing health percentage or armor points or whatever.
         /// </summary>
-        public float health;
+        public float Health { get; set; }
 
         /// <summary>
-        /// Pre-allocated x-y point container to be used however you like
+        /// This is just a pre-allocated x-y point container to be used however you like.
         /// </summary>
-        protected FlxPoint _point;
+        protected FlxPoint _tagPoint;
 
         /// <summary>
-        /// Pre-allocated rectangle container to be used however you like
+        /// This is just a pre-allocated rectangle container to be used however you like.
         /// </summary>
-        protected FlxRect _rect;
+        protected FlxRect _tagRect;
 
         /// <summary>
-        /// Set this to false if you want to skip automatic motion/movement stuff.
-        /// Default is true for FlxObject and FlxSprite.
-        /// Default is false for FlxText, FlxTileblock, FlxTilemap, and FlxSound.
+        /// Set this to false if you want to skip the automatic motion/movement stuff (see <code>updateMotion()</code>).
+        /// FlxObject and FlxSprite default to true.
+        /// FlxText, FlxTileblock, FlxTilemap and FlxSound default to false.
         /// </summary>
-        public bool moves;
+        public bool Moves { get; set; }
 
         /// <summary>
         /// Bit field of flags (use with UP, DOWN, LEFT, RIGHT, etc) indicating surface contacts.
         /// Use bitwise operators to check the values stored here, or use touching(), justStartedTouching(), etc.
         /// You can even use them broadly as boolean values if you're feeling saucy!
         /// </summary>
-        public uint touching;
+        public uint Touching { get; set; }
 
         /// <summary>
         /// Bit field of flags (use with UP, DOWN, LEFT, RIGHT, etc) indicating surface contacts from the previous game loop step.
         /// Use bitwise operators to check the values stored here, or use touching(), justStartedTouching(), etc.
         /// You can even use them broadly as boolean values if you're feeling saucy!
         /// </summary>
-        public uint wasTouching;
+        public uint WasTouching { get; set; }
 
         /// <summary>
         /// Bit field of flags (use with UP, DOWN, LEFT, RIGHT, etc) indicating collision directions.
@@ -249,244 +256,266 @@ namespace fliXNA_xbox
         /// Useful for things like one-way platforms (e.g. allowCollisions = UP;)
         /// The accessor "solid" just flips this variable between NONE and ANY/
         /// </summary>
-        public uint allowCollisions;
+        public uint AllowCollisions { get; set; }
 
         /// <summary>
         /// Important variable for collision processing.
-        /// Set automatically during <code>preUpdate()</code>
+        /// By default this value is set automatically during <code>preUpdate()</code>.
         /// </summary>
-        public FlxPoint last;
+        public FlxPoint Last { get; set; }
 
         /// <summary>
-        /// A reference to a path object.  Null by default, assigned by followPath()
+        /// A reference to a path object.
+        /// Null by default, assigned by <code>followPath()</code>.
         /// </summary>
-        public FlxPath path;
+        public FlxPath Path { get; set; }
 
         /// <summary>
         /// The speed at which the object is moving on the path.
         /// When an object completes a non-looping path circuit,
-        /// the pathSpeed will be zeroed out, but the path reference
-        /// will NOT be nulled out.  So pathSpeed is a good way
-        /// to check if this object is currently following a path of not
+        /// the pathSpeed will be zeroed out, but the <code>Path</code> reference
+        /// will NOT be nulled out.  So <code>PathSpeed</code> is a good way
+        /// to check if this object is currently following a path or not.
         /// </summary>
-        public float pathSpeed;
+        public float PathSpeed { get; set; }
 
         /// <summary>
-        /// The angle in degrees between this object and the next node, where 0 is directly North, 90 is East
+        /// The angle in degrees between this object and the next node, where 0 is directly upward, and 90 is to the right.
         /// </summary>
-        public float pathAngle;
+        public float PathAngle { get; set; }
 
         /// <summary>
-        /// Internal helper, tracks which node of the path this object is moving toward
+        /// Internal helper, tracks which node of the path this object is moving toward.
         /// </summary>
         protected int _pathNodeIndex;
         
         /// <summary>
-        /// Internal tracker for path behavior flags (looping, horizontal only, etc)
+        /// Internal tracker for path behavior flags (like looping, horizontal only, etc).
         /// </summary>
         protected uint _pathMode;
 
         /// <summary>
-        /// Internal helper for node navigation, specifically yoyo and backwards movement
+        /// Internal helper for node navigation, specifically yo-yo and backwards movement.
         /// </summary>
         protected int _pathInc;
 
         /// <summary>
-        /// Internal flag for whether the object's angle should be adjusted to the path angle during path follow behavior
+        /// Internal flag for whether the object's angle should be adjusted to the path angle during path follow behavior.
         /// </summary>
         protected bool _pathRotate;
 
         /// <summary>
-        /// Instantiates a <code>FlxObject</code>
+        /// Instantiates a <code>FlxObject</code>.
         /// </summary>
-        /// <param name="X">X-coordinate of the object in space</param>
-        /// <param name="Y">y-coordinate of the object in space</param>
-        /// <param name="Width">Desired width of the rectangle</param>
-        /// <param name="Height">Desired height of the rectangle</param>
-        public FlxObject(float X = 0, float Y = 0, float Width = 0, float Height = 0)
-            : base()
+        /// <param name="x">X-coordinate of the object in space.</param>
+        /// <param name="y">y-coordinate of the object in space.</param>
+        /// <param name="width">Desired width of the rectangle.</param>
+        /// <param name="height">Desired height of the rectangle.</param>
+        public FlxObject(float x = 0, float y = 0, float width = 0, float height = 0) : base()
         {
-            x = X;
-            y = Y;
-            last = new FlxPoint(x, y);
-            width = Width;
-            height = Height;
-            mass = 1.0f;
-            elasticity = 0.0f;
+            X = x;
+            Y = y;
+            Last = new FlxPoint(x, y);
+            Width = width;
+            Height = height;
+            Mass = 1.0f;
+            Elasticity = 0.0f;
 
-            health = 1;
+            Immovable = false;
+            Moves = true;
 
-            immovable = false;
-            moves = true;
+            Touching = None;
+            WasTouching = None;
+            AllowCollisions = Any;
 
-            touching = NONE;
-            wasTouching = NONE;
-            allowCollisions = ANY;
+            Velocity = new FlxPoint();
+            Acceleration = new FlxPoint();
+            Drag = new FlxPoint();
+            MaxVelocity = new FlxPoint(10000, 10000);
 
-            velocity = new FlxPoint();
-            acceleration = new FlxPoint();
-            drag = new FlxPoint();
-            maxVelocity = new FlxPoint(10000, 10000);
+            Angle = 0;
+            AngularVelocity = 0;
+            AngularAcceleration = 0;
+            AngularDrag = 0;
+            MaxAngular = 10000;
 
-            angle = 0;
-            angularVelocity = 0;
-            angularAcceleration = 0;
-            angularDrag = 0;
-            maxAngular = 10000;
-
-            scrollFactor = new FlxPoint(1, 1);
+            ScrollFactor = new FlxPoint(1, 1);
             _flicker = false;
             _flickerTimer = 0;
 
-            _point = new FlxPoint();
-            _rect = new FlxRect();
+            _tagPoint = new FlxPoint();
+            _tagRect = new FlxRect();
 
-            path = null;
-            pathSpeed = 0;
-            pathAngle = 0;
+            Path = null;
+            PathSpeed = 0;
+            PathAngle = 0;
+
+            // flx# - ?
+            //Health = 1;
         }
 
         /// <summary>
-        /// Override to null out variables manually
+        /// Override this function to null out variables or
+        /// manually call destroy() on class members if necessary.
+        /// Don't forget to call super.destroy()!
         /// </summary>
         public override void destroy()
 		{
-            velocity = null;
-            acceleration = null;
-            drag = null;
-            maxVelocity = null;
-            scrollFactor = null;
-            _point = null;
-            _rect = null;
-            last = null;
+            Velocity = null;
+            Acceleration = null;
+            Drag = null;
+            MaxVelocity = null;
+            ScrollFactor = null;
+            _tagPoint = null;
+            _tagRect = null;
+            Last = null;
+            
+            // flx# - ?
             //cameras = null;
-            if (path != null)
-                path.destroy();
-            path = null;
+
+            if (Path != null)
+            {
+                Path.destroy();
+                Path = null;
+            }
+
+            base.destroy();
 		}
         
         /// <summary>
-        /// Called right before update()
+        /// Pre-update is called right before <code>update()</code> on each object in the game loop.
+        /// In <code>FlxObject</code> it controls the flicker timer,
+        /// tracking the last coordinates for collision purposes,
+        /// and checking if the object is moving along a path or not.
         /// </summary>
         public override void preUpdate()
         {
             _ACTIVECOUNT++;
 
+            // flx# - floatround
             if (_flickerTimer != 0)
             {
                 if (_flickerTimer > 0)
                 {
                     _flickerTimer = _flickerTimer - FlxG.elapsed;
+
                     if (_flickerTimer <= 0)
                     {
                         _flickerTimer = 0;
                         _flicker = false;
-                        reset(x, y);
+                        reset(X, Y);
                     }
                 }
             }
 
-            last.x = x;
-            last.y = y;
+            Last.x = X;
+            Last.y = Y;
 
-            if ((path != null) && (pathSpeed != 0) && (path.nodes[_pathNodeIndex] != null))
-                updatePathMotion();
-        }
-
-        public override void update()
-        {
-            base.update();
-            position.make(x, y);
-        }
-
-        /// <summary>
-        /// Called right after update()
-        /// </summary>
-        public override void postUpdate()
-        {
-            if (moves)
-                updateMotion();
-
-            wasTouching = touching;
-            touching = NONE;
-        }
-
-        /// <summary>
-        /// Internal function for updating the position and speed of this object.
-        /// </summary>
-        private void updateMotion()
-        {
-            float delta;
-            float velocityDelta;
-
-            velocityDelta = (FlxU.computeVelocity(angularVelocity, angularAcceleration, angularDrag, maxAngular) - angularVelocity) / 2;
-            angularVelocity += velocityDelta;
-            angle += angularVelocity * FlxG.elapsed;
-            angularVelocity += velocityDelta;
-
-            velocityDelta = (FlxU.computeVelocity(velocity.x, acceleration.x, drag.x, maxVelocity.x) - velocity.x) / 2;
-            velocity.x += velocityDelta;
-            delta = velocity.x * FlxG.elapsed;
-            velocity.x += velocityDelta;
-            x += delta;
-
-            velocityDelta = (FlxU.computeVelocity(velocity.y, acceleration.y, drag.y, maxVelocity.y) - velocity.y) / 2;
-            velocity.y += velocityDelta;
-            delta = velocity.y * FlxG.elapsed;
-            velocity.y += velocityDelta;
-            y += delta;
-        }
-
-        /// <summary>
-        /// Rarely called.
-        /// Not yet implemented like AS3 Flixel
-        /// </summary>
-        public override void draw()
-        {
-            if (cameras == null)
-                cameras = FlxG.cameras;
-            FlxCamera camera;// = FlxG.camera;
-            int i = 0;
-            int l = cameras.Count;
-            while (i < l)
+            if ((Path != null) && (PathSpeed != 0) && (Path.nodes[_pathNodeIndex] != null))
             {
-                camera = cameras[i++];
-                //camera = FlxG.camera;
-                if (!onScreen(camera))
-                    continue;
-                _VISIBLECOUNT++;
-                if (FlxG.visualDebug && !ignoreDrawDebug)
-                    drawDebug(camera);
+                updatePathMotion();
             }
         }
 
         /// <summary>
-        /// Not yet implemented
+        /// Post-update is called right after <code>update()</code> on each object in the game loop.
+        /// In <code>FlxObject</code> this function handles integrating the objects motion
+        /// based on the velocity and acceleration settings, and tracking/clearing the <code>touching</code> flags.
+        /// </summary>
+        public override void postUpdate()
+        {
+            if (Moves)
+            {
+                updateMotion();                
+            }
+
+            WasTouching = Touching;
+            Touching = None;
+        }
+
+        /// <summary>
+        /// Internal function for updating the position and speed of this object.
+        /// Useful for cases when you need to update this but are buried down in too many supers.
+        /// Does a slightly fancier-than-normal integration to help with higher fidelity framerate-independenct motion.
+        /// </summary>
+        protected void updateMotion()
+        {
+            float delta;
+            float velocityDelta;
+
+            velocityDelta = (FlxU.computeVelocity(AngularVelocity, AngularAcceleration, AngularDrag, MaxAngular) - AngularVelocity) / 2;
+            AngularVelocity += velocityDelta;
+            Angle += AngularVelocity * FlxG.elapsed;
+            AngularVelocity += velocityDelta;
+
+            velocityDelta = (FlxU.computeVelocity(Velocity.x, Acceleration.x, Drag.x, MaxVelocity.x) - Velocity.x) / 2;
+            Velocity.x += velocityDelta;
+            delta = Velocity.x * FlxG.elapsed;
+            Velocity.x += velocityDelta;
+            X += delta;
+
+            velocityDelta = (FlxU.computeVelocity(Velocity.y, Acceleration.y, Drag.y, MaxVelocity.y) - Velocity.y) / 2;
+            Velocity.y += velocityDelta;
+            delta = Velocity.y * FlxG.elapsed;
+            Velocity.y += velocityDelta;
+            Y += delta;
+        }
+
+        /// <summary>
+        /// Rarely called, and in this case just increments the visible objects count and calls <code>drawDebug()</code> if necessary.
+        /// </summary>
+        public override void draw()
+        {
+            if (cameras == null)
+            {
+                cameras = FlxG.cameras;                
+            }
+
+            foreach (FlxCamera camera in cameras)
+            {
+                if (!onScreen(camera))
+                {
+                    continue;
+                }
+
+                _VISIBLECOUNT++;
+
+                if (FlxG.visualDebug && !ignoreDrawDebug)
+                {
+                    drawDebug(camera);
+                }
+            }
+        }
+
+        /// <summary>
+        /// #flx - Not yet implemented / missing FlxG.flashGfx for direct drawing (draw on immovable debug overlay?)
         /// </summary>
         /// <param name="Camera">Which Camera - currently only one exists</param>
         public override void drawDebug(FlxCamera Camera=null)
 		{
+            throw new NotImplementedException();
+
 			if(Camera == null)
 				Camera = FlxG.camera;
 
 			//get bounding box coordinates
-			float boundingBoxX = x - (int)(Camera.scroll.x*scrollFactor.x); //copied from getScreenXY()
-			float boundingBoxY = y - (int)(Camera.scroll.y*scrollFactor.y);
+			float boundingBoxX = X - (int)(Camera.scroll.x*ScrollFactor.x); //copied from getScreenXY()
+			float boundingBoxY = Y - (int)(Camera.scroll.y*ScrollFactor.y);
 			boundingBoxX = (int)(boundingBoxX + ((boundingBoxX > 0)?0.0000001f:-0.0000001f));
 			boundingBoxY = (int)(boundingBoxY + ((boundingBoxY > 0)?0.0000001f:-0.0000001f));
-            int boundingBoxWidth = (int)((width != (int)(width)) ? width : width - 1f);
-            int boundingBoxHeight = (int)((height != (int)(height)) ?height : height - 1f);
+            int boundingBoxWidth = (int)((Width != (int)(Width)) ? Width : Width - 1f);
+            int boundingBoxHeight = (int)((Height != (int)(Height)) ?Height : Height - 1f);
 
             ////fill static graphics object with square shape
             //var gfx:Graphics = FlxG.flashGfx;
             //gfx.clear();
             //gfx.moveTo(boundingBoxX,boundingBoxY);
 			Color boundingBoxColor;
-			if(Convert.ToBoolean(allowCollisions))
+			if(Convert.ToBoolean(AllowCollisions))
 			{
-				if(allowCollisions != ANY)
+				if(AllowCollisions != Any)
                     boundingBoxColor = FlxColor.PINK;
-				if(immovable)
+				if(Immovable)
                     boundingBoxColor = FlxColor.GREEN;
 				else
                     boundingBoxColor = FlxColor.RED;
@@ -503,33 +532,32 @@ namespace fliXNA_xbox
             //Camera.buffer.draw(FlxG.flashGfxSprite);
 		}
 
-        /**
-		 * Call this function to give this object a path to follow.
-		 * If the path does not have at least one node in it, this function
-		 * will log a warning message and return.
-		 * 
-		 * @param	Path		The <code>FlxPath</code> you want this object to follow.
-		 * @param	Speed		How fast to travel along the path in pixels per second.
-		 * @param	Mode		Optional, controls the behavior of the object following the path using the path behavior constants.  Can use multiple flags at once, for example PATH_YOYO|PATH_HORIZONTAL_ONLY will make an object move back and forth along the X axis of the path only.
-		 * @param	AutoRotate	Automatically point the object toward the next node.  Assumes the graphic is pointing upward.  Default behavior is false, or no automatic rotation.
-		 */
-        public void followPath(FlxPath Path, float Speed = 100, uint Mode = PATH_FORWARD, bool AutoRotate = false)
+        /// <summary>
+        /// Call this function to give this object a path to follow.
+        /// If the path does not have at least one node in it, this function
+        /// will log a warning message and return.
+        /// </summary>
+        /// <param name="path">The <code>FlxPath</code> you want this object to follow.</param>
+        /// <param name="speed">How fast to travel along the path in pixels per second.</param>
+        /// <param name="mode">Optional, controls the behavior of the object following the path using the path behavior constants. Can use multiple flags at once, for example PATH_YOYO|PATH_HORIZONTAL_ONLY will make an object move back and forth along the X axis of the path only.</param>
+        /// <param name="autoRotate">Automatically point the object toward the next node.  Assumes the graphic is pointing upward.  Default behavior is false, or no automatic rotation.</param>
+        public void followPath(FlxPath path, float speed = 100, uint mode = PathForward, bool autoRotate = false)
         {
-            if (Path.nodes.Count <= 0)
+            if (path.nodes.Count <= 0)
             {
                 FlxG.log("WARNING: Paths need at least one node in them to be followed.");
                 return;
             }
 
-            path = Path;
-            pathSpeed = FlxU.abs(Speed);
-            _pathMode = Mode;
-            _pathRotate = AutoRotate;
+            Path = path;
+            PathSpeed = FlxU.abs(speed);
+            _pathMode = mode;
+            _pathRotate = autoRotate;
 
-            //get starting node
-            if ((_pathMode == PATH_BACKWARD) || (_pathMode == PATH_LOOP_BACKWARD))
+            // get starting node
+            if ((_pathMode == PathBackward) || (_pathMode == PathLoopBackward)) // flx# - no bitmask?
             {
-                _pathNodeIndex = path.nodes.Count - 1;
+                _pathNodeIndex = Path.nodes.Count - 1;
                 _pathInc = -1;
             }
             else
@@ -539,338 +567,429 @@ namespace fliXNA_xbox
             }
         }
 
-        /**
-		 * Tells this object to stop following the path its on.
-		 * 
-		 * @param	DestroyPath		Tells this function whether to call destroy on the path object.  Default value is false.
-		 */
-		public void stopFollowingPath(bool DestroyPath=false)
+        /// <summary>
+        /// Tells this object to stop following the path its on.
+        /// </summary>
+        /// <param name="destroyPath">Tells this function whether to call destroy on the path object. Default value is false.</param>
+		public void stopFollowingPath(bool destroyPath = false)
 		{
-			pathSpeed = 0;
-			if(DestroyPath && (path != null))
+			PathSpeed = 0;
+
+			if(destroyPath && (Path != null))
 			{
-				path.destroy();
-				path = null;
+				Path.destroy();
+				Path = null;
 			}
 		}
 
-        /**
-		 * Internal function that decides what node in the path to aim for next based on the behavior flags.
-		 * 
-		 * @return	The node (a <code>FlxPoint</code> object) we are aiming for next.
-		 */
-		protected FlxPoint advancePath(bool Snap=true)
+        /// <summary>
+        /// Internal function that decides what node in the path to aim for next based on the behavior flags.
+        /// </summary>
+        /// <param name="snap">?</param>
+        /// <returns>The node (a <code>FlxPoint</code> object) we are aiming for next.</returns>
+		protected FlxPoint advancePath(bool snap=true)
 		{
-			if(Snap)
+			if(snap)
 			{
-				FlxPoint oldNode = path.nodes[_pathNodeIndex];
+				FlxPoint oldNode = Path.nodes[_pathNodeIndex];
 				if(oldNode != null)
 				{
-					if((_pathMode & PATH_VERTICAL_ONLY) == 0)
-						x = oldNode.x - width*0.5f;
-					if((_pathMode & PATH_HORIZONTAL_ONLY) == 0)
-						y = oldNode.y - height*0.5f;
+					if ((_pathMode & PathVerticalOnly) == 0)
+					{
+                        X = oldNode.x - Width * 0.5f;					    
+					}
+
+					if ((_pathMode & PathHorizontalOnly) == 0)
+					{
+                        Y = oldNode.y - Height * 0.5f;					    
+					}
 				}
 			}
 
-			_pathNodeIndex += _pathInc;
+			_pathNodeIndex = _pathNodeIndex + _pathInc;
 
-			if((_pathMode & PATH_BACKWARD) > 0)
+			if((_pathMode & PathBackward) > 0)
 			{
 				if(_pathNodeIndex < 0)
 				{
 					_pathNodeIndex = 0;
-					pathSpeed = 0;
+					PathSpeed = 0;
 				}
 			}
-			else if((_pathMode & PATH_LOOP_FORWARD) > 0)
+			else if((_pathMode & PathLoopForward) > 0)
 			{
-				if(_pathNodeIndex >= path.nodes.Count)
-					_pathNodeIndex = 0;
+				if (_pathNodeIndex >= Path.nodes.Count)
+				{
+                    _pathNodeIndex = 0;				    
+				}
 			}
-			else if((_pathMode & PATH_LOOP_BACKWARD) > 0)
+			else if((_pathMode & PathLoopBackward) > 0)
 			{
 				if(_pathNodeIndex < 0)
 				{
-					_pathNodeIndex = path.nodes.Count-1;
-					if(_pathNodeIndex < 0)
-						_pathNodeIndex = 0;
+					_pathNodeIndex = Path.nodes.Count - 1;
+					if (_pathNodeIndex < 0)
+					{
+                        _pathNodeIndex = 0;					    
+					}
 				}
 			}
-			else if((_pathMode & PATH_YOYO) > 0)
+			else if((_pathMode & PathYoyo) > 0)
 			{
 				if(_pathInc > 0)
 				{
-                    if (_pathNodeIndex >= path.nodes.Count)
+                    if (_pathNodeIndex >= Path.nodes.Count)
 					{
-                        _pathNodeIndex = path.nodes.Count - 2;
-						if(_pathNodeIndex < 0)
-							_pathNodeIndex = 0;
+                        _pathNodeIndex = Path.nodes.Count - 2;
+						if (_pathNodeIndex < 0)
+						{
+                            _pathNodeIndex = 0;						    
+						}
 						_pathInc = -_pathInc;
 					}
 				}
 				else if(_pathNodeIndex < 0)
 				{
 					_pathNodeIndex = 1;
-                    if (_pathNodeIndex >= path.nodes.Count)
-                        _pathNodeIndex = path.nodes.Count - 1;
-					if(_pathNodeIndex < 0)
-						_pathNodeIndex = 0;
+                    if (_pathNodeIndex >= Path.nodes.Count)
+                    {
+                        _pathNodeIndex = Path.nodes.Count - 1;                        
+                    }
+
+					if (_pathNodeIndex < 0)
+					{
+                        _pathNodeIndex = 0;					    
+					}
 					_pathInc = -_pathInc;
 				}
 			}
 			else
 			{
-                if (_pathNodeIndex >= path.nodes.Count)
+                if (_pathNodeIndex >= Path.nodes.Count)
 				{
-                    _pathNodeIndex = path.nodes.Count - 1;
-					pathSpeed = 0;
+                    _pathNodeIndex = Path.nodes.Count - 1;
+					PathSpeed = 0;
 				}
 			}
 
-			return path.nodes[_pathNodeIndex];
+			return Path.nodes[_pathNodeIndex];
 		}
 
-        /**
-		 * Internal function for moving the object along the path.
-		 * Generally this function is called automatically by <code>preUpdate()</code>.
-		 * The first half of the function decides if the object can advance to the next node in the path,
-		 * while the second half handles actually picking a velocity toward the next node.
-		 */
+        /// <summary>
+        /// Internal function for moving the object along the path.
+        /// Generally this function is called automatically by <code>preUpdate()</code>.
+        /// The first half of the function decides if the object can advance to the next node in the path,
+        /// while the second half handles actually picking a velocity toward the next node.
+        /// </summary>
 		protected void updatePathMotion()
 		{
-			//first check if we need to be pointing at the next node yet
-			_point.x = x + width*0.5f;
-			_point.y = y + height*0.5f;
-			FlxPoint node = path.nodes[_pathNodeIndex];
-			float deltaX = node.x - _point.x;
-			float deltaY = node.y - _point.y;
+			// first check if we need to be pointing at the next node yet
+			_tagPoint.x = X + Width * 0.5f;
+			_tagPoint.y = Y + Height * 0.5f;
+			FlxPoint node = Path.nodes[_pathNodeIndex];
+			float deltaX = node.x - _tagPoint.x;
+			float deltaY = node.y - _tagPoint.y;
 
-			bool horizontalOnly = (_pathMode & PATH_HORIZONTAL_ONLY) > 0;
-			bool verticalOnly = (_pathMode & PATH_VERTICAL_ONLY) > 0;
+			bool horizontalOnly = (_pathMode & PathHorizontalOnly) > 0;
+			bool verticalOnly = (_pathMode & PathVerticalOnly) > 0;
 
 			if(horizontalOnly)
 			{
-				if(((deltaX>0)?deltaX:-deltaX) < pathSpeed*FlxG.elapsed)
+				if(((deltaX>0)?deltaX:-deltaX) < PathSpeed*FlxG.elapsed)
 					node = advancePath();
 			}
 			else if(verticalOnly)
 			{
-				if(((deltaY>0)?deltaY:-deltaY) < pathSpeed*FlxG.elapsed)
-					node = advancePath();
+				if (((deltaY > 0) ? deltaY : -deltaY) < PathSpeed*FlxG.elapsed)
+				{
+                    node = advancePath();				    
+				}
 			}
 			else
 			{
-				if(Math.Sqrt(deltaX*deltaX + deltaY*deltaY) < pathSpeed*FlxG.elapsed)
-					node = advancePath();
+				if (Math.Sqrt(deltaX*deltaX + deltaY*deltaY) < PathSpeed*FlxG.elapsed)
+				{
+                    node = advancePath();				    
+				}
 			}
 
-			//then just move toward the current node at the requested speed
-			if(pathSpeed != 0)
+			// then just move toward the current node at the requested speed
+			if(PathSpeed != 0)
 			{
 				//set velocity based on path mode
-				_point.x = x + width*0.5f;
-				_point.y = y + height*0.5f;
-				if(horizontalOnly || (_point.y == node.y))
+				_tagPoint.x = X + Width * 0.5f;
+				_tagPoint.y = Y + Height * 0.5f;
+
+				if(horizontalOnly || (_tagPoint.y == node.y))
 				{
-					velocity.x = (_point.x < node.x)?pathSpeed:-pathSpeed;
-					if(velocity.x < 0)
-						pathAngle = -90;
+					Velocity.x = (_tagPoint.x < node.x) ? PathSpeed: -PathSpeed;
+
+					if (Velocity.x < 0)
+					{
+					    PathAngle = -90;
+					}
 					else
-						pathAngle = 90;
-					if(!horizontalOnly)
-						velocity.y = 0;
+					{
+                        PathAngle = 90;					    
+					}
+
+					if (!horizontalOnly)
+					{
+                        Velocity.y = 0;					    
+					}
 				}
-				else if(verticalOnly || (_point.x == node.x))
+				else if(verticalOnly || (_tagPoint.x == node.x))
 				{
-					velocity.y = (_point.y < node.y)?pathSpeed:-pathSpeed;
-					if(velocity.y < 0)
-						pathAngle = 0;
-					else
-						pathAngle = 180;
-					if(!verticalOnly)
-						velocity.x = 0;
+					Velocity.y = (_tagPoint.y < node.y) ? PathSpeed : -PathSpeed;
+					
+                    if (Velocity.y < 0)
+                    {
+                        PathAngle = 0;
+                    }
+                    else
+                    {
+                        PathAngle = 180;                        
+                    }
+
+					if (!verticalOnly)
+					{
+                        Velocity.x = 0;					    
+					}
 				}
 				else
 				{
-					pathAngle = FlxU.getAngle(_point,node);
-					FlxU.rotatePoint(0,pathSpeed,0,0,pathAngle,velocity);
+					PathAngle = FlxU.getAngle(_tagPoint, node);
+					FlxU.rotatePoint(0, PathSpeed, 0, 0, PathAngle, Velocity);
 				}
 
-				//then set object rotation if necessary
+				// then set object rotation if necessary
 				if(_pathRotate)
 				{
-					angularVelocity = 0;
-					angularAcceleration = 0;
-					angle = pathAngle;
+					AngularVelocity = 0;
+					AngularAcceleration = 0;
+					Angle = PathAngle;
 				}
 			}			
 		}
 
 
         /// <summary>
-        /// Checks to see if some FlxObject overlaps this FlxObject or FlxGroup.
-        /// If the group has a LOT of things in it, it might be faster to use <code>FlxG.ovelaps()</code>
+        /// Checks to see if some <code>FlxObject</code> overlaps this <code>FlxObject</code> or <code>FlxGroup</code>.
+        /// If the group has a LOT of things in it, it might be faster to use <code>FlxG.overlaps()</code>.
+        /// WARNING: Currently tilemaps do NOT support screen space overlap checks!
         /// </summary>
-        /// <param name="ObjectOrGroup">The object or group being tested</param>
-        /// <param name="InScreenSpace">Whether to take scroll factors into account.</param>
-        /// <param name="Camera">Which Camera - currently only one exists</param>
+        /// <param name="objectOrGroup">The object or group being tested.</param>
+        /// <param name="inScreenSpace">Whether to take scroll factors into account when checking for overlap.  Default is false, or "only compare in world space."</param>
+        /// <param name="camera">Specify which game camera you want. If null getScreenXY() will just grab the first global camera. flx# - currently only one exists</param>
         /// <returns></returns>
-        public virtual bool overlaps(FlxBasic ObjectOrGroup, bool InScreenSpace=false, FlxCamera Camera=null)
+        public virtual bool overlaps(FlxBasic objectOrGroup, bool inScreenSpace = false, FlxCamera camera = null)
 		{
-			if(ObjectOrGroup is FlxGroup)
+			if(objectOrGroup is FlxGroup)
 			{
 				bool results = false;
+			    var group = objectOrGroup as FlxGroup;
+			    foreach (FlxBasic member in group.members)
+			    {
+			        if (overlaps(member, inScreenSpace, camera))
+			        {
+			            results = true;
+                        // flx# - we could break here, if overlaps does not trigger anything on the remaining members
+			        }
+			    }
+                
+                /*
 				int i = 0;
                 List<FlxBasic> members = new List<FlxBasic>();
-                members = (ObjectOrGroup as FlxGroup).members;
+                members = (objectOrGroup as FlxGroup).members;
                 //uint l = (uint)(ObjectOrGroup as FlxGroup).length;
                 uint length = (uint)members.Count;
 				while(i < length)
 				{
-					if(overlaps(members[i++],InScreenSpace,Camera))
+					if(overlaps(members[i++],inScreenSpace,camera))
 						results = true;
 				}
+                */
+
 				return results;
 			}
 
-            if (ObjectOrGroup is FlxTilemap)
+            if (objectOrGroup is FlxTilemap)
             {
-                //Since tilemap's have to be the caller, not the target, to do proper tile-based collisions,
+                // Since tilemap's have to be the caller, not the target, to do proper tile-based collisions,
                 // we redirect the call to the tilemap overlap here.
-                return (ObjectOrGroup as FlxTilemap).overlaps(this, InScreenSpace, Camera);
+                return (objectOrGroup as FlxTilemap).overlaps(this, inScreenSpace, camera);
             }
 
-			FlxObject Object = ObjectOrGroup as FlxObject;
-			if(!InScreenSpace)
+			var flxObject = objectOrGroup as FlxObject;
+			
+            if(!inScreenSpace)
 			{
-                return (Object.x + Object.width > x) && (Object.x < x + width) &&
-                        (Object.y + Object.height > y) && (Object.y < y + height);
+                return (flxObject.X + flxObject.Width > X) && (flxObject.X < X + Width) &&
+                       (flxObject.Y + flxObject.Height > Y) && (flxObject.Y < Y + Height);
 			}
 
-			if(Camera == null)
-				Camera = FlxG.camera;
-            FlxPoint objectScreenPos = Object.getScreenXY(null, Camera);
-			getScreenXY(_point,Camera);
-            return (objectScreenPos.x + Object.width > _point.x) && (objectScreenPos.x < _point.x + width) &&
-                    (objectScreenPos.y + Object.height > _point.y) && (objectScreenPos.y < _point.y + height);
+			if (camera == null)
+			{
+                camera = FlxG.camera;			    
+			}
+
+            FlxPoint objectScreenPos = flxObject.getScreenXY(null, camera);
+			getScreenXY(_tagPoint, camera);
+            return (objectScreenPos.x + flxObject.Width > _tagPoint.x) && (objectScreenPos.x < _tagPoint.x + Width) &&
+                   (objectScreenPos.y + flxObject.Height > _tagPoint.y) && (objectScreenPos.y < _tagPoint.y + Height);
 		}
 
         /// <summary>
-        /// Checks to see if this FlxObject were located at the given position
+        /// Checks to see if this <code>FlxObject</code> were located at the given position, would it overlap the <code>FlxObject</code> or <code>FlxGroup</code>?
+        /// This is distinct from overlapsPoint(), which just checks that point, rather than taking the object's size into account.
+        /// WARNING: Currently tilemaps do NOT support screen space overlap checks!
         /// </summary>
-        /// <param name="X">X position you want to check</param>
-        /// <param name="Y">Y position you want to check</param>
-        /// <param name="ObjectOrGroup">The object or group being tested</param>
-        /// <param name="InScreenSpace">Whether to take scroll factors into account.</param>
-        /// <param name="Camera">Which Camera - currently only one exists</param>
+        /// <param name="x">The X position you want to check. Pretends this object (the caller, not the parameter) is located here.</param>
+        /// <param name="y">The Y position you want to check. Pretends this object (the caller, not the parameter) is located here.</param>
+        /// <param name="objectOrGroup">The object or group being tested.</param>
+        /// <param name="inScreenSpace">Whether to take scroll factors into account when checking for overlap.  Default is false, or "only compare in world space."</param>
+        /// <param name="camera">Specify which game camera you want.  If null getScreenXY() will just grab the first global camera. flx# - currently only one exists</param>
         /// <returns></returns>
-        public virtual bool overlapsAt(float X, float Y, FlxBasic ObjectOrGroup, bool InScreenSpace = false, FlxCamera Camera = null)
+        public virtual bool overlapsAt(float x, float y, FlxBasic objectOrGroup, bool inScreenSpace = false, FlxCamera camera = null)
         {
-            if (ObjectOrGroup is FlxGroup)
+            if (objectOrGroup is FlxGroup)
             {
                 bool results = false;
+                var group = objectOrGroup as FlxGroup;
+                foreach (FlxBasic member in group.members)
+                {
+                    if (overlapsAt(x, y, member, inScreenSpace, camera))
+                    {
+                        results = true;
+                        // flx# - we could break here, if overlaps does not trigger anything on the remaining members
+                    }
+                }
+
+                /*
                 int i = 0;List<FlxBasic> members = new List<FlxBasic>();
-                members = (ObjectOrGroup as FlxGroup).members;
+                members = (objectOrGroup as FlxGroup).members;
                 uint length = (uint)members.Count;
                 while (i < length)
                 {
-                        if (overlapsAt(X, Y, members[i++], InScreenSpace, Camera))
+                        if (overlapsAt(x, y, members[i++], inScreenSpace, camera))
                             results = true;
                 }
+                */
                 return results;
             }
 
-            if (ObjectOrGroup is FlxTilemap)
+            if (objectOrGroup is FlxTilemap)
             {
-                FlxTilemap tilemap = ObjectOrGroup as FlxTilemap;
-                return tilemap.overlapsAt(tilemap.x - (X - x), tilemap.y - (Y - y), this, InScreenSpace, Camera);
+                var tilemap = objectOrGroup as FlxTilemap;
+                return tilemap.overlapsAt(tilemap.X - (x - this.X), tilemap.Y - (y - this.Y), this, inScreenSpace, camera);
             }
 
-            FlxObject Object = ObjectOrGroup as FlxObject;
-            if(!InScreenSpace)
+            var flxObject = objectOrGroup as FlxObject;
+            
+            if(!inScreenSpace)
             {
-                return (Object.x + Object.width > X) && (Object.x < X + width) &&
-                        (Object.y + Object.height > Y) && (Object.y < Y + height);
+                return (flxObject.X + flxObject.Width > x) && (flxObject.X < x + Width) &&
+                       (flxObject.Y + flxObject.Height > y) && (flxObject.Y < y + Height);
             }
 
-            if (Camera == null)
-                Camera = FlxG.camera;
-            FlxPoint objectScreenPos = Object.getScreenXY(null, Camera);
-            _point.x = X - Camera.scroll.x * scrollFactor.x;
-            _point.y = Y - Camera.scroll.y * scrollFactor.y;
-            _point.x += (_point.x > 0) ? 0.0000001f : -0.0000001f;
-            _point.y += (_point.y > 0) ? 0.0000001f : -0.0000001f;
+            if (camera == null)
+            {
+                camera = FlxG.camera;                
+            }
 
-            return (objectScreenPos.x + Object.width > _point.x) && (objectScreenPos.x < _point.x + width) &&
-                (objectScreenPos.y + Object.height > _point.y) && (objectScreenPos.y < _point.y + height);
+            FlxPoint objectScreenPos = flxObject.getScreenXY(null, camera);
+            _tagPoint.x = x - camera.scroll.x * ScrollFactor.x; //copied from getScreenXY()
+            _tagPoint.y = y - camera.scroll.y * ScrollFactor.y;
+            _tagPoint.x += (_tagPoint.x > 0) ? 0.0000001f : -0.0000001f;
+            _tagPoint.y += (_tagPoint.y > 0) ? 0.0000001f : -0.0000001f;
+
+            return (objectScreenPos.x + flxObject.Width > _tagPoint.x) && (objectScreenPos.x < _tagPoint.x + Width) &&
+                   (objectScreenPos.y + flxObject.Height > _tagPoint.y) && (objectScreenPos.y < _tagPoint.y + Height);
         }
 
         /// <summary>
-        /// Check to see if a point in 2D world space overlaps this FlxObject
+        /// Checks to see if a point in 2D world space overlaps this <code>FlxObject</code> object.
         /// </summary>
-        /// <param name="Point">The point in world space you want to check</param>
-        /// <param name="InScreenSpace">Whether to take scroll factors into account.</param>
-        /// <param name="Camera">Which Camera - currently only one exists</param>
+        /// <param name="point">The point in world space you want to check.</param>
+        /// <param name="inScreenSpace">Whether to take scroll factors into account when checking for overlap.</param>
+        /// <param name="camera">Specify which game camera you want.  If null getScreenXY() will just grab the first global camera. flx# - currently only one exists</param>
         /// <returns></returns>
-        public virtual bool overlapsPoint(FlxPoint Point, bool InScreenSpace = false, FlxCamera Camera = null)
+        public virtual bool overlapsPoint(FlxPoint point, bool inScreenSpace = false, FlxCamera camera = null)
         {
-            if (!InScreenSpace)
-                return (Point.x > x) && (Point.x < x + width) && (Point.y > y) && (Point.y < y + height);
+            if (!inScreenSpace)
+            {
+                return (point.x > this.X) && (point.x < this.X + Width) && (point.y > this.Y) && (point.y < this.Y + Height);                
+            }
 
-            if (Camera == null)
-                Camera = FlxG.camera;
-            float X = Point.x - Camera.scroll.x;
-            float Y = Point.y - Camera.scroll.y;
-            getScreenXY(_point, Camera);
-            return (X > _point.x) && (X < _point.x + width) && (Y > _point.y) && (Y < _point.y + height);
+            if (camera == null)
+            {
+                camera = FlxG.camera;                
+            }
+
+            float x = point.x - camera.scroll.x;
+            float y = point.y - camera.scroll.y;
+            getScreenXY(_tagPoint, camera);
+            return (x > _tagPoint.x) && (x < _tagPoint.x + Width) && (y > _tagPoint.y) && (y < _tagPoint.y + Height);
         }
 
         /// <summary>
-        /// Check to see if this object is currently on the screen
+        /// Check and see if this object is currently on screen.
         /// </summary>
-        /// <param name="Camera">Which Camera - currently only one exists</param>
+        /// <param name="camera">Specify which game camera you want. If null getScreenXY() will just grab the first global camera.</param>
         /// <returns>bool</returns>
-        public virtual bool onScreen(FlxCamera Camera=null)
+        public virtual bool onScreen(FlxCamera camera = null)
 		{
-			if(Camera == null)
-				Camera = FlxG.camera;
-			getScreenXY(_point,Camera);
-			return (_point.x + width > 0) && (_point.x < Camera.width) && (_point.y + height > 0) && (_point.y < Camera.height);
+			if (camera == null)
+			{
+                camera = FlxG.camera;			    
+			}
+
+			getScreenXY(_tagPoint,camera);
+			return (_tagPoint.x + Width > 0) && (_tagPoint.x < camera.width) && (_tagPoint.y + Height > 0) && (_tagPoint.y < camera.height);
 		}
 
         /// <summary>
-        /// Call this to figure out the on-screen position of the object
+        /// Call this function to figure out the on-screen position of the object.
         /// </summary>
-        /// <param name="Point">Take a FlxPoint object and assign the post-scrolled X and Y values of this object to it</param>
-        /// <param name="Camera">Which Camera - currently only one exists</param>
+        /// <param name="point">Takes a <code>FlxPoint</code> object and assigns the post-scrolled X and Y values of this object to it.</param>
+        /// <param name="camera">Specify which game camera you want.  If null getScreenXY() will just grab the first global camera.</param>
         /// <returns></returns>
-        public FlxPoint getScreenXY(FlxPoint Point=null, FlxCamera Camera=null)
+        public FlxPoint getScreenXY(FlxPoint point = null, FlxCamera camera = null)
 		{
-			if(Point == null)
-				Point = new FlxPoint();
-			if(Camera == null)
-				Camera = FlxG.camera;
-			Point.x = x - (Camera.scroll.x*scrollFactor.x);
-			Point.y = y - (Camera.scroll.y*scrollFactor.y);
-			Point.x += (Point.x > 0)?0.0000001f:-0.0000001f;
-			Point.y += (Point.y > 0)?0.0000001f:-0.0000001f;
-			return Point;
+			if (point == null)
+			{
+                point = new FlxPoint();			    
+			}
+
+			if (camera == null)
+			{
+                camera = FlxG.camera;			    
+			}
+
+			point.x = X - (camera.scroll.x * ScrollFactor.x);
+			point.y = Y - (camera.scroll.y * ScrollFactor.y);
+			point.x += (point.x > 0) ? 0.0000001f : -0.0000001f;
+			point.y += (point.y > 0) ? 0.0000001f : -0.0000001f;
+			return point;
 		}
 
         /// <summary>
-        /// Flicker this object
+        /// Tells this object to flicker, retro-style.
+        /// Pass a negative value to flicker forever.
         /// </summary>
-        /// <param name="Duration">How many seconds</param>
-        public void flicker(float Duration=1.0f)
+        /// <param name="duration">How many seconds to flicker for.</param>
+        public void flicker(float duration = 1.0f)
 		{
-			_flickerTimer = Duration;
-			if(_flickerTimer == 0)
-				_flicker = false;
+			_flickerTimer = duration;
+
+			if (_flickerTimer == 0)
+			{
+                _flicker = false;			    
+			}
 		}
 
         /// <summary>
-        /// Check to see if it is still flickering
+        /// Check to see if the object is still flickering.
         /// </summary>
         public bool flickering
         {
@@ -878,155 +997,159 @@ namespace fliXNA_xbox
         }
 
         /// <summary>
-        /// Get/Set solid
+        /// Whether the object collides or not.  For more control over what directions
+        /// the object will collide from, use collision constants (like LEFT, FLOOR, etc)
+        /// to set the value of allowCollisions directly.
         /// </summary>
-        public bool solid
+        public bool Solid
         {
-            get { return (allowCollisions & ANY) > NONE; }
-            set
-            {
-                if (value)
-                    allowCollisions = ANY;
-                else
-                    allowCollisions = NONE;
-            }
-
+            get { return (AllowCollisions & Any) > None; }
+            set { AllowCollisions = (value) ? Any : None; }
         }
 
         /// <summary>
-        /// Retrieve midpoint of this object in world coordinates
+        /// Retrieve the midpoint of this object in world coordinates.
         /// </summary>
-        /// <param name="Point"></param>
-        /// <returns></returns>
-        public FlxPoint getMidpoint(FlxPoint Point=null)
+        /// <param name="point">Allows you to pass in an existing <code>FlxPoint</code> object if you're so inclined. Otherwise a new one is created.</param>
+        /// <returns>A <code>FlxPoint</code> object containing the midpoint of this object in world coordinates.</returns>
+        public FlxPoint getMidpoint(FlxPoint point = null)
 		{
-			if(Point == null)
-				Point = new FlxPoint();
-			Point.x = x + (width / 2);
-			Point.y = y + (height / 2);
-			return Point;
+			if (point == null)
+			{
+                point = new FlxPoint();			    
+			}
+
+            // flx# - wtf we dont bitshift here but anywhere else?
+			point.x = X + (Width / 2);
+			point.y = Y + (Height / 2);
+			return point;
 		}
 
         /// <summary>
-        /// Handy function for reviving game objects.  
-        /// Resets their existence flags and position
+        /// Handy function for reviving game objects.
+        /// Resets their existence flags and position.
         /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        public virtual void reset(float X, float Y)
+        /// <param name="x">The new X position of this object.</param>
+        /// <param name="y">The new Y position of this object.</param>
+        public virtual void reset(float x, float y)
 		{
 			revive();
-			touching = NONE;
-			wasTouching = NONE;
-			x = X;
-			y = Y;
-			last.x = x;
-			last.y = y;
-			velocity.x = 0;
-			velocity.y = 0;
+			Touching = None;
+			WasTouching = None;
+			X = x;
+			Y = y;
+			Last.x = X;
+			Last.y = Y;
+			Velocity.x = 0;
+			Velocity.y = 0;
 		}
 
         /// <summary>
-        /// Check to see if this object is touching a particular surface
+        /// Handy function for checking if this object is touching a particular surface.
+        /// For slightly better performance you can just & the value directly into <code>touching</code>.
+        /// However, this method is good for readability and accessibility.
         /// </summary>
-        /// <param name="Direction">Any of the collision flags (e.g. LEFT, FLOOR, etc)</param>
-        /// <returns>true if touching is true</returns>
-        public bool isTouching(uint Direction)
+        /// <param name="direction">Any of the collision flags (e.g. LEFT, FLOOR, etc).</param>
+        /// <returns>Whether the object is touching an object in (any of) the specified direction(s) this frame.</returns>
+        public bool isTouching(uint direction)
 		{
-			return (touching & Direction) > NONE;
+			return (Touching & direction) > None;
 		}
 
         /// <summary>
-        /// Check to see if this object just touched a particular surface
+        /// Handy function for checking if this object is just landed on a particular surface.
         /// </summary>
-        /// <param name="Direction">Any of the collision flags (e.g. LEFT, FLOOR, etc)</param>
-        /// <returns>true if touching is true</returns>
-        public bool justTouched(uint Direction)
+        /// <param name="direction">Any of the collision flags (e.g. LEFT, FLOOR, etc).</param>
+        /// <returns>Whether the object just landed on (any of) the specified surface(s) this frame.</returns>
+        public bool justTouched(uint direction)
 		{
-			return ((touching & Direction) > NONE) && ((wasTouching & Direction) <= NONE);
+			return ((Touching & direction) > None) && ((WasTouching & direction) <= None);
 		}
 
         /// <summary>
-        /// Reduces the health
+        /// Reduces the "health" variable of this sprite by the amount specified in Damage.
+        /// Calls kill() if health drops to or below zero.
         /// </summary>
-        /// <param name="Damage">Amount to reduce by</param>
-        public void hurt(float Damage)
+        /// <param name="damage">How much health to take away (use a negative number to give a health bonus).</param>
+        public void hurt(float damage)
 		{
-			health = health - Damage;
-			if(health <= 0)
-				kill();
+			Health = Health - damage;
+
+			if (Health <= 0)
+			{
+                kill();			    
+			}
 		}
 
         /// <summary>
-        /// The main collision resolution function
+        /// The main collision resolution function in flixel.
         /// </summary>
-        /// <param name="Object1"></param>
-        /// <param name="Object2"></param>
-        /// <returns></returns>
-        static public bool separate(FlxObject Object1, FlxObject Object2)
+        /// <param name="objectOne">Any <code>FlxObject</code>.</param>
+        /// <param name="objectTwo">Any other <code>FlxObject</code>.</param>
+        /// <returns>Whether the objects in fact touched and were separated.</returns>
+        static public bool separate(FlxObject objectOne, FlxObject objectTwo)
 		{
-			bool separatedX = separateX(Object1,Object2);
-			bool separatedY = separateY(Object1,Object2);
+			bool separatedX = separateX(objectOne, objectTwo);
+			bool separatedY = separateY(objectOne, objectTwo);
 			return separatedX || separatedY;
 		}
 
         /// <summary>
-        /// X-axis component of the object separation process
+        /// The X-axis component of the object separation process.
         /// </summary>
-        /// <param name="Object1"></param>
-        /// <param name="Object2"></param>
+        /// <param name="objectOne">Any <code>FlxObject</code>.</param>
+        /// <param name="objectTwo">Any other <code>FlxObject</code>.</param>
         /// <returns></returns>
-        static public bool separateX(FlxObject Object1, FlxObject Object2)
+        static public bool separateX(FlxObject objectOne, FlxObject objectTwo)
 		{
-
-			//can't separate two immovable objects
-			bool obj1immovable = Object1.immovable;
-			bool obj2immovable = Object2.immovable;
+			// can't separate two immovable objects
+			bool obj1immovable = objectOne.Immovable;
+			bool obj2immovable = objectTwo.Immovable;
 			if(obj1immovable && obj2immovable)
 				return false;
 
-			//If one of the objects is a tilemap, just pass it off.
-            if (Object1 is FlxTilemap)
-                return (Object1 as FlxTilemap).overlapsWithCallback(Object2, separateX);
-            if (Object2 is FlxTilemap)
-                return (Object2 as FlxTilemap).overlapsWithCallback(Object1, separateX, true);
+			// If one of the objects is a tilemap, just pass it off.
+            if (objectOne is FlxTilemap)
+                return (objectOne as FlxTilemap).overlapsWithCallback(objectTwo, separateX);
+            if (objectTwo is FlxTilemap)
+                return (objectTwo as FlxTilemap).overlapsWithCallback(objectOne, separateX, true);
 
-			//First, get the two object deltas
+			// First, get the two object deltas
             float overlap = 0;
-            float obj1delta = Object1.x - Object1.last.x;
-            float obj2delta = Object2.x - Object2.last.x;
+            float obj1delta = objectOne.X - objectOne.Last.x;
+            float obj2delta = objectTwo.X - objectTwo.Last.x;
 			if(obj1delta != obj2delta)
 			{
 				//Check if the X hulls actually overlap
                 float obj1deltaAbs = (obj1delta > 0) ? obj1delta : -obj1delta;
                 float obj2deltaAbs = (obj2delta > 0) ? obj2delta : -obj2delta;
-				FlxRect obj1rect = new FlxRect(Object1.x-((obj1delta > 0)?obj1delta:0),Object1.last.y,Object1.width+((obj1delta > 0)?obj1delta:-obj1delta),Object1.height);
-				FlxRect obj2rect = new FlxRect(Object2.x-((obj2delta > 0)?obj2delta:0),Object2.last.y,Object2.width+((obj2delta > 0)?obj2delta:-obj2delta),Object2.height);
+				FlxRect obj1rect = new FlxRect(objectOne.X-((obj1delta > 0)?obj1delta:0),objectOne.Last.y,objectOne.Width+((obj1delta > 0)?obj1delta:-obj1delta),objectOne.Height);
+				FlxRect obj2rect = new FlxRect(objectTwo.X-((obj2delta > 0)?obj2delta:0),objectTwo.Last.y,objectTwo.Width+((obj2delta > 0)?obj2delta:-obj2delta),objectTwo.Height);
 				if((obj1rect.x + obj1rect.width > obj2rect.x) && (obj1rect.x < obj2rect.x + obj2rect.width) && (obj1rect.y + obj1rect.height > obj2rect.y) && (obj1rect.y < obj2rect.y + obj2rect.height))
 				{
-                    float maxOverlap = obj1deltaAbs + obj2deltaAbs + OVERLAP_BIAS;
+                    float maxOverlap = obj1deltaAbs + obj2deltaAbs + OverlapBias;
 
 					//If they did overlap (and can), figure out by how much and flip the corresponding flags
 					if(obj1delta > obj2delta)
 					{
-						overlap = Object1.x + Object1.width - Object2.x;
-						if((overlap > maxOverlap) || !Convert.ToBoolean(Object1.allowCollisions & RIGHT) || !Convert.ToBoolean(Object2.allowCollisions & LEFT))
+						overlap = objectOne.X + objectOne.Width - objectTwo.X;
+						if((overlap > maxOverlap) || !Convert.ToBoolean(objectOne.AllowCollisions & Right) || !Convert.ToBoolean(objectTwo.AllowCollisions & Left))
 							overlap = 0;
 						else
 						{
-							Object1.touching |= RIGHT;
-							Object2.touching |= LEFT;
+							objectOne.Touching |= Right;
+							objectTwo.Touching |= Left;
 						}
 					}
 					else if(obj1delta < obj2delta)
 					{
-						overlap = Object1.x - Object2.width - Object2.x;
-						if((-overlap > maxOverlap) || !Convert.ToBoolean(Object1.allowCollisions & LEFT) || !Convert.ToBoolean(Object2.allowCollisions & RIGHT))
+						overlap = objectOne.X - objectTwo.Width - objectTwo.X;
+						if((-overlap > maxOverlap) || !Convert.ToBoolean(objectOne.AllowCollisions & Left) || !Convert.ToBoolean(objectTwo.AllowCollisions & Right))
 							overlap = 0;
 						else
 						{
-							Object1.touching |= LEFT;
-							Object2.touching |= RIGHT;
+							objectOne.Touching |= Left;
+							objectTwo.Touching |= Right;
 						}
 					}
 				}
@@ -1036,32 +1159,32 @@ namespace fliXNA_xbox
 			//Then adjust their positions and velocities accordingly (if there was any overlap)
 			if(overlap != 0)
 			{
-                float obj1v = Object1.velocity.x;
-                float obj2v = Object2.velocity.x;
+                float obj1v = objectOne.Velocity.x;
+                float obj2v = objectTwo.Velocity.x;
 
 				if(!obj1immovable && !obj2immovable)
 				{
 					overlap *= 0.5f;
-					Object1.x = Object1.x - overlap;
-					Object2.x += overlap;
+					objectOne.X = objectOne.X - overlap;
+					objectTwo.X += overlap;
 
-                    float obj1velocity = (float)Math.Sqrt((obj2v * obj2v * Object2.mass) / Object1.mass) * ((obj2v > 0) ? 1f : -1f);
-                    float obj2velocity = (float)Math.Sqrt((obj1v * obj1v * Object1.mass) / Object2.mass) * ((obj1v > 0) ? 1f : -1f);
+                    float obj1velocity = (float)Math.Sqrt((obj2v * obj2v * objectTwo.Mass) / objectOne.Mass) * ((obj2v > 0) ? 1f : -1f);
+                    float obj2velocity = (float)Math.Sqrt((obj1v * obj1v * objectOne.Mass) / objectTwo.Mass) * ((obj1v > 0) ? 1f : -1f);
                     float average = (obj1velocity + obj2velocity) * 0.5f;
 					obj1velocity -= average;
 					obj2velocity -= average;
-					Object1.velocity.x = average + obj1velocity * Object1.elasticity;
-					Object2.velocity.x = average + obj2velocity * Object2.elasticity;
+					objectOne.Velocity.x = average + obj1velocity * objectOne.Elasticity;
+					objectTwo.Velocity.x = average + obj2velocity * objectTwo.Elasticity;
 				}
 				else if(!obj1immovable)
 				{
-					Object1.x = Object1.x - overlap;
-					Object1.velocity.x = obj2v - obj1v*Object1.elasticity;
+					objectOne.X = objectOne.X - overlap;
+					objectOne.Velocity.x = obj2v - obj1v*objectOne.Elasticity;
 				}
 				else if(!obj2immovable)
 				{
-					Object2.x += overlap;
-					Object2.velocity.x = obj1v - obj2v*Object2.elasticity;
+					objectTwo.X += overlap;
+					objectTwo.Velocity.x = obj1v - obj2v*objectTwo.Elasticity;
 				}
 				return true;
 			}
@@ -1070,61 +1193,61 @@ namespace fliXNA_xbox
 		}
 
         /// <summary>
-        /// Y-axis component of the object separation process
+        /// The Y-axis component of the object separation process.
         /// </summary>
-        /// <param name="Object1"></param>
-        /// <param name="Object2"></param>
+        /// <param name="objectOne">Any <code>FlxObject</code>.</param>
+        /// <param name="objectTwo">Any other <code>FlxObject</code>.</param>
         /// <returns></returns>
-        static public bool separateY(FlxObject Object1, FlxObject Object2)
+        static public bool separateY(FlxObject objectOne, FlxObject objectTwo)
 		{
 			//can't separate two immovable objects
-			bool obj1immovable = Object1.immovable;
-			bool obj2immovable = Object2.immovable;
+			bool obj1immovable = objectOne.Immovable;
+			bool obj2immovable = objectTwo.Immovable;
 			if(obj1immovable && obj2immovable)
 				return false;
 
             ////If one of the objects is a tilemap, just pass it off.
-            if (Object1 is FlxTilemap)
-                return (Object1 as FlxTilemap).overlapsWithCallback(Object2, separateY);
-            if (Object2 is FlxTilemap)
-                return (Object2 as FlxTilemap).overlapsWithCallback(Object1, separateY, true);
+            if (objectOne is FlxTilemap)
+                return (objectOne as FlxTilemap).overlapsWithCallback(objectTwo, separateY);
+            if (objectTwo is FlxTilemap)
+                return (objectTwo as FlxTilemap).overlapsWithCallback(objectOne, separateY, true);
 
 			//First, get the two object deltas
             float overlap = 0;
-            float obj1delta = Object1.y - Object1.last.y;
-            float obj2delta = Object2.y - Object2.last.y;
+            float obj1delta = objectOne.Y - objectOne.Last.y;
+            float obj2delta = objectTwo.Y - objectTwo.Last.y;
 			if(obj1delta != obj2delta)
 			{
 				//Check if the Y hulls actually overlap
                 float obj1deltaAbs = (obj1delta > 0) ? obj1delta : -obj1delta;
                 float obj2deltaAbs = (obj2delta > 0) ? obj2delta : -obj2delta;
-				FlxRect obj1rect = new FlxRect(Object1.x,Object1.y-((obj1delta > 0)?obj1delta:0),Object1.width,Object1.height+obj1deltaAbs);
-				FlxRect obj2rect = new FlxRect(Object2.x,Object2.y-((obj2delta > 0)?obj2delta:0),Object2.width,Object2.height+obj2deltaAbs);
+				FlxRect obj1rect = new FlxRect(objectOne.X,objectOne.Y-((obj1delta > 0)?obj1delta:0),objectOne.Width,objectOne.Height+obj1deltaAbs);
+				FlxRect obj2rect = new FlxRect(objectTwo.X,objectTwo.Y-((obj2delta > 0)?obj2delta:0),objectTwo.Width,objectTwo.Height+obj2deltaAbs);
 				if((obj1rect.x + obj1rect.width > obj2rect.x) && (obj1rect.x < obj2rect.x + obj2rect.width) && (obj1rect.y + obj1rect.height > obj2rect.y) && (obj1rect.y < obj2rect.y + obj2rect.height))
 				{
-                    float maxOverlap = obj1deltaAbs + obj2deltaAbs + OVERLAP_BIAS;
+                    float maxOverlap = obj1deltaAbs + obj2deltaAbs + OverlapBias;
 
 					//If they did overlap (and can), figure out by how much and flip the corresponding flags
 					if(obj1delta > obj2delta)
 					{
-						overlap = Object1.y + Object1.height - Object2.y;
-						if((overlap > maxOverlap) || !Convert.ToBoolean(Object1.allowCollisions & DOWN) || !Convert.ToBoolean(Object2.allowCollisions & UP))
+						overlap = objectOne.Y + objectOne.Height - objectTwo.Y;
+						if((overlap > maxOverlap) || !Convert.ToBoolean(objectOne.AllowCollisions & Down) || !Convert.ToBoolean(objectTwo.AllowCollisions & Up))
 							overlap = 0;
 						else
 						{
-							Object1.touching |= DOWN;
-							Object2.touching |= UP;
+							objectOne.Touching |= Down;
+							objectTwo.Touching |= Up;
 						}
 					}
 					else if(obj1delta < obj2delta)
 					{
-						overlap = Object1.y - Object2.height - Object2.y;
-						if((-overlap > maxOverlap) || !Convert.ToBoolean(Object1.allowCollisions & UP) || !Convert.ToBoolean(Object2.allowCollisions & DOWN))
+						overlap = objectOne.Y - objectTwo.Height - objectTwo.Y;
+						if((-overlap > maxOverlap) || !Convert.ToBoolean(objectOne.AllowCollisions & Up) || !Convert.ToBoolean(objectTwo.AllowCollisions & Down))
 							overlap = 0;
 						else
 						{
-							Object1.touching |= UP;
-							Object2.touching |= DOWN;
+							objectOne.Touching |= Up;
+							objectTwo.Touching |= Down;
 						}
 					}
 				}
@@ -1133,43 +1256,52 @@ namespace fliXNA_xbox
 			//Then adjust their positions and velocities accordingly (if there was any overlap)
 			if(overlap != 0)
 			{
-                float obj1v = Object1.velocity.y;
-                float obj2v = Object2.velocity.y;
+                float obj1v = objectOne.Velocity.y;
+                float obj2v = objectTwo.Velocity.y;
 
 				if(!obj1immovable && !obj2immovable)
 				{
 					overlap *= 0.5f;
-					Object1.y = Object1.y - overlap;
-					Object2.y += overlap;
+					objectOne.Y = objectOne.Y - overlap;
+					objectTwo.Y += overlap;
 
-                    float obj1velocity = (float)Math.Sqrt((obj2v * obj2v * Object2.mass) / Object1.mass) * ((obj2v > 0) ? 1f : -1f);
-                    float obj2velocity = (float)Math.Sqrt((obj1v * obj1v * Object1.mass) / Object2.mass) * ((obj1v > 0) ? 1f : -1f);
+                    float obj1velocity = (float)Math.Sqrt((obj2v * obj2v * objectTwo.Mass) / objectOne.Mass) * ((obj2v > 0) ? 1f : -1f);
+                    float obj2velocity = (float)Math.Sqrt((obj1v * obj1v * objectOne.Mass) / objectTwo.Mass) * ((obj1v > 0) ? 1f : -1f);
                     float average = (obj1velocity + obj2velocity) * 0.5f;
 					obj1velocity -= average;
 					obj2velocity -= average;
-					Object1.velocity.y = average + obj1velocity *  Object1.elasticity;
-					Object2.velocity.y = average + obj2velocity *  Object2.elasticity;
+					objectOne.Velocity.y = average + obj1velocity *  objectOne.Elasticity;
+					objectTwo.Velocity.y = average + obj2velocity *  objectTwo.Elasticity;
 				}
 				else if(!obj1immovable)
 				{
-					Object1.y = Object1.y - overlap;
-					Object1.velocity.y = obj2v - obj1v*Object1.elasticity;
+					objectOne.Y = objectOne.Y - overlap;
+					objectOne.Velocity.y = obj2v - obj1v*objectOne.Elasticity;
 					//This is special case code that handles cases like horizontal moving platforms you can ride
-					if(Object2.active && Object2.moves && (obj1delta > obj2delta))
-						Object1.x += Object2.x - Object2.last.x;
+					if(objectTwo.active && objectTwo.Moves && (obj1delta > obj2delta))
+						objectOne.X += objectTwo.X - objectTwo.Last.x;
 				}
 				else if(!obj2immovable)
 				{
-					Object2.y += overlap;
-					Object2.velocity.y = obj1v - obj2v*Object2.elasticity;
+					objectTwo.Y += overlap;
+					objectTwo.Velocity.y = obj1v - obj2v*objectTwo.Elasticity;
 					//This is special case code that handles cases like horizontal moving platforms you can ride
-					if(Object1.active && Object1.moves && (obj1delta < obj2delta))
-						Object2.x += Object1.x - Object1.last.x;
+					if(objectOne.active && objectOne.Moves && (obj1delta < obj2delta))
+						objectTwo.X += objectOne.X - objectOne.Last.x;
 				}
 				return true;
 			}
 			else
 				return false;
 		}
+
+        /// <summary>
+        /// flx# - ? method not present in flixel
+        /// </summary>
+        public override void update()
+        {
+            base.update();
+            position.make(X, Y);
+        }
     }
 }

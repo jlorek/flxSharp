@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -59,16 +60,16 @@ namespace fliXNA_xbox
             _tileWidth = 0;
             _tileHeight = 0;
 
-            immovable = true;
+            Immovable = true;
 
             _block = new FlxObject();
-            _block.width = _block.height = 0;
-            _block.immovable = true;
+            _block.Width = _block.Height = 0;
+            _block.Immovable = true;
 
             _startingIndex = 0;
             collideIndex = 1;
 
-            allowCollisions = ANY;
+            AllowCollisions = Any;
             ID = 3;
         }
 
@@ -125,14 +126,14 @@ namespace fliXNA_xbox
             while (i < l)
             {
                 //                           (FlxTilemap Tilemap, int Tx, int Ty, int Index, int Width, int Height, Boolean Visible, uint AllowCollisions)
-                _tileObjects[i] = new FlxTile(this, 0, 0, (int)i, _tileWidth, _tileHeight, (i >= DrawIndex), (i >= CollideIndex) ? allowCollisions : NONE);
+                _tileObjects[i] = new FlxTile(this, 0, 0, (int)i, _tileWidth, _tileHeight, (i >= DrawIndex), (i >= CollideIndex) ? AllowCollisions : None);
                 i++;
             }
 
             
 
-            width = widthInTiles * _tileWidth;
-            height = heightInTiles * _tileHeight;
+            Width = widthInTiles * _tileWidth;
+            Height = heightInTiles * _tileHeight;
             _rects = new Rectangle[totalTiles];
 
             //create the actual map
@@ -150,7 +151,7 @@ namespace fliXNA_xbox
             {
                 for (tx = 0; tx < widthInTiles; tx++)
                 {
-                    FlxTile _temp = new FlxTile(this, tx, ty, (int)_data[index], _tileWidth, _tileHeight, (_data[index] >= DrawIndex) ? true : false, (_data[index] >= CollideIndex) ? allowCollisions : NONE);
+                    FlxTile _temp = new FlxTile(this, tx, ty, (int)_data[index], _tileWidth, _tileHeight, (_data[index] >= DrawIndex) ? true : false, (_data[index] >= CollideIndex) ? AllowCollisions : None);
                     _tileObjectsForDrawing.Add(_temp);
 
                     
@@ -209,15 +210,15 @@ namespace fliXNA_xbox
 
         // walkPath
 
-        override public Boolean overlaps(FlxBasic ObjectOrGroup, Boolean InScreenSpace = false, FlxCamera Camera = null)
+        override public Boolean overlaps(FlxBasic objectOrGroup, Boolean inScreenSpace = false, FlxCamera camera = null)
         {
-            if (ObjectOrGroup is FlxGroup)
+            if (objectOrGroup is FlxGroup)
             {
                 Boolean results = false;
                 FlxBasic basic;
                 int i = 0;
                 List<FlxBasic> members = new List<FlxBasic>();
-                members = (ObjectOrGroup as FlxGroup).members;
+                members = (objectOrGroup as FlxGroup).members;
                 while (i < members.Count)
                 {
                     basic = members[i++] as FlxBasic;
@@ -228,15 +229,15 @@ namespace fliXNA_xbox
                     }
                     else
                     {
-                        if (overlaps(basic, InScreenSpace, Camera))
+                        if (overlaps(basic, inScreenSpace, camera))
                             results = true;
                     }
                 }
                 return results;
             }
-            else if (ObjectOrGroup is FlxObject)
+            else if (objectOrGroup is FlxObject)
             {
-                return overlapsWithCallback(ObjectOrGroup as FlxObject);
+                return overlapsWithCallback(objectOrGroup as FlxObject);
             }
             return false;
         }
@@ -246,8 +247,8 @@ namespace fliXNA_xbox
         {
             Boolean results = false;
 
-            float X = x;
-            float Y = y;
+            float X = base.X;
+            float Y = base.Y;
             if (Position != null)
             {
                 X = Position.x;
@@ -255,10 +256,10 @@ namespace fliXNA_xbox
             }
 
             //Figure out what tiles we need to check against
-            int selectionX = (int)FlxU.floor((Object.x - X) / _tileWidth);
-            int selectionY = (int)FlxU.floor((Object.y - Y) / _tileHeight);
-            uint selectionWidth = (uint)(selectionX + (FlxU.ceil((int)Object.width / _tileWidth)) + 2);
-            uint selectionHeight = (uint)(selectionY + (FlxU.ceil((int)Object.height / _tileHeight)) + 2);
+            int selectionX = (int)FlxU.floor((Object.X - X) / _tileWidth);
+            int selectionY = (int)FlxU.floor((Object.Y - Y) / _tileHeight);
+            uint selectionWidth = (uint)(selectionX + (FlxU.ceil((int)Object.Width / _tileWidth)) + 2);
+            uint selectionHeight = (uint)(selectionY + (FlxU.ceil((int)Object.Height / _tileHeight)) + 2);
 
             //Then bound these coordinates by the map edges
             if (selectionX < 0)
@@ -276,8 +277,8 @@ namespace fliXNA_xbox
             uint column;
             FlxTile tile;
             Boolean overlapFound;
-            float deltaX = X - last.x;
-            float deltaY = Y - last.y;
+            float deltaX = X - Last.x;
+            float deltaY = Y - Last.y;
 
            
 
@@ -288,12 +289,12 @@ namespace fliXNA_xbox
                 {
                     overlapFound = false;
                     tile = _tileObjects[(int)_data[(int)(rowStart+column)]] as FlxTile;
-                    if ( Convert.ToBoolean(tile.allowCollisions) )
+                    if ( Convert.ToBoolean(tile.AllowCollisions) )
                     {
-                        tile.x = X + (int)column * _tileWidth;
-                        tile.y = Y + (int)row * _tileHeight;
-                        tile.last.x = tile.x - deltaX;
-                        tile.last.y = tile.y - deltaY;
+                        tile.X = X + (int)column * _tileWidth;
+                        tile.Y = Y + (int)row * _tileHeight;
+                        tile.Last.x = tile.X - deltaX;
+                        tile.Last.y = tile.Y - deltaY;
                         if (Callback != null)
                         {
                             if (FlipCallbackParams)
@@ -303,7 +304,7 @@ namespace fliXNA_xbox
                         }
                         else
                         {
-                            overlapFound = (Object.x + Object.width > tile.x) && (Object.x < tile.x + tile.width) && (Object.y + Object.height > tile.y) && (Object.y < tile.y + tile.height);
+                            overlapFound = (Object.X + Object.Width > tile.X) && (Object.X < tile.X + tile.Width) && (Object.Y + Object.Height > tile.Y) && (Object.Y < tile.Y + tile.Height);
                         }
                         if (overlapFound)
                         {
@@ -330,17 +331,17 @@ namespace fliXNA_xbox
 
 
         // overlapsPoint
-        override public Boolean overlapsPoint(FlxPoint Point, Boolean InScreenSpace = false, FlxCamera Camera = null)
+        override public Boolean overlapsPoint(FlxPoint point, Boolean inScreenSpace = false, FlxCamera camera = null)
         {
-            if (!InScreenSpace)
-                return (_tileObjects[_data[(int)(((Point.y - y) / _tileHeight) * widthInTiles + (Point.x - x) / _tileWidth)]] as FlxTile).allowCollisions > 0;
+            if (!inScreenSpace)
+                return (_tileObjects[_data[(int)(((point.y - Y) / _tileHeight) * widthInTiles + (point.x - X) / _tileWidth)]] as FlxTile).AllowCollisions > 0;
 
-            if (Camera == null)
-                Camera = FlxG.camera;
-            Point.x = Point.x - Camera.scroll.x;
-            Point.y = Point.y - Camera.scroll.y;
-            getScreenXY(_point, Camera);
-            return (_tileObjects[_data[(int)(((Point.y - _point.y) / _tileHeight) * widthInTiles + (Point.x - _point.x) / _tileWidth)]] as FlxTile).allowCollisions > 0;
+            if (camera == null)
+                camera = FlxG.camera;
+            point.x = point.x - camera.scroll.x;
+            point.y = point.y - camera.scroll.y;
+            getScreenXY(_tagPoint, camera);
+            return (_tileObjects[_data[(int)(((point.y - _tagPoint.y) / _tileHeight) * widthInTiles + (point.x - _tagPoint.x) / _tileWidth)]] as FlxTile).AllowCollisions > 0;
         }
 
 
@@ -368,7 +369,7 @@ namespace fliXNA_xbox
         {
             if (Camera == null)
                 Camera = FlxG.camera;
-            Camera.setBounds(x + Border * tileSize, y + Border * tileSize, width - Border * tileSize * 2, height - Border * tileSize * 2, UpdateWorld);
+            Camera.setBounds(X + Border * tileSize, Y + Border * tileSize, Width - Border * tileSize * 2, Height - Border * tileSize * 2, UpdateWorld);
         }
 
         public int getTile(int X, int Y)
@@ -388,7 +389,7 @@ namespace fliXNA_xbox
             while (i < l)
             {
                 tile = _tileObjects[(int)i++] as FlxTile;
-                tile.allowCollisions = AllowCollisions;
+                tile.AllowCollisions = AllowCollisions;
                 tile.callback = Callback;
             }
         }
@@ -407,12 +408,12 @@ namespace fliXNA_xbox
 		public FlxPath findPath(FlxPoint Start, FlxPoint End, bool Simplify=true, bool RaySimplify=false)
 		{
 			//figure out what tile we are starting and ending on.
-			int startIndex = (int)((Start.y-y)/_tileHeight) * widthInTiles + (int)((Start.x-x)/_tileWidth);
-			int endIndex = (int)((End.y-y)/_tileHeight) * widthInTiles + (int)((End.x-x)/_tileWidth);
+			int startIndex = (int)((Start.y-Y)/_tileHeight) * widthInTiles + (int)((Start.x-X)/_tileWidth);
+			int endIndex = (int)((End.y-Y)/_tileHeight) * widthInTiles + (int)((End.x-X)/_tileWidth);
 
 			//check that the start and end are clear.
-			if( ((_tileObjects[_data[startIndex]] as FlxTile).allowCollisions > 0) ||
-				((_tileObjects[_data[endIndex]] as FlxTile).allowCollisions > 0) )
+			if( ((_tileObjects[_data[startIndex]] as FlxTile).AllowCollisions > 0) ||
+				((_tileObjects[_data[endIndex]] as FlxTile).AllowCollisions > 0) )
 				return null;
 
 			//figure out how far each of the tiles is from the starting tile
@@ -494,7 +495,7 @@ namespace fliXNA_xbox
 				node = Points[i++];
 				if(node == null)
 					continue;
-				if(ray(source,node,_point))	
+				if(ray(source,node,_tagPoint))	
 				{
 					if(lastIndex >= 0)
 						Points[lastIndex] = null;
@@ -523,7 +524,7 @@ namespace fliXNA_xbox
 			int i = 0;
 			while(i < mapSize)
 			{
-				if(Convert.ToBoolean((_tileObjects[_data[i]] as FlxTile).allowCollisions))
+				if(Convert.ToBoolean((_tileObjects[_data[i]] as FlxTile).AllowCollisions))
 					distances[i] = -2;
 				else
 					distances[i] = -1;
@@ -653,7 +654,7 @@ namespace fliXNA_xbox
 		 */
 		protected void walkPath(List<int> Data, int Start, List<FlxPoint> Points)
 		{
-            Points.Add(new FlxPoint((int)x + (int)(Start % widthInTiles) * _tileWidth + _tileWidth * 0.5f, (int)y + (int)(Start / widthInTiles) * _tileHeight + _tileHeight * 0.5f));
+            Points.Add(new FlxPoint((int)X + (int)(Start % widthInTiles) * _tileWidth + _tileWidth * 0.5f, (int)Y + (int)(Start / widthInTiles) * _tileHeight + _tileHeight * 0.5f));
 			if(Data[Start] == 0)
 				return;
 
@@ -762,8 +763,8 @@ namespace fliXNA_xbox
 			int steps = (int)FlxU.ceil(distance/step);
 			float stepX = deltaX/steps;
 			float stepY = deltaY/steps;
-			float curX = Start.x - stepX - x;
-			float curY = Start.y - stepY - y;
+			float curX = Start.x - stepX - X;
+			float curY = Start.y - stepY - Y;
 			int tileX;
 			int tileY;
 			int i = 0;
@@ -772,7 +773,7 @@ namespace fliXNA_xbox
 				curX += stepX;
 				curY += stepY;
 
-				if((curX < 0) || (curX > width) || (curY < 0) || (curY > height))
+				if((curX < 0) || (curX > Width) || (curY < 0) || (curY > Height))
 				{
 					i++;
 					continue;
@@ -780,7 +781,7 @@ namespace fliXNA_xbox
 
 				tileX = (int)curX/_tileWidth;
 				tileY = (int)curY/_tileHeight;
-				if( Convert.ToBoolean((_tileObjects[_data[tileY*widthInTiles+tileX]] as FlxTile).allowCollisions))
+				if( Convert.ToBoolean((_tileObjects[_data[tileY*widthInTiles+tileX]] as FlxTile).AllowCollisions))
 				{
 					//Some basic helper stuff
 					tileX *= _tileWidth;
