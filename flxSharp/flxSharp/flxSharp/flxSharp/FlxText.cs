@@ -50,7 +50,7 @@ namespace fliXNA_xbox
         public override void draw()
         {
             //base.draw(spriteBatch);
-            if (visible)
+            if (Visible)
             {
                 Vector2 pos = new Vector2(X, Y);
                 Vector2 orig = new Vector2(0,0);

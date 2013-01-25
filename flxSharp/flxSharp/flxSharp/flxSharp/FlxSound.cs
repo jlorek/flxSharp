@@ -159,9 +159,9 @@ namespace fliXNA_xbox
             _pauseOnFadeOut = false;
             _fadeInTimer = 0;
             _fadeInTotal = 0;
-            exists = true;
-            active = true;
-            visible = false;
+            Exists = true;
+            Active = true;
+            Visible = false;
             name = null;
             artist = null;
             amplitude = 0;
@@ -261,7 +261,7 @@ namespace fliXNA_xbox
             _sound.IsLooped = Looped;
 			_looped = Looped;
 			updateTransform();
-			exists = true;
+			Exists = true;
 			return this;
 		}
 

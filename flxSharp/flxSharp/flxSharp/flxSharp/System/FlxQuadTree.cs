@@ -172,14 +172,14 @@ namespace fliXNA_xbox
 				while(i < l)
 				{
 					basic = members[(int)i++] as FlxBasic;
-					if((basic != null) && basic.exists)
+					if((basic != null) && basic.Exists)
 					{
 						if(basic is FlxGroup)
 							add(basic,List);
 						else if(basic is FlxObject)
 						{
 							_object = basic as FlxObject;
-                            if(_object.exists && Convert.ToBoolean(_object.AllowCollisions))
+                            if(_object.Exists && Convert.ToBoolean(_object.AllowCollisions))
 							{
 								_objectLeftEdge = _object.X;
 								_objectTopEdge = _object.Y;
@@ -194,7 +194,7 @@ namespace fliXNA_xbox
 			else
 			{
 				_object = ObjectOrGroup as FlxObject;
-				if(_object.exists && Convert.ToBoolean(_object.AllowCollisions) )
+				if(_object.Exists && Convert.ToBoolean(_object.AllowCollisions) )
 				{
 					_objectLeftEdge = _object.X;
 					_objectTopEdge = _object.Y;
@@ -331,9 +331,9 @@ namespace fliXNA_xbox
 						_iterator = _headB;
 					else
 						_iterator = iterator.next;
-					if(	_object.exists && (_object.AllowCollisions > 0) &&
+					if(	_object.Exists && (_object.AllowCollisions > 0) &&
 						(_iterator != null) && (_iterator.Object != null) &&
-						_iterator.Object.exists && overlapNode())
+						_iterator.Object.Exists && overlapNode())
 					{
 						overlapProcessed = true;
 					}
@@ -361,11 +361,11 @@ namespace fliXNA_xbox
 			FlxObject checkObject;
 			while(_iterator != null)
 			{
-				if(!_object.exists || (_object.AllowCollisions <= 0))
+				if(!_object.Exists || (_object.AllowCollisions <= 0))
 					break;
 				
 				checkObject = _iterator.Object;
-				if((_object == checkObject) || !checkObject.exists || (checkObject.AllowCollisions <= 0))
+				if((_object == checkObject) || !checkObject.Exists || (checkObject.AllowCollisions <= 0))
 				{
 					_iterator = _iterator.next;
 					continue;

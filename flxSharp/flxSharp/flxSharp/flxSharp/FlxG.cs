@@ -240,9 +240,9 @@ namespace fliXNA_xbox
         {
             foreach (FlxCamera c in FlxG.cameras)
             {
-                if ((c != null) && c.exists)
+                if ((c != null) && c.Exists)
                 {
-                    if (c.active)
+                    if (c.Active)
                         c.update();
                 }
             }

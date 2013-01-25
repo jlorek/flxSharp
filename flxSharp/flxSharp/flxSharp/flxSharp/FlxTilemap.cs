@@ -348,7 +348,7 @@ namespace fliXNA_xbox
         protected void updateTile(int Index)
         {
             FlxTile tile = _tileObjects[_data[Index]] as FlxTile;
-            if ((tile == null) || !tile.visible)
+            if ((tile == null) || !tile.Visible)
             {
                 _rects[Index] = Rectangle.Empty;
                 return;

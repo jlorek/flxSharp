@@ -27,7 +27,7 @@ namespace fliXNA_xbox
             : base(X, Y)
         {
             makeGraphic(Width, Height, FlxColor.WHITE);
-            active = false;
+            Active = false;
             Immovable = true;
         }
     }

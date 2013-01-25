@@ -46,7 +46,7 @@ namespace fliXNA_xbox
             while (i < length)
             {
                 basic = members[(int)i++] as FlxBasic;
-                if ((basic != null) && basic.exists && basic.active)
+                if ((basic != null) && basic.Exists && basic.Active)
                 {
                     basic.preUpdate();
                     basic.update();
@@ -91,7 +91,7 @@ namespace fliXNA_xbox
             {
                 foreach (FlxBasic m in members)
                 {
-                    if (m.visible)
+                    if (m.Visible)
                     {
                         m.kill();
                     }
@@ -101,13 +101,13 @@ namespace fliXNA_xbox
 
         public override void draw()
         {
-            if (visible)
+            if (Visible)
             {
                 if (members.Count != 0)
                 {
                     foreach (FlxBasic m in members)
                     {
-                        if (m.visible)
+                        if (m.Visible)
                             m.draw();
                     }
                 }
@@ -160,7 +160,7 @@ namespace fliXNA_xbox
             while (i < length)
             {
                 basic = members[(int)i++] as FlxBasic;
-                if ((basic != null) && !basic.exists && ((ObjectClass == null) || (basic is FlxBasic)))
+                if ((basic != null) && !basic.Exists && ((ObjectClass == null) || (basic is FlxBasic)))
                     return basic;
             }
             return null;

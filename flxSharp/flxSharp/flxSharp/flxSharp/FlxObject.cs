@@ -390,7 +390,7 @@ namespace flxSharp.flxSharp
         /// </summary>
         public override void preUpdate()
         {
-            _ACTIVECOUNT++;
+            activeCount++;
 
             // flx# - floatround
             if (_flickerTimer != 0)
@@ -466,21 +466,21 @@ namespace flxSharp.flxSharp
         /// </summary>
         public override void draw()
         {
-            if (cameras == null)
+            if (Cameras == null)
             {
-                cameras = FlxG.cameras;                
+                Cameras = FlxG.cameras;                
             }
 
-            foreach (FlxCamera camera in cameras)
+            foreach (FlxCamera camera in Cameras)
             {
                 if (!onScreen(camera))
                 {
                     continue;
                 }
 
-                _VISIBLECOUNT++;
+                visibleCount++;
 
-                if (FlxG.visualDebug && !ignoreDrawDebug)
+                if (FlxG.visualDebug && !IgnoreDrawDebug)
                 {
                     drawDebug(camera);
                 }
@@ -1278,7 +1278,7 @@ namespace flxSharp.flxSharp
 					objectOne.Y = objectOne.Y - overlap;
 					objectOne.Velocity.y = obj2v - obj1v*objectOne.Elasticity;
 					//This is special case code that handles cases like horizontal moving platforms you can ride
-					if(objectTwo.active && objectTwo.Moves && (obj1delta > obj2delta))
+					if(objectTwo.Active && objectTwo.Moves && (obj1delta > obj2delta))
 						objectOne.X += objectTwo.X - objectTwo.Last.x;
 				}
 				else if(!obj2immovable)
@@ -1286,7 +1286,7 @@ namespace flxSharp.flxSharp
 					objectTwo.Y += overlap;
 					objectTwo.Velocity.y = obj1v - obj2v*objectTwo.Elasticity;
 					//This is special case code that handles cases like horizontal moving platforms you can ride
-					if(objectOne.active && objectOne.Moves && (obj1delta < obj2delta))
+					if(objectOne.Active && objectOne.Moves && (obj1delta < obj2delta))
 						objectTwo.X += objectOne.X - objectOne.Last.x;
 				}
 				return true;
@@ -1301,7 +1301,7 @@ namespace flxSharp.flxSharp
         public override void update()
         {
             base.update();
-            position.make(X, Y);
+            Position.make(X, Y);
         }
     }
 }

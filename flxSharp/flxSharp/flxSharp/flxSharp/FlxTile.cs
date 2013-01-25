@@ -39,7 +39,7 @@ namespace fliXNA_xbox
             tilemap = Tilemap;
             tileGraphic = tilemap.tileGraphic;
             index = Index;
-            visible = Visible;
+            ((FlxBasic) this).Visible = Visible;
             base.AllowCollisions = AllowCollisions;
 
             mapIndex = 0;
@@ -56,7 +56,7 @@ namespace fliXNA_xbox
 
         public override void draw()
         {
-            if (visible)
+            if (Visible)
                 FlxG.spriteBatch.Draw(tileGraphic, drawPosition, tileGraphicSectionToDraw, FlxColor.WHITE);
         }
     }

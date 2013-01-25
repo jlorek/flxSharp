@@ -212,7 +212,7 @@ namespace flxSharp.flxSharp
                     particle.AllowCollisions = FlxObject.None;
                 }
 
-                particle.exists = false;
+                particle.Exists = false;
                 this.add(particle);
             }
 
@@ -303,7 +303,7 @@ namespace flxSharp.flxSharp
 		public void start(bool Explode=true, float Lifespan=0, float Frequency=0.1f, uint Quantity=0)
 		{
 			revive();
-			visible = true;
+			Visible = true;
 			on = true;
 
 			_explode = Explode;
@@ -330,7 +330,7 @@ namespace flxSharp.flxSharp
             particle.Lifespan = lifespan;
             particle.Elasticity = bounce;
             particle.reset(X - ((int)particle.Width >> 1) + FlxG.random() * Width, Y - ((int)particle.Height >> 1) + FlxG.random() * Height);
-            particle.visible = true;
+            particle.Visible = true;
 
             // jlorek: revisit
 
@@ -368,7 +368,7 @@ namespace flxSharp.flxSharp
                 particle.Angle = FlxG.random() * 360 - 180;                
             }
 
-			particle.visible = true;
+			particle.Visible = true;
 			particle.Drag.x = particleDrag.x;
 			particle.Drag.y = particleDrag.y;
 			particle.onEmit();

@@ -196,14 +196,14 @@ namespace flxSharp.flxSharp
             if (dirty)
                 calcFrame();
 
-            if (cameras == null)
-                cameras = FlxG.cameras;
+            if (Cameras == null)
+                Cameras = FlxG.cameras;
             FlxCamera camera = FlxG.camera;
             int i = 0;
-            int l = cameras.Count;
+            int l = Cameras.Count;
             while (i < l)
             {
-                camera = cameras[i++];
+                camera = Cameras[i++];
                 //camera = FlxG.camera;
                 if (!onScreen(camera))
                 {
@@ -213,7 +213,7 @@ namespace flxSharp.flxSharp
                 _tagPoint.y = Y - (int)(camera.scroll.y * ScrollFactor.y) - offset.y;
                 _tagPoint.x += (_tagPoint.x > 0) ? 0.0000001f : -0.0000001f;
                 _tagPoint.y += (_tagPoint.y > 0) ? 0.0000001f : -0.0000001f;
-                if (visible)
+                if (Visible)
                 {
                     base.draw();
                     if (texture != null)
