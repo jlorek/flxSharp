@@ -24,7 +24,7 @@ namespace fliXNA_xbox
         public FlxText(float X, float Y, float Width, String Text = null, SpriteFont Font = null)
             : base(X, Y)
         {
-            makeGraphic(Width, 1, FlxColor.BLACK);
+            makeGraphic((uint)Width, 1, FlxColor.BLACK);
             if (Text == null)
                 _textField = "";
             else
@@ -60,7 +60,7 @@ namespace fliXNA_xbox
                     FlxG.defaultFont,
                     _textField,
                     pos,
-                    (_color * alpha),
+                    (Color * Alpha),
                     rot,
                     new Vector2(),
                     _scale,

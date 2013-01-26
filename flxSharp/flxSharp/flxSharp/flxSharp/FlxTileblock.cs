@@ -26,7 +26,7 @@ namespace fliXNA_xbox
         public FlxTileblock(float X, float Y, float Width, float Height)
             : base(X, Y)
         {
-            makeGraphic(Width, Height, FlxColor.WHITE);
+            makeGraphic((uint)Width, (uint)Height, FlxColor.WHITE);
             Active = false;
             Immovable = true;
         }

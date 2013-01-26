@@ -373,6 +373,101 @@ namespace fliXNA_xbox
 		}
 
         /// <summary>
+        /// Check the local bitmap cache to see if a bitmap with this key has been loaded already.
+        /// </summary>
+        /// <param name="key">The string key identifying the bitmap.</param>
+        /// <returns></returns>
+        public static bool checkBitmapCache(string key)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Generates a new <code>BitmapData</code> object (a colored square) and caches it.
+        /// </summary>
+        /// <param name="width">How wide the square should be.</param>
+        /// <param name="height">How high the square should be.</param>
+        /// <param name="color">What color the square should be (0xAARRGGBB)</param>
+        /// <param name="unique">Ensures that the bitmap data uses a new slot in the cache.</param>
+        /// <param name="key">Force the cache to use a specific Key to index the bitmap.</param>
+        /// <returns></returns>
+        public static Texture2D createBitmap(uint width, uint height, Color color, bool unique = false, string key = null)
+        {
+            if (unique || !string.IsNullOrEmpty(key))
+            {
+                throw new NotSupportedException();
+            }
+
+            // we could also use the famous XNA1x1pxWhiteTexture here
+            var texture = new Texture2D(FlxG.graphicsDevice, (int)width, (int)height);
+
+            // flx# - why read the color data when everything is overridden anyway?
+            var colorData = new Color[width * height];
+            //texture.GetData<Color>(colorData);
+            for (int i = 0; i < colorData.Length; ++i)
+            {
+                colorData[i] = color;
+            }
+            texture.SetData<Color>(colorData);
+
+            return texture;
+        }
+
+        /// <summary>
+        /// Loads a bitmap from a file, caches it, and generates a horizontally flipped version if necessary.
+        /// </summary>
+        /// <param name="graphic">The image file that you want to load.</param>
+        /// <param name="reverse">Whether to generate a flipped version.</param>
+        /// <param name="unique">Ensures that the bitmap data uses a new slot in the cache.</param>
+        /// <param name="key">Force the cache to use a specific Key to index the bitmap.</param>
+        /// <returns>The <code>BitmapData</code> we just created.</returns>
+        static public Texture2D addBitmap(Texture2D graphic, bool reverse = false, bool unique = false, string key = null)
+        {
+            throw new NotSupportedException();
+
+            /*
+			var needReverse:Boolean = false;
+			if(Key == null)
+			{
+				Key = String(Graphic)+(Reverse?"_REVERSE_":"");
+				if(Unique && checkBitmapCache(Key))
+				{
+					var inc:uint = 0;
+					var ukey:String;
+					do
+					{
+						ukey = Key + inc++;
+					} while(checkBitmapCache(ukey));
+					Key = ukey;
+				}
+			}
+			
+			//If there is no data for this key, generate the requested graphic
+			if(!checkBitmapCache(Key))
+			{
+				_cache[Key] = (new Graphic).bitmapData;
+				if(Reverse)
+					needReverse = true;
+			}
+			var pixels:BitmapData = _cache[Key];
+			if(!needReverse && Reverse && (pixels.width == (new Graphic).bitmapData.width))
+				needReverse = true;
+			if(needReverse)
+			{
+				var newPixels:BitmapData = new BitmapData(pixels.width<<1,pixels.height,true,0x00000000);
+				newPixels.draw(pixels);
+				var mtx:Matrix = new Matrix();
+				mtx.scale(-1,1);
+				mtx.translate(newPixels.width,0);
+				newPixels.draw(pixels,mtx);
+				pixels = newPixels;
+				_cache[Key] = pixels;
+			}
+			return pixels;
+            */
+        }
+
+        /// <summary>
         /// Initiate all the things needed by the engine
         /// </summary>
         internal static void init()

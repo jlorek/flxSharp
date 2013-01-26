@@ -117,6 +117,7 @@
     <Compile Include="flxSharp\FlxPath.cs" />
     <Compile Include="flxSharp\FlxPoint.cs" />
     <Compile Include="flxSharp\FlxRect.cs" />
+    <Compile Include="flxSharp\FlxS.cs" />
     <Compile Include="flxSharp\FlxSound.cs" />
     <Compile Include="flxSharp\FlxSprite.cs" />
     <Compile Include="flxSharp\FlxState.cs" />
@@ -144,8 +145,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\flxSharpContent\flxSharpContent.contentproj">
-      <Name>flxSharpContent</Name>
+      <Name>flxSharpContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{3FB26337-7697-40A2-A1E7-393818768014}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

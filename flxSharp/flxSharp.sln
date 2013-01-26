@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flxSharp", "flxSharp\flxSharp\flxSharp.csproj", "{1990DABE-960D-4433-A0D0-6994BB83EC76}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flxSharpGame", "flxSharp\flxSharp\flxSharpGame.csproj", "{1990DABE-960D-4433-A0D0-6994BB83EC76}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "flxSharpContent", "flxSharp\flxSharpContent\flxSharpContent.contentproj", "{3FB26337-7697-40A2-A1E7-393818768014}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "flxSharpContent", "flxSharp\flxSharpContent\flxSharpContent.contentproj", "{3FB26337-7697-40A2-A1E7-393818768014}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
