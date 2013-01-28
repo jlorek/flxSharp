@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using fliXNA_xbox;
@@ -12,7 +13,7 @@ namespace flxSharp.flxSharp
         /// <summary>
         /// Default image.
         /// </summary>
-        protected Texture2D ImgDefault = FlxG.content.Load<Texture2D>("default");
+        protected static readonly Texture2D ImgDefault = FlxG.content.Load<Texture2D>("default");
 
         /// <summary>
         /// WARNING: The origin of the sprite will default to its center.
@@ -725,15 +726,18 @@ namespace flxSharp.flxSharp
 					    camera.buffer.draw(framePixels,_matrix,null,blend,null,antialiasing);
 				    }
                      */
+                    Vector2 halfSize = new Vector2(sourceRect.width / 2, sourceRect.height / 2);
+
                     //Vector2 position = new Vector2(X + FrameWidth / 2, Y + FrameWidth / 2);
                     //Vector2 position = new Vector2(X, Y);
-                    Vector2 position = new Vector2(_tagPoint.x, _tagPoint.y);
+                    Vector2 position = new Vector2(_tagPoint.x, _tagPoint.y) + halfSize;
                     
                     //Rectangle sourceRectangle = new Rectangle(0, 0, (int)FrameWidth, (int)FrameHeight);
                     Rectangle sourceRectangle = drawSourceRect;
 
                     //Vector2 origin = new Vector2(FrameWidth / 2, FrameHeight / 2);
-                    Vector2 origin = new Vector2(Offset.x, Offset.y);
+                    Vector2 origin = new Vector2(Offset.x, Offset.y) + halfSize;
+                    //Debug.WriteLine(origin);
                     
                     Vector2 scale = new Vector2(Scale.x, Scale.y);
                     // flx# - use sprite effects to flip horizontal/vertical
