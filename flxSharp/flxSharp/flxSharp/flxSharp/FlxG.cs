@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Storage;
-using flxSharp.flxSharp;
+using System;
+using System.Collections.Generic;
+using fliXNA_xbox;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
     public class FlxG
     {
@@ -169,7 +162,7 @@ namespace fliXNA_xbox
         /// <summary>
         /// Internal random number helper
         /// </summary>
-        static public float globalSeed = FlxU.random();
+        static public float globalSeed = (float) FlxU.Random.NextDouble();
 
         /// <summary>
         /// Can be used to zoom the camera
@@ -278,7 +271,7 @@ namespace fliXNA_xbox
         /// <returns></returns>
         static internal float random()
         {
-            return globalSeed = FlxU.random();
+            return globalSeed = (float) FlxU.Random.NextDouble();
         }
 
 
@@ -289,7 +282,7 @@ namespace fliXNA_xbox
         /// <returns></returns>
         static public bool log(Object data)
         {
-            System.Diagnostics.Debug.WriteLine(data.ToString());
+            global::System.Diagnostics.Debug.WriteLine(data.ToString());
             return true;
         }
 
