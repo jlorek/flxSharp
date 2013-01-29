@@ -32,7 +32,7 @@ namespace flxSharp
 
             block3 = new FlxSprite(0, 100);
             block3.makeGraphic(100, 100, FlxColor.INDIGO);
-            block3.drawLine(0, 0, 100, 100, FlxColor.BLACK, 3);
+            block3.drawLine(0, 0, 99, 99, FlxColor.BLACK, 1);
             this.add(block3);
 
             block4 = new FlxSprite(100, 100);

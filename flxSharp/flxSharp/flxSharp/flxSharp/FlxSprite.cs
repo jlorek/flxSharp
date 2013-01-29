@@ -866,16 +866,13 @@ namespace flxSharp.flxSharp
         /// <param name="thickness">How thick the line is in pixels (default value is 1).</param>
         public void drawLine(float startX, float startY, float endX, float endY, Color color, uint thickness = 1)
 		{
-            // flx# - preliminary implementation
-            // bresham or convert to gdi -> draw -> back to texture2d
-            // but the gdi stuff may not be available on !windows plattforms
-
-		    var vecFrom = new Vector2(startX, startY);
-            var vecTo = new Vector2(endX, endY);
+            if (thickness > 1)
+            {
+                throw new NotImplementedException();
+            }
 
             var texBuffer = new Color[_pixels.Width * _pixels.Height];
             _pixels.GetData<Color>(texBuffer);
-
 
             int posX = (int) startX;
             int posY = (int) startY;
@@ -889,39 +886,28 @@ namespace flxSharp.flxSharp
             while(true)
             {
                 texBuffer[posY * _pixels.Width + posX] = color;
-                if ((posX == endX) && (posY == endY)) break;
+
+                if ((posX == endX) && (posY == endY))
+                {
+                    break;
+                }
+
                 float e = 2 * err;
-                if (e > dy) { err += dy; posX += sx; }
-                if (e < dx) { err += dx; posY += sy; }
+                
+                if (e > dy)
+                {
+                    err += dy;
+                    posX += sx;
+                }
+
+                if (e < dx)
+                {
+                    err += dx;
+                    posY += sy;
+                }
             }
 
             _pixels.SetData<Color>(texBuffer);
-
-            /*
-            var texBuffer = new Color[_pixels.Width * _pixels.Height];
-            _pixels.GetData<Color>(texBuffer);
-
-            int numIterations = (int) ((vecTo - vecFrom).Length() * 100);
-            numIterations = 100;
-            for (int i = 0; i < numIterations; ++i)
-            {
-                Vector2 vecPoint = Vector2.Lerp(vecFrom, vecTo, (float)i / (float)numIterations);
-                int bufferIndex = ((int)vecPoint.Y * _pixels.Width) + (int)vecPoint.X;
-
-                if (bufferIndex > 0 && bufferIndex < texBuffer.Length)
-                    texBuffer[bufferIndex] = color;
-            }
-
-            _pixels.SetData<Color>(texBuffer);
-
-            if (thickness > 1)
-            {
-                drawLine(startX + 1, startY, endX + 1, endY, color, thickness - 1);
-                drawLine(startX - 1, startY, endX - 1, endY, color, thickness - 1);
-                drawLine(startX, startY + 1, endX, endY + 1, color, thickness - 1);
-                drawLine(startX, startY - 1, endX, endY - 1, color, thickness - 1);
-            }
-            */
 
             // flx# - seems useless
             Dirty = true;
