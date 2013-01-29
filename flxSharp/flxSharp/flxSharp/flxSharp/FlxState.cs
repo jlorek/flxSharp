@@ -42,6 +42,11 @@ namespace fliXNA_xbox
         /// </summary>
         public override void draw()
         {
+            // xnaFlixel
+            //we don't need no new-fangled pixel processing
+            //in our retro engine!
+            //FlxG.graphics.PreferMultiSampling = false;
+
             // first clear the screen with the background color of your choice
             FlxG.graphicsDevice.Clear(FlxG.bgColor);
 

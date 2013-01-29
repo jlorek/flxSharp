@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -6,11 +7,328 @@ using Microsoft.Xna.Framework.Storage;
 using System;
 using System.Collections.Generic;
 using fliXNA_xbox;
+using flxSharp.flxSharp.System;
 
 namespace flxSharp.flxSharp
 {
+    /// <summary>
+    /// This is a global helper class full of useful functions for audio,
+    /// input, basic info, and the camera system among other things.
+    /// Utilities for maths and color and things can be found in <code>FlxU</code>.
+    /// <code>FlxG</code> is specifically for Flixel-specific properties.
+    /// </summary>
     public class FlxG
     {
+        /// <summary>
+        /// If you build and maintain your own version of flixel,
+        /// you can give it your own name here.
+        /// </summary>
+        public static readonly string LibraryName = "flxSharp";
+
+        /// <summary>
+        /// Assign a major version to your library.
+        /// Appears before the decimal in the console.
+        /// </summary>
+        public static readonly uint LibraryMajorVersion = 2;
+
+        /// <summary>
+        /// Assign a minor version to your library.
+        /// Appears after the decimal in the console.
+        /// </summary>
+        public static readonly uint LibraryMinorVersion = 55;
+
+        /// <summary>
+        /// Debugger overlay layout preset: Wide but low windows at the bottom of the screen.
+        /// </summary>
+        public static readonly uint DebuggerStandard = 0;
+
+        /// <summary>
+        /// Debugger overlay layout preset: Tiny windows in the screen corners.
+        /// </summary>
+        public static readonly uint DebuggerMicro = 1;
+
+        /// <summary>
+        /// Debugger overlay layout preset: Large windows taking up bottom half of screen.
+        /// </summary>
+        public static readonly uint DebuggerBig = 2;
+
+        /// <summary>
+        /// Debugger overlay layout preset: Wide but low windows at the top of the screen.
+        /// </summary>
+        public static readonly uint DebuggerTop = 3;
+
+        /// <summary>
+        /// Debugger overlay layout preset: Large windows taking up left third of screen.
+        /// </summary>
+        public static readonly uint DebuggerLeft = 4;
+
+        /// <summary>
+        /// Debugger overlay layout preset: Large windows taking up right third of screen.
+        /// </summary>
+        public static readonly uint DebuggerRight = 5;
+
+        /// <summary>
+        /// Some handy color presets.  Less glaring than pure RGB full values.
+        /// Primarily used in the visual debugger mode for bounding box displays.
+        /// Red is used to indicate an active, movable, solid object.
+        /// </summary>
+        public static readonly uint Red = 0xffff0012;
+
+        /// <summary>
+        /// Green is used to indicate solid but immovable objects.
+        /// </summary>
+        public static readonly uint Green = 0xff00f225;
+
+        /// <summary>
+        /// Blue is used to indicate non-solid objects.
+        /// </summary>
+        public static readonly uint Blue = 0xff0090e9;
+
+        /// <summary>
+        /// Pink is used to indicate objects that are only partially solid, like one-way platforms.
+        /// </summary>
+        public static readonly uint Pink = 0xfff01eff;
+
+        /// <summary>
+        /// White... for white stuff.
+        /// </summary>
+        public static readonly uint White = 0xffffffff;
+
+        /// <summary>
+        /// And black too.
+        /// </summary>
+        public static readonly uint Black = 0xff000000;
+
+        /// <summary>
+        /// Internal tracker for game object.
+        /// </summary>
+        static protected internal FlxGame _game;
+
+        /// <summary>
+        /// Handy shared variable for implementing your own pause behavior.
+        /// </summary>
+        static protected bool _pause;
+
+        /// <summary>
+        /// Whether you are running in Debug or Release mode.
+        /// Set automatically by <code>FlxPreloader</code> during startup.
+        /// </summary>
+        static public bool debug;
+
+        /// <summary>
+        /// Represents the amount of time in seconds that passed since last frame.
+        /// </summary>
+        public static float elapsed;
+
+        /// <summary>
+        /// How fast or slow time should pass in the game; default is 1.0.
+        /// </summary>
+        static public float timeScale;
+
+        /// <summary>
+        /// The width of the screen in game pixels.
+        /// </summary>
+        public static int width;
+
+        /// <summary>
+        /// The height of the screen in game pixels.
+        /// </summary>
+        public static int height;
+
+        /// <summary>
+        /// The dimensions of the game world, used by the quad tree for collisions and overlap checks.
+        /// </summary>
+        static internal FlxRect worldBounds;
+
+        /// <summary>
+        /// How many times the quad tree should divide the world on each axis.
+        /// Generally, sparse collisions can have fewer divisons,
+        /// while denser collision activity usually profits from more.
+        /// Default value is 6.
+        /// </summary>
+        static internal uint worldDivisions;
+
+        /// <summary>
+        /// Whether to show visual debug displays or not.
+        /// Default = false.
+        /// </summary>
+        public static bool visualDebug;
+
+        /// <summary>
+        /// Setting this to true will disable/skip stuff that isn't necessary for mobile platforms like Android. [BETA]
+        /// </summary>
+        public static bool mobile
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
+        }
+
+        /// <summary>
+        /// The global random number generator seed (for deterministic behavior in recordings and saves).
+        /// </summary>
+        public static float globalSeed;
+
+        /// <summary>
+        /// <code>FlxG.levels</code> and <code>FlxG.scores</code> are generic
+        /// global variables that can be used for various cross-state stuff.
+        /// </summary>
+        static public Array levels;
+        static public int level;
+        static public Array scores;
+        static public int score;
+
+        /// <summary>
+        /// <code>FlxG.saves</code> is a generic bucket for storing
+        /// FlxSaves so you can access them whenever you want.
+        /// </summary>
+        static public Array saves;
+        static public int save;
+
+        /// <summary>
+        /// A reference to a <code>FlxMouse</code> object. Important for input!
+        /// </summary>
+        static public FlxMouse mouse;
+
+        /// <summary>
+        /// A reference to a <code>FlxKeyboard</code> object. Important for input!
+        /// </summary>
+        static public FlxKeyboard keys;
+
+        /// <summary>
+        /// A handy container for a background music object.
+        /// </summary>
+        public static FlxSound music;
+
+        /// <summary>
+        /// A list of all the sounds being played in the game.
+        /// </summary>
+        public static FlxGroup sounds;
+
+        /// <summary>
+        /// Whether or not the game sounds are muted.
+        /// </summary>
+        public static bool mute;
+
+        /// <summary>
+        /// Internal volume level, used for global sound control.
+        /// </summary>
+        public static float volume;
+
+        /// <summary>
+        /// An array of <code>FlxCamera</code> objects that are used to draw stuff.
+        /// By default flixel creates one camera the size of the screen.
+        /// </summary>
+        public static List<FlxCamera> cameras;
+
+        /// <summary>
+        /// By default this just refers to the first entry in the cameras array
+        /// declared above, but you can do what you like with it.
+        /// </summary>
+        public static FlxCamera camera;
+
+        /// <summary>
+        /// Allows you to possibly slightly optimize the rendering process IF
+        /// you are not doing any pre-processing in your game state's <code>draw()</code> call.
+        /// @default false
+        /// </summary>
+        public static bool UseBufferLocking
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
+        }
+
+        /// <summary>
+        /// Internal helper variable for clearing the cameras each frame.
+        /// </summary>
+        protected static Rectangle _cameraRect
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
+        }
+
+        /// <summary>
+        /// An array container for plugins.
+        /// By default flixel uses a couple of plugins:
+        /// DebugPathDisplay, and TimerManager.
+        /// </summary>
+        public static List<FlxBasic> plugins { get; protected set; }
+
+        /// <summary>
+        /// Set this hook to get a callback whenever the volume changes.
+        /// Function should take the form <code>myVolumeHandler(float Volume)</code>.
+        /// </summary>
+        public static event Action volumeHandler;
+
+        /**
+		 * Useful helper objects for doing Flash-specific rendering.
+		 * Primarily used for "debug visuals" like drawing bounding boxes directly to the screen buffer.
+		 */
+		//static public var flashGfxSprite:Sprite;
+		//static public var flashGfx:Graphics;
+
+        /**
+		 * Internal storage system to prevent graphics from being used repeatedly in memory.
+		 */
+		//static protected var _cache:Object;
+
+        /// <summary>
+        /// For debug purpose.
+        /// </summary>
+        /// <returns>The library name including major and minor version.</returns>
+        public static string getLibraryName()
+        {
+            return FlxG.LibraryName + " v" + FlxG.LibraryMajorVersion + "." + FlxG.LibraryMinorVersion;
+        }
+
+        /// <summary>
+        /// Log data to the debugger.
+        /// </summary>
+        /// <param name="data">Anything you want to log to the console.</param>
+        public static void log(Object data)
+        {
+            Debug.WriteLine(data.ToString());
+
+            /*
+            if((_game != null) && (_game._debugger != null))
+				_game._debugger.log.add((Data == null)?"ERROR: null object":Data.toString());
+            */
+        }
+
+        /// <summary>
+        /// Add a variable to the watch list in the debugger.
+        /// This lets you see the value of the variable all the time.
+        /// </summary>
+        /// <param name="anyObject">A reference to any object in your game, e.g. Player or Robot or this.</param>
+        /// <param name="variableName">The name of the variable you want to watch, in quotes, as a string: e.g. "speed" or "health".</param>
+        /// <param name="displayName">Optional, display your own string instead of the class name + variable name: e.g. "enemy count".</param>
+        public static void watch(object anyObject, string variableName, string displayName = null)
+        {
+            throw new NotImplementedException("UseMSVSWatchForNow;)");
+
+            /*
+			if((_game != null) && (_game._debugger != null))
+				_game._debugger.watch.add(AnyObject,VariableName,DisplayName);
+            */
+        }
+
+        /// <summary>
+        /// Remove a variable from the watch list in the debugger.
+        /// Don't pass a Variable Name to remove all watched variables for the specified object.
+        /// </summary>
+        /// <param name="anyObject">A reference to any object in your game, e.g. Player or Robot or this.</param>
+        /// <param name="variableName">The name of the variable you want to watch, in quotes, as a string: e.g. "speed" or "health".</param>
+        /// <param name="displayName">Optional, display your own string instead of the class name + variable name: e.g. "enemy count".</param>
+        public static void unwatch(object anyObject, string variableName)
+        {
+            throw new NotImplementedException("UseMSVSWatchForNow;)");
+
+            /*
+			if((_game != null) && (_game._debugger != null))
+				_game._debugger.watch.add(AnyObject,VariableName,DisplayName);
+            */
+        }
+
+        #region flx# Stuff
         /// <summary>
         /// Reference to the ContentManager, important for retrieving Content such as images and sound
         /// </summary>
@@ -32,11 +350,6 @@ namespace flxSharp.flxSharp
         static public Viewport defaultWholeScreenViewport;
 
         /// <summary>
-        /// Array of cameras, used for splitscreen
-        /// </summary>
-        static public List<FlxCamera> cameras;
-
-        /// <summary>
         /// Reference to a storage device, perhaps the harddrive on the Xbox?
         /// Not yet implemented
         /// </summary>
@@ -53,24 +366,9 @@ namespace flxSharp.flxSharp
         static public GraphicsDevice graphicsDevice;
 
         /// <summary>
-        /// Time elapsed since last frame
-        /// </summary>
-        static public float elapsed;
-
-        /// <summary>
         /// Reference to the SpriteBatch
         /// </summary>
         static internal SpriteBatch spriteBatch;
-
-        /// <summary>
-        /// Reference to Keyboard input
-        /// </summary>
-        static public FlxKeyboard keys;
-
-        /// <summary>
-        /// Reference to Mouse input
-        /// </summary>
-        static public FlxMouse mouse;
 
         /// <summary>
         /// Reference to Gamepad input for Player One
@@ -109,11 +407,6 @@ namespace flxSharp.flxSharp
         static public Color bgColor;
 
         /// <summary>
-        /// Reference to the Game Camera
-        /// </summary>
-        static public FlxCamera camera;
-
-        /// <summary>
         /// Internal reference to XNA's GameTime - useful for getting time stuff in between frames.
         /// Allows you more control than FlxG.elapsed
         /// </summary>
@@ -123,46 +416,6 @@ namespace flxSharp.flxSharp
         /// The default font that you can use for text
         /// </summary>
         static public SpriteFont defaultFont;
-
-        /// <summary>
-        /// Internal helper for FlxQuadtree to calculate collisions
-        /// </summary>
-        static internal FlxRect worldBounds;
-
-        /// <summary>
-        /// Internal helper for FlxQuadtree to calculate collisions
-        /// </summary>
-        static internal uint worldDivisions = 6;
-
-        /// <summary>
-        /// Can be used to change volume of all sounds, default is 1.0f which equals 100%
-        /// </summary>
-        static public float volume = 1.0f;
-
-        /// <summary>
-        /// A list of all the sounds being played in the game
-        /// </summary>
-        static public FlxGroup sounds;
-
-        /// <summary>
-        /// Whether all the sounds are mute
-        /// </summary>
-        static public bool mute;
-        
-        /// <summary>
-        /// Reference to the Width of the Viewport
-        /// </summary>
-        static public float width;
-
-        /// <summary>
-        /// Reference to the Height of the Viewport
-        /// </summary>
-        static public float height;
-
-        /// <summary>
-        /// Internal random number helper
-        /// </summary>
-        static public float globalSeed = (float) FlxU.Random.NextDouble();
 
         /// <summary>
         /// Can be used to zoom the camera
@@ -183,6 +436,7 @@ namespace flxSharp.flxSharp
         /// Reference of the Safe Zone, useful for making sure your objects are visible across various televisions
         /// </summary>
         static public FlxRect safeZone;
+        #endregion // flx# Stuff
 
         /// <summary>
         /// Call this to switch to a new state
@@ -275,21 +529,9 @@ namespace flxSharp.flxSharp
         }
 
 
-        /// <summary>
-        /// Log something to the debugger console in Visual Studio
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        static public bool log(Object data)
-        {
-            global::System.Diagnostics.Debug.WriteLine(data.ToString());
-            return true;
-        }
 
-        /// <summary>
-        /// Not yet implemented - will be used to draw bounding boxes around sprites
-        /// </summary>
-        public static bool visualDebug { get; set; }
+
+
 
         /// <summary>
         /// Returns true if the two FlxObjects overlap.  Optional Callback function of return type bool with two FlxObject parameters will be called if true.

@@ -18,6 +18,8 @@ namespace flxSharp
         {
             base.create();
 
+            //FlxG.addCamera(new FlxCamera(50, 50, 500, 500));
+
             defaultLogo = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
             //defaultLogo.scaling = new FlxPoint(10, 10);
             this.add(defaultLogo);
