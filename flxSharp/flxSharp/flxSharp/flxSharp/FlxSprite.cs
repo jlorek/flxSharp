@@ -703,10 +703,10 @@ namespace flxSharp.flxSharp
                     continue;
                 }
 
-                _tagPoint.x = X - (int)(camera.scroll.x * ScrollFactor.x) - Offset.x;
-                _tagPoint.y = Y - (int)(camera.scroll.y * ScrollFactor.y) - Offset.y;
-                _tagPoint.x += (_tagPoint.x > 0) ? 0.0000001f : -0.0000001f;
-                _tagPoint.y += (_tagPoint.y > 0) ? 0.0000001f : -0.0000001f;
+                _tagPoint.X = X - (int)(camera.scroll.X * ScrollFactor.X) - Offset.X;
+                _tagPoint.Y = Y - (int)(camera.scroll.Y * ScrollFactor.Y) - Offset.Y;
+                _tagPoint.X += (_tagPoint.X > 0) ? 0.0000001f : -0.0000001f;
+                _tagPoint.Y += (_tagPoint.Y > 0) ? 0.0000001f : -0.0000001f;
                 
                 if (Visible)
                 {
@@ -727,19 +727,23 @@ namespace flxSharp.flxSharp
 				    }
                      */
                     Vector2 halfSize = new Vector2(sourceRect.width / 2, sourceRect.height / 2);
+                    Vector2 vecOrigin = new Vector2(Origin.X, Origin.Y);
 
-                    //Vector2 position = new Vector2(X + FrameWidth / 2, Y + FrameWidth / 2);
-                    //Vector2 position = new Vector2(X, Y);
-                    Vector2 position = new Vector2(_tagPoint.x, _tagPoint.y) + halfSize;
-                    
+
                     //Rectangle sourceRectangle = new Rectangle(0, 0, (int)FrameWidth, (int)FrameHeight);
                     Rectangle sourceRectangle = drawSourceRect;
 
+                    //Vector2 position = new Vector2(X + FrameWidth / 2, Y + FrameWidth / 2);
+                    //Vector2 position = new Vector2(X, Y);
+
+                    // add origin to reverse the translation brought up by the origin in the origin... you know ;)
+                    Vector2 position = new Vector2(_tagPoint.X, _tagPoint.Y) + vecOrigin;
+
                     //Vector2 origin = new Vector2(FrameWidth / 2, FrameHeight / 2);
-                    Vector2 origin = new Vector2(Offset.x, Offset.y) + halfSize;
+                    Vector2 origin = new Vector2(Offset.X, Offset.Y) + vecOrigin;
                     //Debug.WriteLine(origin);
                     
-                    Vector2 scale = new Vector2(Scale.x, Scale.y);
+                    Vector2 scale = new Vector2(Scale.X, Scale.Y);
                     // flx# - use sprite effects to flip horizontal/vertical
 
                     //Color drawColor = new Color(1f, 1f, 1f, 0f);
@@ -872,6 +876,31 @@ namespace flxSharp.flxSharp
             var texBuffer = new Color[_pixels.Width * _pixels.Height];
             _pixels.GetData<Color>(texBuffer);
 
+
+            int posX = (int) startX;
+            int posY = (int) startY;
+
+            int dx = (int) Math.Abs(endX - startX);
+            int sx = (startX < endX) ? 1 : -1;
+            int dy = - (int) Math.Abs(endY - startY);
+            int sy = (startY < endY) ? 1 : -1;
+            int err = dx + dy;
+
+            while(true)
+            {
+                texBuffer[posY * _pixels.Width + posX] = color;
+                if ((posX == endX) && (posY == endY)) break;
+                float e = 2 * err;
+                if (e > dy) { err += dy; posX += sx; }
+                if (e < dx) { err += dx; posY += sy; }
+            }
+
+            _pixels.SetData<Color>(texBuffer);
+
+            /*
+            var texBuffer = new Color[_pixels.Width * _pixels.Height];
+            _pixels.GetData<Color>(texBuffer);
+
             int numIterations = (int) ((vecTo - vecFrom).Length() * 100);
             numIterations = 100;
             for (int i = 0; i < numIterations; ++i)
@@ -892,6 +921,7 @@ namespace flxSharp.flxSharp
                 drawLine(startX, startY + 1, endX, endY + 1, color, thickness - 1);
                 drawLine(startX, startY - 1, endX, endY - 1, color, thickness - 1);
             }
+            */
 
             // flx# - seems useless
             Dirty = true;
@@ -1049,8 +1079,8 @@ namespace flxSharp.flxSharp
         /// </summary>
         public void setOriginToCorner()
         {
-            Origin.x = 0;
-            Origin.y = 0;
+            Origin.X = 0;
+            Origin.Y = 0;
         }
 
         /// <summary>
@@ -1059,13 +1089,13 @@ namespace flxSharp.flxSharp
         /// <param name="adjustPosition">Adjusts the actual X and Y position just once to match the offset change. Default is false.</param>
         public void centerOffsets(bool adjustPosition = false)
         {
-            Offset.x = (FrameWidth - Width) * 0.5f;
-            Offset.y = (FrameHeight - Height) * 0.5f;
+            Offset.X = (FrameWidth - Width) * 0.5f;
+            Offset.Y = (FrameHeight - Height) * 0.5f;
 
             if (adjustPosition)
             {
-                X = X + Offset.x;
-                Y = Y + Offset.y;
+                X = X + Offset.X;
+                Y = Y + Offset.Y;
             }
         }
 
@@ -1129,8 +1159,8 @@ namespace flxSharp.flxSharp
             }
 
             getScreenXY(_tagPoint, camera);
-            _tagPoint.x = _tagPoint.x - Offset.x;
-            _tagPoint.y = _tagPoint.y - Offset.y;
+            _tagPoint.X = _tagPoint.X - Offset.X;
+            _tagPoint.Y = _tagPoint.Y - Offset.Y;
 
             /*
             if (((angle == 0) || (_bakedRotation > 0)) && (scale.x == 1) && (scale.y == 1))
@@ -1139,12 +1169,12 @@ namespace flxSharp.flxSharp
 
             float halfWidth = FrameWidth / 2;
             float halfHeight = FrameHeight / 2;
-            float absScaleX = (Scale.x > 0) ? Scale.x : -Scale.x;
-            float absScaleY = (Scale.y > 0) ? Scale.y : -Scale.y;
+            float absScaleX = (Scale.X > 0) ? Scale.X : -Scale.X;
+            float absScaleY = (Scale.Y > 0) ? Scale.Y : -Scale.Y;
             float radius = (float)Math.Sqrt((halfWidth * halfWidth) + (halfHeight * halfHeight)) * ((absScaleX >= absScaleY) ? absScaleX : absScaleY);
-            _tagPoint.x = _tagPoint.x + halfWidth;
-            _tagPoint.y = _tagPoint.y + halfHeight;
-            return ((_tagPoint.x + radius > 0) && (_tagPoint.x - radius < camera.width) && (_tagPoint.y + radius > 0) && (_tagPoint.y - radius < camera.height));
+            _tagPoint.X = _tagPoint.X + halfWidth;
+            _tagPoint.Y = _tagPoint.Y + halfHeight;
+            return ((_tagPoint.X + radius > 0) && (_tagPoint.X - radius < camera.width) && (_tagPoint.Y + radius > 0) && (_tagPoint.Y - radius < camera.height));
         }
 
         /// <summary>
@@ -1258,7 +1288,7 @@ namespace flxSharp.flxSharp
 
         public Vector2 getVec2()
         {
-            return new Vector2(X - Offset.x, Y - Offset.y);
+            return new Vector2(X - Offset.X, Y - Offset.Y);
         }
     }
 }

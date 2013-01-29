@@ -1,76 +1,95 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
+    /// <summary>
+    /// Stores a 2D floating point coordinate.
+    /// </summary>
     public class FlxPoint
     {
+        /// <summary>
+        /// Default 0.
+        /// </summary>
+        public float X { get; set; }
 
         /// <summary>
-        /// Default 0
+        /// Default 0.
         /// </summary>
-        public float x;
+        public float Y { get; set; }
 
         /// <summary>
-        /// Default 0
+        /// Instantiate a new point object.
         /// </summary>
-        public float y;
-
-        /// <summary>
-        /// Instantiate a new point object
-        /// </summary>
-        /// <param name="X">The X-coordinate of the point in space</param>
-        /// <param name="Y">The Y-coordinate of the point in space</param>
+        /// <param name="x">The X-coordinate of the point in space.</param>
+        /// <param name="y">The Y-coordinate of the point in space.</param>
         /// <returns></returns>
-        public FlxPoint(float X = 0, float Y = 0)
+        public FlxPoint(float x = 0, float y = 0)
         {
-            make(X, Y);
+            X = x;
+            Y = y;
         }
 
         /// <summary>
-        /// Instantiate a new point object
+        /// Instantiate a new point object.
+        /// 
+        /// The naming is very confusing... This method does not
+        /// make or create a point (like the NEW keyword). Instead
+        /// it only set's the X and Y value of the current instance
+        /// and returnes this. So this is NOT a factory method.
         /// </summary>
-        /// <param name="X">The X-coordinate of the point in space</param>
-        /// <param name="Y">The Y-coordinate of the point in space</param>
+        /// <param name="x">The X-coordinate of the point in space.</param>
+        /// <param name="y">The Y-coordinate of the point in space.</param>
         /// <returns></returns>
-        public FlxPoint make(float X = 0, float Y = 0)
+        public FlxPoint make(float x = 0, float y = 0)
         {
-            x = X;
-            y = Y;
+            X = x;
+            Y = y;
             return this;
         }
 
         /// <summary>
-        /// Helper function, just copies the values from the specified point
+        /// Helper function, just copies the values from the specified point.
         /// </summary>
-        /// <param name="Point">Any FlxPoint</param>
-        /// <returns>a reference to itself</returns>
-        public FlxPoint copyFrom(FlxPoint Point)
+        /// <param name="point">Any <code>FlxPoint</code>.</param>
+        /// <returns>A reference to itself.</returns>
+        public FlxPoint copyFrom(FlxPoint point)
         {
-            x = Point.x;
-            y = Point.y;
+            X = point.X;
+            Y = point.Y;
             return this;
         }
 
         /// <summary>
-        /// Helper function, just copies the values to the specified point
+        /// Helper function, just copies the values to the specified point.
         /// </summary>
-        /// <param name="Point">Any FlxPoint</param>
-        /// <returns>a reference to the altered point parameter</returns>
-        public FlxPoint copyTo(FlxPoint Point)
+        /// <param name="point">Any <code>FlxPoint</code>.</param>
+        /// <returns>A reference to itself.</returns>
+        public FlxPoint copyTo(FlxPoint point)
         {
-            Point.x = x;
-            Point.y = y;
-            return Point;
+            point.X = X;
+            point.Y = Y;
+            return point;
+        }
+
+        /// <summary>
+        /// Helper function, just copies the values from the specified Flash point.
+        /// </summary>
+        /// <param name="flashPoint">Point	Any <code>Point</code>.</param>
+        /// <returns>A reference to itself.</returns>
+        public FlxPoint copyFromFlash(object flashPoint)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Helper function, just copies the values from this point to the specified Flash point.
+        /// </summary>
+        /// <param name="flashPoint">Any <code>Point</code>.</param>
+        /// <returns>A reference to the altered point parameter.</returns>
+        public object copyToflash(object flashPoint)
+        {
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -78,9 +97,9 @@ namespace fliXNA_xbox
         /// Useful for drawing to the SpriteBatch since it requires a Vector2
         /// </summary>
         /// <returns>Vector2</returns>
-        public Vector2 getVec2()
+        public Vector2 ToVector2()
         {
-            return new Vector2(x, y);
+            return new Vector2(X, Y);
         }
     }
 }

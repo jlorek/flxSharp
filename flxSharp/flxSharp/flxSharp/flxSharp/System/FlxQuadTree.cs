@@ -372,19 +372,19 @@ namespace fliXNA_xbox
 				}
 				
 				//calculate bulk hull for _object
-				_objectHullX = (_object.X < _object.Last.x)?_object.X:_object.Last.x;
-				_objectHullY = (_object.Y < _object.Last.y)?_object.Y:_object.Last.y;
-				_objectHullWidth = _object.X - _object.Last.x;
+				_objectHullX = (_object.X < _object.Last.X)?_object.X:_object.Last.X;
+				_objectHullY = (_object.Y < _object.Last.Y)?_object.Y:_object.Last.Y;
+				_objectHullWidth = _object.X - _object.Last.X;
 				_objectHullWidth = _object.Width + ((_objectHullWidth>0)?_objectHullWidth:-_objectHullWidth);
-				_objectHullHeight = _object.Y - _object.Last.y;
+				_objectHullHeight = _object.Y - _object.Last.Y;
 				_objectHullHeight = _object.Height + ((_objectHullHeight>0)?_objectHullHeight:-_objectHullHeight);
 				
 				//calculate bulk hull for checkObject
-				_checkObjectHullX = (checkObject.X < checkObject.Last.x)?checkObject.X:checkObject.Last.x;
-				_checkObjectHullY = (checkObject.Y < checkObject.Last.y)?checkObject.Y:checkObject.Last.y;
-				_checkObjectHullWidth = checkObject.X - checkObject.Last.x;
+				_checkObjectHullX = (checkObject.X < checkObject.Last.X)?checkObject.X:checkObject.Last.X;
+				_checkObjectHullY = (checkObject.Y < checkObject.Last.Y)?checkObject.Y:checkObject.Last.Y;
+				_checkObjectHullWidth = checkObject.X - checkObject.Last.X;
 				_checkObjectHullWidth = checkObject.Width + ((_checkObjectHullWidth>0)?_checkObjectHullWidth:-_checkObjectHullWidth);
-                _checkObjectHullHeight = checkObject.Y - checkObject.Last.y;
+                _checkObjectHullHeight = checkObject.Y - checkObject.Last.Y;
 				_checkObjectHullHeight = checkObject.Height + ((_checkObjectHullHeight>0)?_checkObjectHullHeight:-_checkObjectHullHeight);
 				
 				//check for intersection of the two hulls

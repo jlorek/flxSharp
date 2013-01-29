@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -57,7 +58,7 @@ namespace fliXNA_xbox
             if (AsReference)
                 nodes.Add(Node);
             else
-                nodes.Add(new FlxPoint(Node.x, Node.y));
+                nodes.Add(new FlxPoint(Node.X, Node.Y));
         }
 
         public void addPointAt(FlxPoint Node, int Index, bool AsReference = false)
@@ -67,7 +68,7 @@ namespace fliXNA_xbox
             if (AsReference)
                 nodes.Insert(Index, Node);
             else
-                nodes.Insert(Index, new FlxPoint(Node.x, Node.y));
+                nodes.Insert(Index, new FlxPoint(Node.X, Node.Y));
         }
 
         public FlxPoint remove(FlxPoint Node)

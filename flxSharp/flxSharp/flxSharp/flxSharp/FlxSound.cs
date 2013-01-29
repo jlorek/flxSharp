@@ -197,8 +197,8 @@ namespace fliXNA_xbox
             base.update();
             if (_source != null)
             {
-                x = _source.getMidpoint().x;
-                y = _source.getMidpoint().y;
+                x = _source.getMidpoint().X;
+                y = _source.getMidpoint().Y;
             }
 
             float radial = 1.0f;

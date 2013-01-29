@@ -334,25 +334,25 @@ namespace flxSharp.flxSharp
 
             // jlorek: revisit
 
-            if (minParticleSpeed.x != maxParticleSpeed.x)
+            if (minParticleSpeed.X != maxParticleSpeed.X)
             {
-                particle.Velocity.x = minParticleSpeed.x + FlxG.random()*(maxParticleSpeed.x - minParticleSpeed.x);
+                particle.Velocity.X = minParticleSpeed.X + FlxG.random()*(maxParticleSpeed.X - minParticleSpeed.X);
             }
             else
             {
-                particle.Velocity.x = minParticleSpeed.x;                
+                particle.Velocity.X = minParticleSpeed.X;                
             }
 
-            if (minParticleSpeed.y != maxParticleSpeed.y)
+            if (minParticleSpeed.Y != maxParticleSpeed.Y)
             {
-                particle.Velocity.y = minParticleSpeed.y + FlxG.random()*(maxParticleSpeed.y - minParticleSpeed.y);
+                particle.Velocity.Y = minParticleSpeed.Y + FlxG.random()*(maxParticleSpeed.Y - minParticleSpeed.Y);
             }
             else
             {
-                particle.Velocity.y = minParticleSpeed.y;                
+                particle.Velocity.Y = minParticleSpeed.Y;                
             }
 
-            particle.Acceleration.y = gravity;
+            particle.Acceleration.Y = gravity;
 
             if (minRotation != maxRotation)
             {
@@ -369,8 +369,8 @@ namespace flxSharp.flxSharp
             }
 
 			particle.Visible = true;
-			particle.Drag.x = particleDrag.x;
-			particle.Drag.y = particleDrag.y;
+			particle.Drag.X = particleDrag.X;
+			particle.Drag.Y = particleDrag.Y;
 			particle.onEmit();
 		}
 
@@ -392,8 +392,8 @@ namespace flxSharp.flxSharp
         /// <param name="Max">The maximum value for this range.</param>
 		public void setXSpeed(float Min=0, float Max=0)
 		{
-			minParticleSpeed.x = Min;
-			maxParticleSpeed.x = Max;
+			minParticleSpeed.X = Min;
+			maxParticleSpeed.X = Max;
 		}
 
         /// <summary>
@@ -403,8 +403,8 @@ namespace flxSharp.flxSharp
         /// <param name="Max">The maximum value for this range.</param>
 		public void setYSpeed(float Min=0, float Max=0)
 		{
-			minParticleSpeed.y = Min;
-			maxParticleSpeed.y = Max;
+			minParticleSpeed.Y = Min;
+			maxParticleSpeed.Y = Max;
 		}
 
         /// <summary>
@@ -425,8 +425,8 @@ namespace flxSharp.flxSharp
 		public void at(FlxObject flxObject)
 		{
 			flxObject.getMidpoint(_point);
-			X = _point.x - (Convert.ToInt32(Width)>>1);
-			Y = _point.y - (Convert.ToInt32(Height)>>1);
+			X = _point.X - (Convert.ToInt32(Width)>>1);
+			Y = _point.Y - (Convert.ToInt32(Height)>>1);
 		}
 	}
 }

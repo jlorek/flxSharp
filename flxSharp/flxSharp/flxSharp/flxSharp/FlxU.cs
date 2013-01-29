@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using flxSharp.flxSharp;
 
 namespace fliXNA_xbox
 {
@@ -159,8 +160,8 @@ namespace fliXNA_xbox
         /// <returns></returns>
         internal static float getDistance(FlxPoint Point1, FlxPoint Point2)
 		{
-			float dx = Point1.x - Point2.x;
-			float dy = Point1.y - Point2.y;
+			float dx = Point1.X - Point2.X;
+			float dy = Point1.Y - Point2.Y;
 			return (float)Math.Sqrt(dx * dx + dy * dy);
 		}
 
@@ -172,8 +173,8 @@ namespace fliXNA_xbox
         /// <returns></returns>
         internal static float getAngle(FlxPoint Point1, FlxPoint Point2)
 		{
-			float x = Point2.x - Point1.x;
-			float y = Point2.y - Point1.y;
+			float x = Point2.X - Point1.X;
+			float y = Point2.Y - Point1.Y;
 			if((x == 0) && (y == 0))
 				return 0;
 			float c1 = 3.14159265f * 0.25f;
@@ -200,8 +201,8 @@ namespace fliXNA_xbox
         /// <returns></returns>
         internal static float getAnglePrecise(FlxPoint Point1, FlxPoint Point2)
         {
-            float x = Point2.x - Point1.x;
-            float y = Point2.y - Point1.y;
+            float x = Point2.X - Point1.X;
+            float y = Point2.Y - Point1.Y;
             return (float)Math.Atan2(y, x) * 180 / (float)Math.PI;
         }
 
@@ -268,8 +269,8 @@ namespace fliXNA_xbox
 			float dy = PivotY+Y; //Y axis is inverted in flash, normally this would be a subtract operation
 			if(Point == null)
 				Point = new FlxPoint();
-			Point.x = PivotX + cos*dx - sin*dy;
-			Point.y = PivotY - sin*dx - cos*dy;
+			Point.X = PivotX + cos*dx - sin*dy;
+			Point.Y = PivotY - sin*dx - cos*dy;
 			return Point;
 		}
 

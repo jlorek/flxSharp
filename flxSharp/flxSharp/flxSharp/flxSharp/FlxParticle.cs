@@ -82,29 +82,29 @@ namespace flxSharp.flxSharp
 			}
 
             //special behavior for particles with gravity
-			if(Acceleration.y > 0) 
+			if(Acceleration.Y > 0) 
 			{
 				if (Convert.ToBoolean(Touching) & Convert.ToBoolean(Floor))
 				{
-				    Drag.x = Friction;
+				    Drag.X = Friction;
 
 				    if (!(Convert.ToBoolean(WasTouching) & Convert.ToBoolean(Floor)))
 				    {
-				        if (Velocity.y < -Elasticity*10)
+				        if (Velocity.Y < -Elasticity*10)
 				        {
 				            if (AngularVelocity != 0)
 				                AngularVelocity *= -Elasticity;
 				        }
 				        else
 				        {
-				            Velocity.y = 0;
+				            Velocity.Y = 0;
 				            AngularVelocity = 0;
 				        }
 				    }
 				}
 				else
 				{
-                    Drag.x = 0;				    
+                    Drag.X = 0;				    
 				}
 			}
 		}

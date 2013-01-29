@@ -408,8 +408,8 @@ namespace flxSharp.flxSharp
                 }
             }
 
-            Last.x = X;
-            Last.y = Y;
+            Last.X = X;
+            Last.Y = Y;
 
             if ((Path != null) && (PathSpeed != 0) && (Path.nodes[_pathNodeIndex] != null))
             {
@@ -448,16 +448,16 @@ namespace flxSharp.flxSharp
             Angle += AngularVelocity * FlxG.elapsed;
             AngularVelocity += velocityDelta;
 
-            velocityDelta = (FlxU.computeVelocity(Velocity.x, Acceleration.x, Drag.x, MaxVelocity.x) - Velocity.x) / 2;
-            Velocity.x += velocityDelta;
-            delta = Velocity.x * FlxG.elapsed;
-            Velocity.x += velocityDelta;
+            velocityDelta = (FlxU.computeVelocity(Velocity.X, Acceleration.X, Drag.X, MaxVelocity.X) - Velocity.X) / 2;
+            Velocity.X += velocityDelta;
+            delta = Velocity.X * FlxG.elapsed;
+            Velocity.X += velocityDelta;
             X += delta;
 
-            velocityDelta = (FlxU.computeVelocity(Velocity.y, Acceleration.y, Drag.y, MaxVelocity.y) - Velocity.y) / 2;
-            Velocity.y += velocityDelta;
-            delta = Velocity.y * FlxG.elapsed;
-            Velocity.y += velocityDelta;
+            velocityDelta = (FlxU.computeVelocity(Velocity.Y, Acceleration.Y, Drag.Y, MaxVelocity.Y) - Velocity.Y) / 2;
+            Velocity.Y += velocityDelta;
+            delta = Velocity.Y * FlxG.elapsed;
+            Velocity.Y += velocityDelta;
             Y += delta;
         }
 
@@ -499,8 +499,8 @@ namespace flxSharp.flxSharp
 				Camera = FlxG.camera;
 
 			//get bounding box coordinates
-			float boundingBoxX = X - (int)(Camera.scroll.x*ScrollFactor.x); //copied from getScreenXY()
-			float boundingBoxY = Y - (int)(Camera.scroll.y*ScrollFactor.y);
+			float boundingBoxX = X - (int)(Camera.scroll.X*ScrollFactor.X); //copied from getScreenXY()
+			float boundingBoxY = Y - (int)(Camera.scroll.Y*ScrollFactor.Y);
 			boundingBoxX = (int)(boundingBoxX + ((boundingBoxX > 0)?0.0000001f:-0.0000001f));
 			boundingBoxY = (int)(boundingBoxY + ((boundingBoxY > 0)?0.0000001f:-0.0000001f));
             int boundingBoxWidth = (int)((Width != (int)(Width)) ? Width : Width - 1f);
@@ -596,12 +596,12 @@ namespace flxSharp.flxSharp
 				{
 					if ((_pathMode & PathVerticalOnly) == 0)
 					{
-                        X = oldNode.x - Width * 0.5f;					    
+                        X = oldNode.X - Width * 0.5f;					    
 					}
 
 					if ((_pathMode & PathHorizontalOnly) == 0)
 					{
-                        Y = oldNode.y - Height * 0.5f;					    
+                        Y = oldNode.Y - Height * 0.5f;					    
 					}
 				}
 			}
@@ -684,11 +684,11 @@ namespace flxSharp.flxSharp
 		protected void updatePathMotion()
 		{
 			// first check if we need to be pointing at the next node yet
-			_tagPoint.x = X + Width * 0.5f;
-			_tagPoint.y = Y + Height * 0.5f;
+			_tagPoint.X = X + Width * 0.5f;
+			_tagPoint.Y = Y + Height * 0.5f;
 			FlxPoint node = Path.nodes[_pathNodeIndex];
-			float deltaX = node.x - _tagPoint.x;
-			float deltaY = node.y - _tagPoint.y;
+			float deltaX = node.X - _tagPoint.X;
+			float deltaY = node.Y - _tagPoint.Y;
 
 			bool horizontalOnly = (_pathMode & PathHorizontalOnly) > 0;
 			bool verticalOnly = (_pathMode & PathVerticalOnly) > 0;
@@ -717,14 +717,14 @@ namespace flxSharp.flxSharp
 			if(PathSpeed != 0)
 			{
 				//set velocity based on path mode
-				_tagPoint.x = X + Width * 0.5f;
-				_tagPoint.y = Y + Height * 0.5f;
+				_tagPoint.X = X + Width * 0.5f;
+				_tagPoint.Y = Y + Height * 0.5f;
 
-				if(horizontalOnly || (_tagPoint.y == node.y))
+				if(horizontalOnly || (_tagPoint.Y == node.Y))
 				{
-					Velocity.x = (_tagPoint.x < node.x) ? PathSpeed: -PathSpeed;
+					Velocity.X = (_tagPoint.X < node.X) ? PathSpeed: -PathSpeed;
 
-					if (Velocity.x < 0)
+					if (Velocity.X < 0)
 					{
 					    PathAngle = -90;
 					}
@@ -735,14 +735,14 @@ namespace flxSharp.flxSharp
 
 					if (!horizontalOnly)
 					{
-                        Velocity.y = 0;					    
+                        Velocity.Y = 0;					    
 					}
 				}
-				else if(verticalOnly || (_tagPoint.x == node.x))
+				else if(verticalOnly || (_tagPoint.X == node.X))
 				{
-					Velocity.y = (_tagPoint.y < node.y) ? PathSpeed : -PathSpeed;
+					Velocity.Y = (_tagPoint.Y < node.Y) ? PathSpeed : -PathSpeed;
 					
-                    if (Velocity.y < 0)
+                    if (Velocity.Y < 0)
                     {
                         PathAngle = 0;
                     }
@@ -753,7 +753,7 @@ namespace flxSharp.flxSharp
 
 					if (!verticalOnly)
 					{
-                        Velocity.x = 0;					    
+                        Velocity.X = 0;					    
 					}
 				}
 				else
@@ -835,8 +835,8 @@ namespace flxSharp.flxSharp
 
             FlxPoint objectScreenPos = flxObject.getScreenXY(null, camera);
 			getScreenXY(_tagPoint, camera);
-            return (objectScreenPos.x + flxObject.Width > _tagPoint.x) && (objectScreenPos.x < _tagPoint.x + Width) &&
-                   (objectScreenPos.y + flxObject.Height > _tagPoint.y) && (objectScreenPos.y < _tagPoint.y + Height);
+            return (objectScreenPos.X + flxObject.Width > _tagPoint.X) && (objectScreenPos.X < _tagPoint.X + Width) &&
+                   (objectScreenPos.Y + flxObject.Height > _tagPoint.Y) && (objectScreenPos.Y < _tagPoint.Y + Height);
 		}
 
         /// <summary>
@@ -898,13 +898,13 @@ namespace flxSharp.flxSharp
             }
 
             FlxPoint objectScreenPos = flxObject.getScreenXY(null, camera);
-            _tagPoint.x = x - camera.scroll.x * ScrollFactor.x; //copied from getScreenXY()
-            _tagPoint.y = y - camera.scroll.y * ScrollFactor.y;
-            _tagPoint.x += (_tagPoint.x > 0) ? 0.0000001f : -0.0000001f;
-            _tagPoint.y += (_tagPoint.y > 0) ? 0.0000001f : -0.0000001f;
+            _tagPoint.X = x - camera.scroll.X * ScrollFactor.X; //copied from getScreenXY()
+            _tagPoint.Y = y - camera.scroll.Y * ScrollFactor.Y;
+            _tagPoint.X += (_tagPoint.X > 0) ? 0.0000001f : -0.0000001f;
+            _tagPoint.Y += (_tagPoint.Y > 0) ? 0.0000001f : -0.0000001f;
 
-            return (objectScreenPos.x + flxObject.Width > _tagPoint.x) && (objectScreenPos.x < _tagPoint.x + Width) &&
-                   (objectScreenPos.y + flxObject.Height > _tagPoint.y) && (objectScreenPos.y < _tagPoint.y + Height);
+            return (objectScreenPos.X + flxObject.Width > _tagPoint.X) && (objectScreenPos.X < _tagPoint.X + Width) &&
+                   (objectScreenPos.Y + flxObject.Height > _tagPoint.Y) && (objectScreenPos.Y < _tagPoint.Y + Height);
         }
 
         /// <summary>
@@ -918,7 +918,7 @@ namespace flxSharp.flxSharp
         {
             if (!inScreenSpace)
             {
-                return (point.x > this.X) && (point.x < this.X + Width) && (point.y > this.Y) && (point.y < this.Y + Height);                
+                return (point.X > this.X) && (point.X < this.X + Width) && (point.Y > this.Y) && (point.Y < this.Y + Height);                
             }
 
             if (camera == null)
@@ -926,10 +926,10 @@ namespace flxSharp.flxSharp
                 camera = FlxG.camera;                
             }
 
-            float x = point.x - camera.scroll.x;
-            float y = point.y - camera.scroll.y;
+            float x = point.X - camera.scroll.X;
+            float y = point.Y - camera.scroll.Y;
             getScreenXY(_tagPoint, camera);
-            return (x > _tagPoint.x) && (x < _tagPoint.x + Width) && (y > _tagPoint.y) && (y < _tagPoint.y + Height);
+            return (x > _tagPoint.X) && (x < _tagPoint.X + Width) && (y > _tagPoint.Y) && (y < _tagPoint.Y + Height);
         }
 
         /// <summary>
@@ -945,7 +945,7 @@ namespace flxSharp.flxSharp
 			}
 
 			getScreenXY(_tagPoint,camera);
-			return (_tagPoint.x + Width > 0) && (_tagPoint.x < camera.width) && (_tagPoint.y + Height > 0) && (_tagPoint.y < camera.height);
+			return (_tagPoint.X + Width > 0) && (_tagPoint.X < camera.width) && (_tagPoint.Y + Height > 0) && (_tagPoint.Y < camera.height);
 		}
 
         /// <summary>
@@ -966,10 +966,10 @@ namespace flxSharp.flxSharp
                 camera = FlxG.camera;			    
 			}
 
-			point.x = X - (camera.scroll.x * ScrollFactor.x);
-			point.y = Y - (camera.scroll.y * ScrollFactor.y);
-			point.x += (point.x > 0) ? 0.0000001f : -0.0000001f;
-			point.y += (point.y > 0) ? 0.0000001f : -0.0000001f;
+			point.X = X - (camera.scroll.X * ScrollFactor.X);
+			point.Y = Y - (camera.scroll.Y * ScrollFactor.Y);
+			point.X += (point.X > 0) ? 0.0000001f : -0.0000001f;
+			point.Y += (point.Y > 0) ? 0.0000001f : -0.0000001f;
 			return point;
 		}
 
@@ -1020,8 +1020,8 @@ namespace flxSharp.flxSharp
 			}
 
             // flx# - wtf we dont bitshift here but anywhere else?
-			point.x = X + (Width / 2);
-			point.y = Y + (Height / 2);
+			point.X = X + (Width / 2);
+			point.Y = Y + (Height / 2);
 			return point;
 		}
 
@@ -1038,10 +1038,10 @@ namespace flxSharp.flxSharp
 			WasTouching = None;
 			X = x;
 			Y = y;
-			Last.x = X;
-			Last.y = Y;
-			Velocity.x = 0;
-			Velocity.y = 0;
+			Last.X = X;
+			Last.Y = Y;
+			Velocity.X = 0;
+			Velocity.Y = 0;
 		}
 
         /// <summary>
@@ -1116,15 +1116,15 @@ namespace flxSharp.flxSharp
 
 			// First, get the two object deltas
             float overlap = 0;
-            float obj1delta = objectOne.X - objectOne.Last.x;
-            float obj2delta = objectTwo.X - objectTwo.Last.x;
+            float obj1delta = objectOne.X - objectOne.Last.X;
+            float obj2delta = objectTwo.X - objectTwo.Last.X;
 			if(obj1delta != obj2delta)
 			{
 				//Check if the X hulls actually overlap
                 float obj1deltaAbs = (obj1delta > 0) ? obj1delta : -obj1delta;
                 float obj2deltaAbs = (obj2delta > 0) ? obj2delta : -obj2delta;
-				FlxRect obj1rect = new FlxRect(objectOne.X-((obj1delta > 0)?obj1delta:0),objectOne.Last.y,objectOne.Width+((obj1delta > 0)?obj1delta:-obj1delta),objectOne.Height);
-				FlxRect obj2rect = new FlxRect(objectTwo.X-((obj2delta > 0)?obj2delta:0),objectTwo.Last.y,objectTwo.Width+((obj2delta > 0)?obj2delta:-obj2delta),objectTwo.Height);
+				FlxRect obj1rect = new FlxRect(objectOne.X-((obj1delta > 0)?obj1delta:0),objectOne.Last.Y,objectOne.Width+((obj1delta > 0)?obj1delta:-obj1delta),objectOne.Height);
+				FlxRect obj2rect = new FlxRect(objectTwo.X-((obj2delta > 0)?obj2delta:0),objectTwo.Last.Y,objectTwo.Width+((obj2delta > 0)?obj2delta:-obj2delta),objectTwo.Height);
 				if((obj1rect.x + obj1rect.width > obj2rect.x) && (obj1rect.x < obj2rect.x + obj2rect.width) && (obj1rect.y + obj1rect.height > obj2rect.y) && (obj1rect.y < obj2rect.y + obj2rect.height))
 				{
                     float maxOverlap = obj1deltaAbs + obj2deltaAbs + OverlapBias;
@@ -1159,8 +1159,8 @@ namespace flxSharp.flxSharp
 			//Then adjust their positions and velocities accordingly (if there was any overlap)
 			if(overlap != 0)
 			{
-                float obj1v = objectOne.Velocity.x;
-                float obj2v = objectTwo.Velocity.x;
+                float obj1v = objectOne.Velocity.X;
+                float obj2v = objectTwo.Velocity.X;
 
 				if(!obj1immovable && !obj2immovable)
 				{
@@ -1173,18 +1173,18 @@ namespace flxSharp.flxSharp
                     float average = (obj1velocity + obj2velocity) * 0.5f;
 					obj1velocity -= average;
 					obj2velocity -= average;
-					objectOne.Velocity.x = average + obj1velocity * objectOne.Elasticity;
-					objectTwo.Velocity.x = average + obj2velocity * objectTwo.Elasticity;
+					objectOne.Velocity.X = average + obj1velocity * objectOne.Elasticity;
+					objectTwo.Velocity.X = average + obj2velocity * objectTwo.Elasticity;
 				}
 				else if(!obj1immovable)
 				{
 					objectOne.X = objectOne.X - overlap;
-					objectOne.Velocity.x = obj2v - obj1v*objectOne.Elasticity;
+					objectOne.Velocity.X = obj2v - obj1v*objectOne.Elasticity;
 				}
 				else if(!obj2immovable)
 				{
 					objectTwo.X += overlap;
-					objectTwo.Velocity.x = obj1v - obj2v*objectTwo.Elasticity;
+					objectTwo.Velocity.X = obj1v - obj2v*objectTwo.Elasticity;
 				}
 				return true;
 			}
@@ -1214,8 +1214,8 @@ namespace flxSharp.flxSharp
 
 			//First, get the two object deltas
             float overlap = 0;
-            float obj1delta = objectOne.Y - objectOne.Last.y;
-            float obj2delta = objectTwo.Y - objectTwo.Last.y;
+            float obj1delta = objectOne.Y - objectOne.Last.Y;
+            float obj2delta = objectTwo.Y - objectTwo.Last.Y;
 			if(obj1delta != obj2delta)
 			{
 				//Check if the Y hulls actually overlap
@@ -1256,8 +1256,8 @@ namespace flxSharp.flxSharp
 			//Then adjust their positions and velocities accordingly (if there was any overlap)
 			if(overlap != 0)
 			{
-                float obj1v = objectOne.Velocity.y;
-                float obj2v = objectTwo.Velocity.y;
+                float obj1v = objectOne.Velocity.Y;
+                float obj2v = objectTwo.Velocity.Y;
 
 				if(!obj1immovable && !obj2immovable)
 				{
@@ -1270,24 +1270,24 @@ namespace flxSharp.flxSharp
                     float average = (obj1velocity + obj2velocity) * 0.5f;
 					obj1velocity -= average;
 					obj2velocity -= average;
-					objectOne.Velocity.y = average + obj1velocity *  objectOne.Elasticity;
-					objectTwo.Velocity.y = average + obj2velocity *  objectTwo.Elasticity;
+					objectOne.Velocity.Y = average + obj1velocity *  objectOne.Elasticity;
+					objectTwo.Velocity.Y = average + obj2velocity *  objectTwo.Elasticity;
 				}
 				else if(!obj1immovable)
 				{
 					objectOne.Y = objectOne.Y - overlap;
-					objectOne.Velocity.y = obj2v - obj1v*objectOne.Elasticity;
+					objectOne.Velocity.Y = obj2v - obj1v*objectOne.Elasticity;
 					//This is special case code that handles cases like horizontal moving platforms you can ride
 					if(objectTwo.Active && objectTwo.Moves && (obj1delta > obj2delta))
-						objectOne.X += objectTwo.X - objectTwo.Last.x;
+						objectOne.X += objectTwo.X - objectTwo.Last.X;
 				}
 				else if(!obj2immovable)
 				{
 					objectTwo.Y += overlap;
-					objectTwo.Velocity.y = obj1v - obj2v*objectTwo.Elasticity;
+					objectTwo.Velocity.Y = obj1v - obj2v*objectTwo.Elasticity;
 					//This is special case code that handles cases like horizontal moving platforms you can ride
 					if(objectOne.Active && objectOne.Moves && (obj1delta < obj2delta))
-						objectTwo.X += objectOne.X - objectOne.Last.x;
+						objectTwo.X += objectOne.X - objectOne.Last.X;
 				}
 				return true;
 			}

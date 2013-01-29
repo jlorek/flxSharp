@@ -251,8 +251,8 @@ namespace fliXNA_xbox
             float Y = base.Y;
             if (Position != null)
             {
-                X = Position.x;
-                Y = Position.x;
+                X = Position.X;
+                Y = Position.X;
             }
 
             //Figure out what tiles we need to check against
@@ -277,8 +277,8 @@ namespace fliXNA_xbox
             uint column;
             FlxTile tile;
             Boolean overlapFound;
-            float deltaX = X - Last.x;
-            float deltaY = Y - Last.y;
+            float deltaX = X - Last.X;
+            float deltaY = Y - Last.Y;
 
            
 
@@ -293,8 +293,8 @@ namespace fliXNA_xbox
                     {
                         tile.X = X + (int)column * _tileWidth;
                         tile.Y = Y + (int)row * _tileHeight;
-                        tile.Last.x = tile.X - deltaX;
-                        tile.Last.y = tile.Y - deltaY;
+                        tile.Last.X = tile.X - deltaX;
+                        tile.Last.Y = tile.Y - deltaY;
                         if (Callback != null)
                         {
                             if (FlipCallbackParams)
@@ -334,14 +334,14 @@ namespace fliXNA_xbox
         override public Boolean overlapsPoint(FlxPoint point, Boolean inScreenSpace = false, FlxCamera camera = null)
         {
             if (!inScreenSpace)
-                return (_tileObjects[_data[(int)(((point.y - Y) / _tileHeight) * widthInTiles + (point.x - X) / _tileWidth)]] as FlxTile).AllowCollisions > 0;
+                return (_tileObjects[_data[(int)(((point.Y - Y) / _tileHeight) * widthInTiles + (point.X - X) / _tileWidth)]] as FlxTile).AllowCollisions > 0;
 
             if (camera == null)
                 camera = FlxG.camera;
-            point.x = point.x - camera.scroll.x;
-            point.y = point.y - camera.scroll.y;
+            point.X = point.X - camera.scroll.X;
+            point.Y = point.Y - camera.scroll.Y;
             getScreenXY(_tagPoint, camera);
-            return (_tileObjects[_data[(int)(((point.y - _tagPoint.y) / _tileHeight) * widthInTiles + (point.x - _tagPoint.x) / _tileWidth)]] as FlxTile).AllowCollisions > 0;
+            return (_tileObjects[_data[(int)(((point.Y - _tagPoint.Y) / _tileHeight) * widthInTiles + (point.X - _tagPoint.X) / _tileWidth)]] as FlxTile).AllowCollisions > 0;
         }
 
 
@@ -408,8 +408,8 @@ namespace fliXNA_xbox
 		public FlxPath findPath(FlxPoint Start, FlxPoint End, bool Simplify=true, bool RaySimplify=false)
 		{
 			//figure out what tile we are starting and ending on.
-			int startIndex = (int)((Start.y-Y)/_tileHeight) * widthInTiles + (int)((Start.x-X)/_tileWidth);
-			int endIndex = (int)((End.y-Y)/_tileHeight) * widthInTiles + (int)((End.x-X)/_tileWidth);
+			int startIndex = (int)((Start.Y-Y)/_tileHeight) * widthInTiles + (int)((Start.X-X)/_tileWidth);
+			int endIndex = (int)((End.Y-Y)/_tileHeight) * widthInTiles + (int)((End.X-X)/_tileWidth);
 
 			//check that the start and end are clear.
 			if( ((_tileObjects[_data[startIndex]] as FlxTile).AllowCollisions > 0) ||
@@ -428,11 +428,11 @@ namespace fliXNA_xbox
 			//reset the start and end points to be exact
 			FlxPoint node;
 			node = points[points.Count-1] as FlxPoint;
-			node.x = Start.x;
-			node.y = Start.y;
+			node.X = Start.X;
+			node.Y = Start.Y;
 			node = points[0] as FlxPoint;
-			node.x = End.x;
-			node.y = End.y;
+			node.X = End.X;
+			node.Y = End.Y;
 
 			//some simple path cleanup options
 			if(Simplify)
@@ -468,9 +468,9 @@ namespace fliXNA_xbox
 			while(i < l)
 			{
 				node = Points[i];
-				deltaPrevious = (node.x - last.x)/(node.y - last.y);
-				deltaNext = (node.x - Points[i+1].x)/(node.y - Points[i+1].y);
-				if((last.x == Points[i+1].x) || (last.y == Points[i+1].y) || (deltaPrevious == deltaNext))
+				deltaPrevious = (node.X - last.X)/(node.Y - last.Y);
+				deltaNext = (node.X - Points[i+1].X)/(node.Y - Points[i+1].Y);
+				if((last.X == Points[i+1].X) || (last.Y == Points[i+1].Y) || (deltaPrevious == deltaNext))
 					Points[i] = null;
 				else
 					last = node;
@@ -757,14 +757,14 @@ namespace fliXNA_xbox
 			if(_tileHeight < _tileWidth)
 				step = _tileHeight;
 			step /= Resolution;
-			float deltaX = End.x - Start.x;
-			float deltaY = End.y - Start.y;
+			float deltaX = End.X - Start.X;
+			float deltaY = End.Y - Start.Y;
 			float distance = (float)Math.Sqrt(deltaX*deltaX + deltaY*deltaY);
 			int steps = (int)FlxU.ceil(distance/step);
 			float stepX = deltaX/steps;
 			float stepY = deltaY/steps;
-			float curX = Start.x - stepX - X;
-			float curY = Start.y - stepY - Y;
+			float curX = Start.X - stepX - X;
+			float curY = Start.Y - stepY - Y;
 			int tileX;
 			int tileY;
 			int i = 0;
@@ -802,8 +802,8 @@ namespace fliXNA_xbox
 					{
 						if(Result == null)
 							Result = new FlxPoint();
-						Result.x = rx;
-						Result.y = ry;
+						Result.X = rx;
+						Result.Y = ry;
 						return false;
 					}
 
@@ -817,8 +817,8 @@ namespace fliXNA_xbox
 					{
 						if(Result == null)
 							Result = new FlxPoint();
-						Result.x = rx;
-						Result.y = ry;
+						Result.X = rx;
+						Result.Y = ry;
 						return false;
 					}
 					return true;

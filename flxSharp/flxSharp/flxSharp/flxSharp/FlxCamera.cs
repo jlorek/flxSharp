@@ -92,18 +92,18 @@ namespace fliXNA_xbox
                     float targetY = FlxU.ceil(target.Y + ((target.Y > 0) ? 0.0000001f : -0.0000001f));
 
                     edge = targetX - deadzone.x;
-                    if (scroll.x > edge)
-                        scroll.x = edge;
+                    if (scroll.X > edge)
+                        scroll.X = edge;
                     edge = targetX + target.Width - deadzone.x - deadzone.width;
-                    if (scroll.x < edge)
-                        scroll.x = edge;
+                    if (scroll.X < edge)
+                        scroll.X = edge;
 
                     edge = targetY - deadzone.y;
-                    if (scroll.y > edge)
-                        scroll.y = edge;
+                    if (scroll.Y > edge)
+                        scroll.Y = edge;
                     edge = targetY + target.Height - deadzone.y - deadzone.height;
-                    if (scroll.y < edge)
-                        scroll.y = edge;
+                    if (scroll.Y < edge)
+                        scroll.Y = edge;
 
                     //SHAKE
                 }
@@ -113,14 +113,14 @@ namespace fliXNA_xbox
             if (bounds != null)
             {
                 //FlxG.log("bounds is not null");
-                if (scroll.x < bounds.left)
-                    scroll.x = bounds.left;
-                if (scroll.x > bounds.right - width)
-                    scroll.x = bounds.right - width;
-                if (scroll.y < bounds.top)
-                    scroll.y = bounds.top;
-                if (scroll.y > bounds.bottom - height)
-                    scroll.y = bounds.bottom - height;
+                if (scroll.X < bounds.left)
+                    scroll.X = bounds.left;
+                if (scroll.X > bounds.right - width)
+                    scroll.X = bounds.right - width;
+                if (scroll.Y < bounds.top)
+                    scroll.Y = bounds.top;
+                if (scroll.Y > bounds.bottom - height)
+                    scroll.Y = bounds.bottom - height;
             }
 
             //update effects
@@ -138,16 +138,16 @@ namespace fliXNA_xbox
                 else
                 {
                     if ((_fxShakeDirection == SHAKE_BOTH_AXES) || (_fxShakeDirection == SHAKE_HORIZONTAL_ONLY))
-                        _fxShakeOffset.x = (FlxG.random() * _fxShakeIntensity * width * 2 - _fxShakeIntensity * width) * _zoom;
+                        _fxShakeOffset.X = (FlxG.random() * _fxShakeIntensity * width * 2 - _fxShakeIntensity * width) * _zoom;
                     if ((_fxShakeDirection == SHAKE_BOTH_AXES) || (_fxShakeDirection == SHAKE_VERTICAL_ONLY))
-                        _fxShakeOffset.y = (FlxG.random() * _fxShakeIntensity * height * 2 - _fxShakeIntensity * height) * _zoom;
+                        _fxShakeOffset.Y = (FlxG.random() * _fxShakeIntensity * height * 2 - _fxShakeIntensity * height) * _zoom;
                 }
                 
             }
 
             
-            scroll.x -= _fxShakeOffset.x;
-            scroll.y -= _fxShakeOffset.y;
+            scroll.X -= _fxShakeOffset.X;
+            scroll.Y -= _fxShakeOffset.Y;
 
             if (zooming < 1)
                 zooming = 1;
@@ -163,7 +163,7 @@ namespace fliXNA_xbox
         /// <param name="Direction"></param>
         public void shake(float Intensity = 0.05f, float Duration = 0.5f, Action OnComplete=null, bool Force=true, uint Direction=SHAKE_BOTH_AXES)
         {
-            if (!Force && ((_fxShakeOffset.x != 0) || (_fxShakeOffset.y != 0)))
+            if (!Force && ((_fxShakeOffset.X != 0) || (_fxShakeOffset.Y != 0)))
                 return;
             _fxShakeIntensity = Intensity;
             _fxShakeDuration = Duration;
@@ -222,9 +222,9 @@ namespace fliXNA_xbox
         /// <param name="Point"></param>
         public void focusOn(FlxPoint Point)
         {
-            Point.x += (Point.x > 0) ? (int)0.0000001 : (int)-0.0000001;
-            Point.y += (Point.y > 0) ? (int)0.0000001 : (int)-0.0000001;
-            scroll = new FlxPoint(Point.x - width * (int)0.5, Point.y - height * (int)0.5);
+            Point.X += (Point.X > 0) ? (int)0.0000001 : (int)-0.0000001;
+            Point.Y += (Point.Y > 0) ? (int)0.0000001 : (int)-0.0000001;
+            scroll = new FlxPoint(Point.X - width * (int)0.5, Point.Y - height * (int)0.5);
         }
 
         /// <summary>
@@ -281,9 +281,9 @@ namespace fliXNA_xbox
             get
             {
                 if(target!=null)
-                    return Matrix.CreateTranslation(-target.X, -target.Y, 0) * Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.x, -scroll.y, 0) * Matrix.CreateTranslation(target.X, target.Y, 0);
+                    return Matrix.CreateTranslation(-target.X, -target.Y, 0) * Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.X, -scroll.Y, 0) * Matrix.CreateTranslation(target.X, target.Y, 0);
                 else
-                    return Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.x, -scroll.y, 0);
+                    return Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.X, -scroll.Y, 0);
             }
         }
     }

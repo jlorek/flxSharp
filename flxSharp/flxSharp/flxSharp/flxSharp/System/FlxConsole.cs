@@ -26,7 +26,7 @@ namespace fliXNA_xbox
             bg.makeGraphic((uint)FlxG.graphicsDevice.Viewport.Width - 160, (uint)FlxG.graphicsDevice.Viewport.Height - 80, FlxColor.WHITE * 0.45f);
             bg.Alpha = 0.5f;
             add(bg);
-            ScrollFactor.x = ScrollFactor.y = 0;
+            ScrollFactor.X = ScrollFactor.Y = 0;
             Visible = false;
             text = new FlxText(100, 60, FlxG.graphicsDevice.Viewport.Width - 160, "internal console is a work in progress", FlxG.defaultFont);
             text.setFormat(FlxColor.WHITE);
