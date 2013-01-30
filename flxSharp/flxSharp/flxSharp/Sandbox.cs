@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
 using fliXNA_xbox;
 using flxSharp.flxSharp;
 
@@ -46,7 +47,10 @@ namespace flxSharp
             megaman.loadGraphic(FlxG.content.Load<Texture2D>("megaman_run"), true, false, 49, 49);
             megaman.addAnimation("run", new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 }, 10);
             megaman.play("run", true);
-            
+
+            FlxG.playMusic(FlxG.content.Load<SoundEffect>("applause"));
+            //FlxG.play(FlxG.content.Load<SoundEffect>("background")); // change content processor to soundeffect
+
             this.add(megaman);
         }
 

@@ -1,19 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using flxSharp.flxSharp;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
-    public class FlxGroup : FlxObject
+    public class FlxGroup : FlxObject, IEnumerable<FlxBasic>
     {
         public const int ASCENDING = -1;
         public const int DESCENDING = 1;
@@ -164,6 +155,24 @@ namespace fliXNA_xbox
                     return basic;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Easy <code>FlxGroup</code> enumeration.
+        /// </summary>
+        /// <returns>Yields a <code>FlxGroup</code> member.</returns>
+        public IEnumerator<FlxBasic> GetEnumerator()
+        {
+            return members.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Internal enumerator implementation.
+        /// </summary>
+        /// <returns>Internal usage.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

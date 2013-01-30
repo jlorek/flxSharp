@@ -6,6 +6,16 @@ namespace flxSharp.flxSharp.System
 {
     public class FlxGame : Game
     {
+        public float Step;
+
+        public float MaxAccumuation;
+
+        public bool RequestedReset = true;
+
+        public FlxState RequestedState { get; set; }
+
+
+
         /// <summary>
         /// Required XNA stuff
         /// </summary>
@@ -29,6 +39,7 @@ namespace flxSharp.flxSharp.System
             graphics.ApplyChanges();
             Content.RootDirectory = ContentRootDirectory;
         }
+
 
         /// <summary>
         /// Required XNA initialization along with some FlxG initializations.

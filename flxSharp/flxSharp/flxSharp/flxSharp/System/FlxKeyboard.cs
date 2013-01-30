@@ -67,5 +67,10 @@ namespace fliXNA_xbox
             else
                 return false;
         }
+
+        public void reset()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

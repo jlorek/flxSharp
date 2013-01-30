@@ -47,6 +47,7 @@ namespace fliXNA_xbox
         protected Action _fxShakeComplete;
         protected FlxPoint _fxShakeOffset;
         protected uint _fxShakeDirection;
+        public Color bgColor;
 
         public FlxCamera(float X, float Y, float Width, float Height, float Zoom = 1.0f)
             : base()
@@ -285,6 +286,16 @@ namespace fliXNA_xbox
                 else
                     return Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-scroll.X, -scroll.Y, 0);
             }
+        }
+
+        public void Flash(Color color, float duration, Action onComplete, bool force)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Fade(Color color, float duration, Action onComplete, bool force)
+        {
+            throw new NotImplementedException();
         }
     }
 }
