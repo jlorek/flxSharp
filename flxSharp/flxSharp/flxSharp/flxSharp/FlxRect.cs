@@ -1,136 +1,163 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.Xna.Framework;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
+    /// <summary>
+    /// Stores a rectangle.
+    /// </summary>
     public class FlxRect
     {
-        /**
-         * @default 0
-         */
-        public float x;
-        /**
-         * @default 0
-         */
-        public float y;
-        /**
-         * @default 0
-         */
-        public float width;
-        /**
-         * @default 0
-         */
-        public float height;
+        /// <summary>
+        /// The X-coordinate of the rectangle in space.
+        /// </summary>
+        public float X { get; set; }
 
-        /**
-         * Instantiate a new rectangle.
-         * 
-         * @param	X		The X-coordinate of the point in space.
-         * @param	Y		The Y-coordinate of the point in space.
-         * @param	Width	Desired width of the rectangle.
-         * @param	Height	Desired height of the rectangle.
-         */
-        public FlxRect(float X = 0, float Y = 0, float Width = 0, float Height = 0)
+        /// <summary>
+        /// The Y-coordinate of the rectangle in space.
+        /// </summary>
+        public float Y { get; set; }
+
+        /// <summary>
+        /// Desired width of the rectangle.
+        /// </summary>
+        public float Width { get; set; }
+
+        /// <summary>
+        /// Desired height of the rectangle.
+        /// </summary>
+        public float Height { get; set; }
+
+        /// <summary>
+        /// The X coordinate of the left side of the rectangle. Read-only.
+        /// </summary>
+        public float Left
         {
-            x = X;
-            y = Y;
-            width = Width;
-            height = Height;
+            get { return X; }
         }
 
-        /**
-         * The X coordinate of the left side of the rectangle.  Read-only.
-         */
-        public float left
+        /// <summary>
+        /// The X coordinate of the right side of the rectangle. Read-only.
+        /// </summary>
+        public float Right
         {
-            get { return x; }
+            get { return X + Width; }
         }
 
-
-        /**
-         * The X coordinate of the right side of the rectangle.  Read-only.
-         */
-        public float right
+        /// <summary>
+        /// The Y coordinate of the top of the rectangle. Read-only.
+        /// </summary>
+        public float Top
         {
-            get { return x + width; }
+            get { return Y; }
         }
 
-        /**
-         * The Y coordinate of the top of the rectangle.  Read-only.
-         */
-        public float top
+        /// <summary>
+        /// The Y coordinate of the bottom of the rectangle. Read-only.
+        /// </summary>
+        public float Bottom
         {
-            get { return y; }
+            get { return Y + Height; }
         }
 
-        /**
-         * The Y coordinate of the bottom of the rectangle.  Read-only.
-         */
-        public float bottom
+        /// <summary>
+        /// Instantiate a new rectangle.
+        /// </summary>
+        /// <param name="x">The X-coordinate of the rectangle in space.</param>
+        /// <param name="y">The Y-coordinate of the rectangle in space.</param>
+        /// <param name="width">Desired width of the rectangle.</param>
+        /// <param name="height">Desired height of the rectangle.</param>
+        public FlxRect(float x = 0, float y = 0, float width = 0, float height = 0)
         {
-            get { return y + height; }
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
         }
 
-
-        public float midX
+        /// <summary>
+        /// Instantiate a new rectangle.
+        /// Protip: Values of the current instance are set, but nothing is created here.
+        /// </summary>
+        /// <param name="x">The X-coordinate of the rectangle in space.</param>
+        /// <param name="y">The Y-coordinate of the rectangle in space.</param>
+        /// <param name="width">Desired width of the rectangle.</param>
+        /// <param name="height">Desired height of the rectangle.</param>
+        /// <returns></returns>
+        public FlxRect make(float x = 0, float y = 0, float width = 0, float height = 0)
         {
-            get { return x + ((width) / 2); }
-        }
-
-        public float midY
-        {
-            get { return y + ((height) / 2); }
-        }
-
-        /**
-         * Instantiate a new rectangle.
-         * 
-         * @param	X		The X-coordinate of the point in space.
-         * @param	Y		The Y-coordinate of the point in space.
-         * @param	Width	Desired width of the rectangle.
-         * @param	Height	Desired height of the rectangle.
-         * 
-         * @return	A reference to itself.
-         */
-        public FlxRect make(float X = 0, float Y = 0, float Width = 0, float Height = 0)
-        {
-            x = X;
-            y = Y;
-            width = Width;
-            height = Height;
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
             return this;
         }
 
-        /**
-         * Checks to see if some <code>FlxRect</code> object overlaps this <code>FlxRect</code> object.
-         * 
-         * @param	Rect	The rectangle being tested.
-         * 
-         * @return	Whether or not the two rectangles overlap.
-         */
-        public Boolean overlaps(FlxRect Rect)
+        /// <summary>
+        /// Helper function, just copies the values from the specified rectangle.
+        /// </summary>
+        /// <param name="rect">Any <code>FlxRect</code>.</param>
+        /// <returns>A reference to itself.</returns>
+        public FlxRect copyFrom(FlxRect rect)
         {
-            return (Rect.x + Rect.width > x) && (Rect.x < x + width) && (Rect.y + Rect.height > y) && (Rect.y < y + height);
-        }
-
-        public FlxRect copyFrom(FlxRect Rect)
-        {
-            x = Rect.x;
-            y = Rect.y;
-            width = Rect.width;
-            height = Rect.height;
+            X = rect.X;
+            Y = rect.Y;
+            Width = rect.Width;
+            Height = rect.Height;
             return this;
         }
 
-        public FlxRect copyTo(FlxRect Rect)
+        /// <summary>
+        /// Helper function, just copies the values from this rectangle to the specified rectangle.
+        /// </summary>
+        /// <param name="rect">Any <code>FlxRect</code>.</param>
+        /// <returns>A reference to the altered rectangle parameter.</returns>
+        public FlxRect copyTo(FlxRect rect)
         {
-            Rect.x = x;
-            Rect.y = y;
-            Rect.width = width;
-            Rect.height = height;
+            rect.X = X;
+            rect.Y = Y;
+            rect.Width = Width;
+            rect.Height = Height;
             return this;
+        }
+
+        /// <summary>
+        /// Helper function, just copies the values from the specified Flash rectangle.
+        /// </summary>
+        /// <param name="flashRect">Any <code>Rectangle</code>.</param>
+        /// <returns>A reference to itself.</returns>
+        public FlxRect copyFromFlash(object flashRect)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Helper function, just copies the values from this rectangle to the specified Flash rectangle.
+        /// </summary>
+        /// <param name="flashRect">Any <code>Rectangle</code>.</param>
+        /// <returns>A reference to the altered rectangle parameter.</returns>
+        public object copyToFlash(object flashRect)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Checks to see if some <code>FlxRect</code> object overlaps this <code>FlxRect</code> object.
+        /// </summary>
+        /// <param name="rect">The rectangle being tested.</param>
+        /// <returns>Whether or not the two rectangles overlap.</returns>
+        public Boolean overlaps(FlxRect rect)
+        {
+            return (rect.X + rect.Width > X) && (rect.X < X + Width) && (rect.Y + rect.Height > Y) && (rect.Y < Y + Height);
+        }
+
+        /// <summary>
+        /// Create a new <code>Rectangle</code> from this <code>FlxRect</code>.
+        /// </summary>
+        /// <returns>A new <code>Rectangle</code> with the same position and dimensions.</returns>
+        public Rectangle ToRectangle()
+        {
+            return new Rectangle((int) X, (int) Y, (int) Width, (int) Height);
         }
     }
 }

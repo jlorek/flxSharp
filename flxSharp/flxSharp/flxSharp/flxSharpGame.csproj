@@ -118,6 +118,7 @@
     <Compile Include="flxSharp\FlxPoint.cs" />
     <Compile Include="flxSharp\FlxRect.cs" />
     <Compile Include="flxSharp\FlxS.cs" />
+    <Compile Include="flxSharp\System\FlxGameRunner.cs" />
     <Compile Include="flxSharp\FlxSound.cs" />
     <Compile Include="flxSharp\FlxSprite.cs" />
     <Compile Include="flxSharp\FlxState.cs" />

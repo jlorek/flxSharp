@@ -70,7 +70,7 @@ namespace fliXNA_xbox
 
         public void reset()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

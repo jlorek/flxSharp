@@ -13,7 +13,7 @@ namespace flxSharp.flxSharp
         /// <summary>
         /// Default image.
         /// </summary>
-        protected static readonly Texture2D ImgDefault = FlxG.content.Load<Texture2D>("default");
+        protected static readonly Texture2D ImgDefault = FlxS.ContentManager.Load<Texture2D>("default");
 
         /// <summary>
         /// WARNING: The origin of the sprite will default to its center.
@@ -637,15 +637,15 @@ namespace flxSharp.flxSharp
         /// </summary>
         protected void resetHelpers()
         {
-            _flashRect.x = 0;
-            _flashRect.y = 0;
-            _flashRect.width = FrameWidth;
-            _flashRect.height = FrameHeight;
+            _flashRect.X = 0;
+            _flashRect.Y = 0;
+            _flashRect.Width = FrameWidth;
+            _flashRect.Height = FrameHeight;
 
-            _flashRect2.x = 0;
-            _flashRect2.y = 0;
-            _flashRect2.width = _pixels.Width;
-            _flashRect2.height = _pixels.Height;
+            _flashRect2.X = 0;
+            _flashRect2.Y = 0;
+            _flashRect2.Width = _pixels.Width;
+            _flashRect2.Height = _pixels.Height;
 
             /*
             if ((framePixels == null) || (framePixels.width != width) || (framePixels.height != height))
@@ -655,7 +655,7 @@ namespace flxSharp.flxSharp
             Origin.make(FrameWidth * 0.5f, FrameHeight * 0.5f);
 
             //framePixels.copyPixels(_pixels, _flashRect, _flashPointZero);
-            Frames = (uint)((_flashRect2.width / _flashRect.width) * (_flashRect2.height / _flashRect.height));
+            Frames = (uint)((_flashRect2.Width / _flashRect.Width) * (_flashRect2.Height / _flashRect.Height));
             //if (_colorTransform != null) framePixels.colorTransform(_flashRect, _colorTransform);
 
             _curIndex = 0;
@@ -726,7 +726,7 @@ namespace flxSharp.flxSharp
 					    camera.buffer.draw(framePixels,_matrix,null,blend,null,antialiasing);
 				    }
                      */
-                    Vector2 halfSize = new Vector2(sourceRect.width / 2, sourceRect.height / 2);
+                    Vector2 halfSize = new Vector2(sourceRect.Width / 2, sourceRect.Height / 2);
                     Vector2 vecOrigin = new Vector2(Origin.X, Origin.Y);
 
 
@@ -750,7 +750,7 @@ namespace flxSharp.flxSharp
                     //Color drawColor = Color.White;
                     Color drawColor = Color * _alpha;
 
-                    FlxG.spriteBatch.Draw(
+                    FlxS.SpriteBatch.Draw(
                         _pixels,
                         position,
                         sourceRectangle,

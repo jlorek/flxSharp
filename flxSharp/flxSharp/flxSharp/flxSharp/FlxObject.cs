@@ -1125,7 +1125,7 @@ namespace flxSharp.flxSharp
                 float obj2deltaAbs = (obj2delta > 0) ? obj2delta : -obj2delta;
 				FlxRect obj1rect = new FlxRect(objectOne.X-((obj1delta > 0)?obj1delta:0),objectOne.Last.Y,objectOne.Width+((obj1delta > 0)?obj1delta:-obj1delta),objectOne.Height);
 				FlxRect obj2rect = new FlxRect(objectTwo.X-((obj2delta > 0)?obj2delta:0),objectTwo.Last.Y,objectTwo.Width+((obj2delta > 0)?obj2delta:-obj2delta),objectTwo.Height);
-				if((obj1rect.x + obj1rect.width > obj2rect.x) && (obj1rect.x < obj2rect.x + obj2rect.width) && (obj1rect.y + obj1rect.height > obj2rect.y) && (obj1rect.y < obj2rect.y + obj2rect.height))
+				if((obj1rect.X + obj1rect.Width > obj2rect.X) && (obj1rect.X < obj2rect.X + obj2rect.Width) && (obj1rect.Y + obj1rect.Height > obj2rect.Y) && (obj1rect.Y < obj2rect.Y + obj2rect.Height))
 				{
                     float maxOverlap = obj1deltaAbs + obj2deltaAbs + OverlapBias;
 
@@ -1223,7 +1223,7 @@ namespace flxSharp.flxSharp
                 float obj2deltaAbs = (obj2delta > 0) ? obj2delta : -obj2delta;
 				FlxRect obj1rect = new FlxRect(objectOne.X,objectOne.Y-((obj1delta > 0)?obj1delta:0),objectOne.Width,objectOne.Height+obj1deltaAbs);
 				FlxRect obj2rect = new FlxRect(objectTwo.X,objectTwo.Y-((obj2delta > 0)?obj2delta:0),objectTwo.Width,objectTwo.Height+obj2deltaAbs);
-				if((obj1rect.x + obj1rect.width > obj2rect.x) && (obj1rect.x < obj2rect.x + obj2rect.width) && (obj1rect.y + obj1rect.height > obj2rect.y) && (obj1rect.y < obj2rect.y + obj2rect.height))
+				if((obj1rect.X + obj1rect.Width > obj2rect.X) && (obj1rect.X < obj2rect.X + obj2rect.Width) && (obj1rect.Y + obj1rect.Height > obj2rect.Y) && (obj1rect.Y < obj2rect.Y + obj2rect.Height))
 				{
                     float maxOverlap = obj1deltaAbs + obj2deltaAbs + OverlapBias;
 

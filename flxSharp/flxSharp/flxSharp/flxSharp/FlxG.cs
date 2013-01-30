@@ -1,13 +1,11 @@
-﻿using System.Diagnostics;
+﻿using fliXNA_xbox;
+using flxSharp.flxSharp.System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Storage;
 using System;
 using System.Collections.Generic;
-using fliXNA_xbox;
-using flxSharp.flxSharp.System;
+using System.Diagnostics;
 
 namespace flxSharp.flxSharp
 {
@@ -107,7 +105,7 @@ namespace flxSharp.flxSharp
         /// <summary>
         /// Handy shared variable for implementing your own pause behavior.
         /// </summary>
-        static protected bool _pause;
+        static protected bool paused;
 
         /// <summary>
         /// Whether you are running in Debug or Release mode.
@@ -336,6 +334,12 @@ namespace flxSharp.flxSharp
 		//static protected var _cache:Object;
 
         /// <summary>
+        /// flx#
+        /// Replacement for Flash getTimer(), which returns the total game time in milliseconds.
+        /// </summary>
+        public static uint getTimer { get; set; }
+
+        /// <summary>
         /// For debug purpose.
         /// </summary>
         /// <returns>The library name including major and minor version.</returns>
@@ -399,16 +403,24 @@ namespace flxSharp.flxSharp
         /// </summary>
         public static float Framerate
         {
-            get { return 1000 / _game.Step; }
+            get { return 1000 / _game.StepMS; }
             set
             {
-                _game.Step = 1000 / value;
+                _game.StepMS = (uint)(1000 / value);
 
-                if (_game.MaxAccumuation < _game.Step)
+                if (_game.MaxAccumuation < _game.StepMS)
                 {
-                    _game.MaxAccumuation = _game.Step;
+                    _game.MaxAccumuation = _game.StepMS;
                 }
             }
+        }
+
+        /// <summary>
+        /// Read-only: access the current game state from anywhere.
+        /// </summary>
+        public static FlxState State
+        {
+            get { return _game.State; }
         }
 
         /// <summary>
@@ -591,7 +603,7 @@ namespace flxSharp.flxSharp
         /// </summary>
         public static void resetInput()
         {
-            throw new NotImplementedException("GamepadReset");
+            //throw new NotImplementedException("GamepadReset");
 
             keys.reset();
             mouse.reset();
@@ -686,7 +698,7 @@ namespace flxSharp.flxSharp
         /// Called by FlxGame on state changes to stop and destroy sounds.
         /// </summary>
         /// <param name="forceDestroy">Kill sounds even if they're flagged <code>survive</code>.</param>
-        internal static void destroySounds(bool forceDestroy)
+        internal static void destroySounds(bool forceDestroy = false)
         {
             if ((music != null) && (forceDestroy || !music.survive))
             {
@@ -788,7 +800,7 @@ namespace flxSharp.flxSharp
             }
 
             // we could also use the famous XNA1x1pxWhiteTexture here
-            var texture = new Texture2D(FlxG.graphicsDevice, (int)width, (int)height);
+            var texture = new Texture2D(FlxS.GraphicsDevice, (int)width, (int)height);
 
             // flx# - user (u)int colors for faster access?
             var colorData = new Color[width * height];
@@ -915,14 +927,14 @@ namespace flxSharp.flxSharp
         /// <returns>This <code>FlxCamera</code> instance.</returns>
         static public FlxCamera addCamera(FlxCamera newCamera)
         {
-            //throw new NotImplementedException();
-
-            FlxG.camera = newCamera;
             FlxG.cameras.Add(newCamera);
-            Viewport v = new Viewport((int)newCamera.x, (int)newCamera.y, (int)newCamera.width, (int)newCamera.height);
+
+            var newViewport = new Viewport((int)newCamera.x, (int)newCamera.y, (int)newCamera.width, (int)newCamera.height);
+            FlxS.Viewports.Add(newViewport);
+            
             //FlxG.log("camera is at x: " + NewCamera.x + " y: " + NewCamera.y + " width: " + NewCamera.width + " height " + NewCamera.height);
             //FlxG.log("camera count: " + FlxG.cameras.Count);
-            FlxG.viewports.Add(v);
+
             return newCamera;
 
             /*
@@ -962,7 +974,21 @@ namespace flxSharp.flxSharp
         /// <param name="newCamera">Optional; specify a specific camera object to be the new main camera.</param>
         public static void resetCameras(FlxCamera newCamera = null)
         {
-            throw new NotImplementedException();
+            foreach (FlxCamera flxCam in cameras)
+            {
+                //FlxG._game.removeChild(cam._flashSprite); // ?
+                flxCam.destroy();
+            }
+
+            cameras.Clear();
+
+            if (newCamera == null)
+            {
+                newCamera = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+            }
+
+            FlxG.addCamera(newCamera);
+            FlxG.camera = newCamera;
 
             /*
 			var cam:FlxCamera;
@@ -1045,7 +1071,7 @@ namespace flxSharp.flxSharp
         {
             if (ObjectOrGroup1 == null)
             {
-                ObjectOrGroup1 = FlxG.state;                
+                ObjectOrGroup1 = FlxG.State;                
             }
 
             if (ObjectOrGroup2 == ObjectOrGroup1)
@@ -1054,7 +1080,7 @@ namespace flxSharp.flxSharp
             }
 
             FlxQuadTree.divisions = FlxG.worldDivisions;
-            FlxQuadTree quadTree = new FlxQuadTree(FlxG.worldBounds.x, FlxG.worldBounds.y, FlxG.worldBounds.width, FlxG.worldBounds.height);
+            FlxQuadTree quadTree = new FlxQuadTree(FlxG.worldBounds.X, FlxG.worldBounds.Y, FlxG.worldBounds.Width, FlxG.worldBounds.Height);
             quadTree.load(ObjectOrGroup1, ObjectOrGroup2, NotifyCallback, ProcessCallback);
             Boolean result = quadTree.execute();
             quadTree.destroy();
@@ -1109,47 +1135,225 @@ namespace flxSharp.flxSharp
             return plugin;
         }
 
+        /// <summary>
+        /// Removes an instance of a plugin from the global plugin array.
+        /// </summary>
+        /// <param name="type">The class name of the plugin type you want removed from the array.</param>
+        /// <returns>Whether or not at least one instance of this plugin type was removed.</returns>
+        public static bool removePluginType(Type type)
+        {
+            int removalCount = plugins.RemoveAll(existingPlugin => existingPlugin.GetType() == type);
+
+            return (removalCount > 0);
+        }
+
+        /// <summary>
+        /// Called by <code>FlxGame</code> to set up <code>FlxG</code> during <code>FlxGame</code>'s constructor.
+        /// </summary>
+        internal static void init(FlxGame game, int width, int height, float zoom)
+        {
+            FlxG._game = game;
+            FlxG.width = width;
+            FlxG.height = height;
+
+            FlxG.mute = false;
+            FlxG.volume = 1.0f;
+            FlxG.sounds = new FlxGroup();
+            FlxG.volumeHandler = delegate { };
+
+            //FlxG.clearBitmapCache();
+			
+            //if(flashGfxSprite == null)
+            //{
+            //    flashGfxSprite = new Sprite();
+            //    flashGfx = flashGfxSprite.graphics;
+            //} 
+
+            FlxCamera.defaultZoom = zoom;
+            //FlxG._cameraRect = new Rectangle();
+            FlxG.cameras = new List<FlxCamera>();
+            //FlxG.UseBufferLocking = false;
+
+            FlxG.plugins = new List<FlxBasic>();
+			//addPlugin(new DebugPathDisplay());
+			//addPlugin(new TimerManager());
+
+            FlxG.mouse = new FlxMouse();
+            FlxG.keys = new FlxKeyboard();
+            //FlxG.mobile = false;
+
+            FlxG.levels = null;
+            FlxG.scores = null;
+            FlxG.visualDebug = false;
+
+            // flx# stuff
+
+            FlxG.cameras = new List<FlxCamera>();
+
+            //FlxG.width = FlxG.graphics.PreferredBackBufferWidth;
+            //FlxG.height = FlxG.graphics.PreferredBackBufferHeight;
+            FlxG.bgColor = Color.Black;
+            FlxG.mute = false;
+            FlxG.sounds = new FlxGroup();
+            FlxG.worldBounds = new FlxRect();
+            FlxG.defaultFont = FlxS.ContentManager.Load<SpriteFont>("ConsoleFont");
+            //FlxG.zoom = 1f;
+            FlxG.pad1 = new FlxGamepad(PlayerIndex.One);
+            FlxG.pad2 = new FlxGamepad(PlayerIndex.Two);
+            FlxG.pad3 = new FlxGamepad(PlayerIndex.Three);
+            FlxG.pad4 = new FlxGamepad(PlayerIndex.Four);
+            FlxG.keys = new FlxKeyboard();
+            FlxG.mouse = new FlxMouse();
+            FlxCamera defaultCam = new FlxCamera(0, 0, FlxG.width, FlxG.height, FlxG.zoom);
+            FlxG.addCamera(defaultCam);
+
+            //Thread tCreate = new Thread(FlxG.state.create);
+            //tCreate.Start();
+
+            //create state last
+            //FlxG.State.create();
+        }
+
+        /// <summary>
+        /// Called whenever the game is reset, doesn't have to do quite as much work as the basic initialization stuff.
+        /// </summary>
+        static internal void reset()
+        {
+            //FlxG.clearBitmapCache();
+            FlxG.resetInput();
+            FlxG.destroySounds(true);
+            FlxG.levels = null;
+            FlxG.scores = null;
+            FlxG.level = 0;
+            FlxG.score = 0;
+            FlxG.paused = false;
+            FlxG.timeScale = 1.0f;
+            FlxG.elapsed = 0;
+            FlxG.globalSeed = (float) FlxU.Random.NextDouble();
+            FlxG.worldBounds = new FlxRect(-10, -10, FlxG.width + 20, FlxG.height + 20);
+            FlxG.worldDivisions = 6;
+
+            /*
+			var debugPathDisplay:DebugPathDisplay = FlxG.getPlugin(DebugPathDisplay) as DebugPathDisplay;
+			if(debugPathDisplay != null)
+				debugPathDisplay.clear();
+            */
+        }
+
+        /// <summary>
+        /// Called by the game object to update the keyboard and mouse input tracking objects.
+        /// </summary>
+        internal static void updateInput()
+        {
+            FlxG.keys.update();
+            FlxG.mouse.update();
+
+            // flx#
+            pad1.update();
+            pad2.update();
+            pad3.update();
+            pad4.update();
+        }
+
+        /// <summary>
+        /// Called by the game object to lock all the camera buffers and clear them for the next draw pass.
+        /// </summary>
+        internal static void lockCameras()
+        {
+            throw new NotImplementedException();
+
+            /*
+			var cam:FlxCamera;
+			var cams:Array = FlxG.cameras;
+			var i:uint = 0;
+			var l:uint = cams.length;
+			while(i < l)
+			{
+				cam = cams[i++] as FlxCamera;
+				if((cam == null) || !cam.exists || !cam.visible)
+					continue;
+				if(useBufferLocking)
+					cam.buffer.lock();
+				cam.fill(cam.bgColor);
+				cam.screen.dirty = true;
+			}
+            */
+        }
+
+        /// <summary>
+        /// Called by the game object to draw the special FX and unlock all the camera buffers.
+        /// </summary>
+        internal static void unlockCameras()
+        {
+            throw new NotImplementedException();
+
+            /*
+			var cam:FlxCamera;
+			var cams:Array = FlxG.cameras;
+			var i:uint = 0;
+			var l:uint = cams.length;
+			while(i < l)
+			{
+				cam = cams[i++] as FlxCamera;
+				if((cam == null) || !cam.exists || !cam.visible)
+					continue;
+				cam.drawFX();
+				if(useBufferLocking)
+					cam.buffer.unlock();
+			}
+            */
+        }
+
+        /// <summary>
+        /// Called by the game object to update the cameras and their tracking/special effects logic.
+        /// </summary>
+        internal static void updateCameras()
+        {
+            foreach (FlxCamera cam in FlxG.cameras)
+            {
+                if (cam.Exists)
+                {
+                    if (cam.Active)
+                    {
+                        cam.update();                        
+                    }
+
+                    cam.FlashSprite.X = cam.x + cam.FlashOffsetX;
+                    cam.FlashSprite.Y = cam.y + cam.FlashOffsetY;
+                    cam.FlashSprite.Visible = cam.Visible;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used by the game object to call <code>update()</code> on all the plugins.
+        /// </summary>
+        internal static void updatePlugins()
+        {
+            foreach (FlxBasic plugin in plugins)
+            {
+                if (plugin.Exists && plugin.Active)
+                {
+                    plugin.update();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used by the game object to call <code>draw()</code> on all the plugins.
+        /// </summary>
+        internal static void drawPlugins()
+        {
+            foreach (FlxBasic plugin in plugins)
+            {
+                if (plugin.Exists && plugin.Visible)
+                {
+                    plugin.draw();
+                }
+            }
+        }
+
         #region flx# Stuff
-        /// <summary>
-        /// Reference to the ContentManager, important for retrieving Content such as images and sound
-        /// </summary>
-        static public ContentManager content;
-
-        /// <summary>
-        /// Array of viewports, could be used for splitscreen
-        /// </summary>
-        static public List<Viewport> viewports;
-
-        /// <summary>
-        /// The current viewport
-        /// </summary>
-        static public Viewport viewport;
-
-        /// <summary>
-        /// A viewport that references the whole screen, used to render the HUD
-        /// </summary>
-        static public Viewport defaultWholeScreenViewport;
-
-        /// <summary>
-        /// Reference to a storage device, perhaps the harddrive on the Xbox?
-        /// Not yet implemented
-        /// </summary>
-        static public StorageDevice storage;
-
-        /// <summary>
-        /// Reference to the GraphicsDeviceManager
-        /// </summary>
-        static public GraphicsDeviceManager graphics;
-
-        /// <summary>
-        /// Reference to the GraphicsDevice
-        /// </summary>
-        static public GraphicsDevice graphicsDevice;
-
-        /// <summary>
-        /// Reference to the SpriteBatch
-        /// </summary>
-        static internal SpriteBatch spriteBatch;
 
         /// <summary>
         /// Reference to Gamepad input for Player One
@@ -1174,19 +1378,7 @@ namespace flxSharp.flxSharp
         /// <summary>
         /// Internal reference to keep track of current state
         /// </summary>
-        static internal FlxState state;
-
-        /// <summary>
-        /// Unused Console reference
-        /// Not yet implemented
-        /// </summary>
-        static public FlxConsole console;
-
-        /// <summary>
-        /// Internal reference to XNA's GameTime - useful for getting time stuff in between frames.
-        /// Allows you more control than FlxG.elapsed
-        /// </summary>
-        static private GameTime gameTime;
+        //static internal FlxState state;
 
         /// <summary>
         /// The default font that you can use for text
@@ -1199,83 +1391,20 @@ namespace flxSharp.flxSharp
         static public float zoom;
 
         /// <summary>
-        /// Can be used to rotate the camera
-        /// </summary>
-        static public float rotation;
-
-        /// <summary>
-        /// Built-In FlxGroup to handle HUD elements since scrollFactor is not yet working
-        /// </summary>
-        static public FlxGroup hud;
-
-        /// <summary>
-        /// Reference of the Safe Zone, useful for making sure your objects are visible across various televisions
-        /// </summary>
-        static public FlxRect safeZone;
-        #endregion // flx# Stuff
-
-
-
-        /// <summary>
-        /// Internal function for keeping input states current
-        /// </summary>
-        static internal void updateInputs()
-        {
-            pad1.update();
-            pad2.update();
-            pad3.update();
-            pad4.update();
-            keys.update();
-            mouse.update();
-        }
-
-        /// <summary>
         /// Internal function for updating Camera, State, Console, and Elapsed Time
         /// </summary>
         /// <param name="dt"></param>
         static internal void update(GameTime dt)
         {
-            gameTime = dt;
             elapsed = (float)dt.ElapsedGameTime.TotalSeconds;
-            state.update();
+
+            //state.update();
             updateCameras();
             sounds.update();
-            updateInputs();
+            updateInput();
         }
 
-        static internal void gametime(GameTime dt)
-        {
-            gameTime = dt;
-            elapsed = (float)dt.ElapsedGameTime.TotalSeconds;
-        }
-
-        static internal void updateCameras()
-        {
-            foreach (FlxCamera c in FlxG.cameras)
-            {
-                if ((c != null) && c.Exists)
-                {
-                    if (c.Active)
-                        c.update();
-                }
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        #endregion // flx# Stuff
 
         internal static float snap(float XorY, float Grid)
 		{
@@ -1284,51 +1413,5 @@ namespace flxSharp.flxSharp
                 coord -= (coord % Grid);
             return coord;
 		}
-
-
-
-
-
-
-
-        /// <summary>
-        /// Initiate all the things needed by the engine
-        /// </summary>
-        internal static void init()
-        {
-            FlxG.mute = false;
-            FlxG.volume = 1.0f;
-            FlxG.sounds = new FlxGroup();
-            FlxG.volumeHandler = delegate { };
-
-            FlxG.defaultWholeScreenViewport = FlxG.viewport;
-            FlxG.cameras = new List<FlxCamera>();
-            FlxG.viewports = new List<Viewport>();
-            //FlxG.width = FlxG.graphics.PreferredBackBufferWidth;
-            //FlxG.height = FlxG.graphics.PreferredBackBufferHeight;
-            FlxG.bgColor = Color.Black;
-            FlxG.mute = false;
-            FlxG.sounds = new FlxGroup();
-            FlxG.console = new FlxConsole();
-            FlxG.worldBounds = new FlxRect();
-            FlxG.defaultFont = FlxG.content.Load<SpriteFont>("ConsoleFont");
-            //FlxG.zoom = 1f;
-            FlxG.rotation = 0f;
-            FlxG.pad1 = new FlxGamepad(PlayerIndex.One);
-            FlxG.pad2 = new FlxGamepad(PlayerIndex.Two);
-            FlxG.pad3 = new FlxGamepad(PlayerIndex.Three);
-            FlxG.pad4 = new FlxGamepad(PlayerIndex.Four);
-            FlxG.keys = new FlxKeyboard();
-            FlxG.mouse = new FlxMouse();
-            FlxG.safeZone = new FlxRect(FlxG.graphicsDevice.Viewport.TitleSafeArea.X, FlxG.graphicsDevice.Viewport.TitleSafeArea.Y, FlxG.graphicsDevice.Viewport.TitleSafeArea.Width, FlxG.graphicsDevice.Viewport.TitleSafeArea.Height);
-            FlxCamera defaultCam = new FlxCamera(0, 0, FlxG.width, FlxG.height, FlxG.zoom);
-            FlxG.addCamera(defaultCam);
-
-            //Thread tCreate = new Thread(FlxG.state.create);
-            //tCreate.Start();
-
-            //create state last
-            FlxG.state.create();
-        }
     }
 }

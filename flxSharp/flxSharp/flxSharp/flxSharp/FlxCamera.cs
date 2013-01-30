@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using flxSharp.flxSharp;
+using System;
+using fliXNA_xbox;
 
-namespace fliXNA_xbox
+namespace flxSharp.flxSharp
 {
     public class FlxCamera : FlxBasic
     {
@@ -49,6 +41,10 @@ namespace fliXNA_xbox
         protected uint _fxShakeDirection;
         public Color bgColor;
 
+        public FlxObject FlashSprite;
+        public float FlashOffsetX;
+        public float FlashOffsetY;
+
         public FlxCamera(float X, float Y, float Width, float Height, float Zoom = 1.0f)
             : base()
         {
@@ -64,12 +60,16 @@ namespace fliXNA_xbox
             deadzone = null;
             bounds = null;
             zooming = Zoom;
+            FlashSprite = new FlxObject();
 
             _fxShakeIntensity = 0;
             _fxShakeDuration = 0;
             _fxShakeComplete = null;
             _fxShakeOffset = new FlxPoint();
             _fxShakeDirection = 0;
+
+            // flx#
+            bgColor = Color.Black;
         }
 
         // update camera scroll in here
@@ -92,17 +92,17 @@ namespace fliXNA_xbox
                     float targetX = FlxU.ceil(target.X + ((target.X > 0) ? 0.0000001f : -0.0000001f));
                     float targetY = FlxU.ceil(target.Y + ((target.Y > 0) ? 0.0000001f : -0.0000001f));
 
-                    edge = targetX - deadzone.x;
+                    edge = targetX - deadzone.X;
                     if (scroll.X > edge)
                         scroll.X = edge;
-                    edge = targetX + target.Width - deadzone.x - deadzone.width;
+                    edge = targetX + target.Width - deadzone.X - deadzone.Width;
                     if (scroll.X < edge)
                         scroll.X = edge;
 
-                    edge = targetY - deadzone.y;
+                    edge = targetY - deadzone.Y;
                     if (scroll.Y > edge)
                         scroll.Y = edge;
-                    edge = targetY + target.Height - deadzone.y - deadzone.height;
+                    edge = targetY + target.Height - deadzone.Y - deadzone.Height;
                     if (scroll.Y < edge)
                         scroll.Y = edge;
 
@@ -114,14 +114,14 @@ namespace fliXNA_xbox
             if (bounds != null)
             {
                 //FlxG.log("bounds is not null");
-                if (scroll.X < bounds.left)
-                    scroll.X = bounds.left;
-                if (scroll.X > bounds.right - width)
-                    scroll.X = bounds.right - width;
-                if (scroll.Y < bounds.top)
-                    scroll.Y = bounds.top;
-                if (scroll.Y > bounds.bottom - height)
-                    scroll.Y = bounds.bottom - height;
+                if (scroll.X < bounds.Left)
+                    scroll.X = bounds.Left;
+                if (scroll.X > bounds.Right - width)
+                    scroll.X = bounds.Right - width;
+                if (scroll.Y < bounds.Top)
+                    scroll.Y = bounds.Top;
+                if (scroll.Y > bounds.Bottom - height)
+                    scroll.Y = bounds.Bottom - height;
             }
 
             //update effects

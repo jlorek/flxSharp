@@ -93,10 +93,9 @@ namespace flxSharp.flxSharp
         }
 
         /// <summary>
-        /// Return this FlxPoint as a Vector2.
-        /// Useful for drawing to the SpriteBatch since it requires a Vector2
+        /// Create a <code>Vector2</code> from this <code>FlxPoint</code>.
         /// </summary>
-        /// <returns>Vector2</returns>
+        /// <returns>A <code>Vector2</code> with the same X and Y values.</returns>
         public Vector2 ToVector2()
         {
             return new Vector2(X, Y);

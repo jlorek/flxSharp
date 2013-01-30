@@ -98,21 +98,21 @@ namespace fliXNA_xbox
 				}
 			}
             else
-                _min = (uint)(width + height) / (2 * divisions);
-            _canSubdivide = (width > _min) || (height > _min);
+                _min = (uint)(base.Width + base.Height) / (2 * divisions);
+            _canSubdivide = (base.Width > _min) || (base.Height > _min);
 
             //Set up comparison/sort helpers
             _northWestTree = null;
             _northEastTree = null;
             _southEastTree = null;
             _southWestTree = null;
-            _leftEdge = x;
-            _rightEdge = x + width;
-            _halfWidth = width / 2;
+            _leftEdge = base.X;
+            _rightEdge = base.X + base.Width;
+            _halfWidth = base.Width / 2;
             _midpointX = _leftEdge + _halfWidth;
-            _topEdge = y;
-            _bottomEdge = y + height;
-            _halfHeight = height / 2;
+            _topEdge = base.Y;
+            _bottomEdge = base.Y + base.Height;
+            _halfHeight = base.Height / 2;
             _midpointY = _topEdge + _halfHeight;
         }
 

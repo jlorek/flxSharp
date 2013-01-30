@@ -57,7 +57,9 @@ namespace fliXNA_xbox
         public override void draw()
         {
             if (Visible)
-                FlxG.spriteBatch.Draw(tileGraphic, drawPosition, tileGraphicSectionToDraw, FlxColor.WHITE);
+            {
+                FlxS.SpriteBatch.Draw(tileGraphic, drawPosition, tileGraphicSectionToDraw, FlxColor.WHITE);                
+            }
         }
     }
 }

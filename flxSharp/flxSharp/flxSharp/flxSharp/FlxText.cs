@@ -55,7 +55,7 @@ namespace fliXNA_xbox
                 Vector2 pos = new Vector2(X, Y);
                 Vector2 orig = new Vector2(0,0);
                 Single rot = 0;
-                FlxG.spriteBatch.DrawString(
+                FlxS.SpriteBatch.DrawString(
 
                     FlxG.defaultFont,
                     _textField,

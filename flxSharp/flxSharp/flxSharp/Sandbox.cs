@@ -43,13 +43,13 @@ namespace flxSharp
             this.add(block4);
 
             megaman = new FlxSprite(300, 300);
-            //megaman.loadGraphic(FlxG.content.Load<Texture2D>("megaman_run_test"), true, false, 49, 49);
-            megaman.loadGraphic(FlxG.content.Load<Texture2D>("megaman_run"), true, false, 49, 49);
+            //megaman.loadGraphic(FlxS.ContentManager.Load<Texture2D>("megaman_run_test"), true, false, 49, 49);
+            megaman.loadGraphic(FlxS.ContentManager.Load<Texture2D>("megaman_run"), true, false, 49, 49);
             megaman.addAnimation("run", new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 }, 10);
             megaman.play("run", true);
 
-            FlxG.playMusic(FlxG.content.Load<SoundEffect>("applause"));
-            //FlxG.play(FlxG.content.Load<SoundEffect>("background")); // change content processor to soundeffect
+            //FlxG.playMusic(FlxS.ContentManager.Load<SoundEffect>("applause"));
+            //FlxG.play(FlxS.ContentManager.Load<SoundEffect>("background")); // change content processor to soundeffect
 
             this.add(megaman);
         }

@@ -1,10 +1,7 @@
-using System;
-using fliXNA_xbox;
 using flxSharp.flxSharp.System;
 
 namespace flxSharp
 {
-#if WINDOWS || XBOX
     static class Program
     {
         /// <summary>
@@ -12,12 +9,11 @@ namespace flxSharp
         /// </summary>
         static void Main(string[] args)
         {
-            using (var flxGame = new FlxGame(new Sandbox()))
+            using (var gameRunner = new FlxGameRunner(640, 480, new Sandbox(), 1.5f))
             {
-                flxGame.Run();
+                gameRunner.Run();
             }
         }
     }
-#endif
 }
 
