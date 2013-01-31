@@ -499,8 +499,8 @@ namespace flxSharp.flxSharp
 				Camera = FlxG.camera;
 
 			//get bounding box coordinates
-			float boundingBoxX = X - (int)(Camera.scroll.X*ScrollFactor.X); //copied from getScreenXY()
-			float boundingBoxY = Y - (int)(Camera.scroll.Y*ScrollFactor.Y);
+			float boundingBoxX = X - (int)(Camera.Scroll.X*ScrollFactor.X); //copied from getScreenXY()
+			float boundingBoxY = Y - (int)(Camera.Scroll.Y*ScrollFactor.Y);
 			boundingBoxX = (int)(boundingBoxX + ((boundingBoxX > 0)?0.0000001f:-0.0000001f));
 			boundingBoxY = (int)(boundingBoxY + ((boundingBoxY > 0)?0.0000001f:-0.0000001f));
             int boundingBoxWidth = (int)((Width != (int)(Width)) ? Width : Width - 1f);
@@ -898,8 +898,8 @@ namespace flxSharp.flxSharp
             }
 
             FlxPoint objectScreenPos = flxObject.getScreenXY(null, camera);
-            _tagPoint.X = x - camera.scroll.X * ScrollFactor.X; //copied from getScreenXY()
-            _tagPoint.Y = y - camera.scroll.Y * ScrollFactor.Y;
+            _tagPoint.X = x - camera.Scroll.X * ScrollFactor.X; //copied from getScreenXY()
+            _tagPoint.Y = y - camera.Scroll.Y * ScrollFactor.Y;
             _tagPoint.X += (_tagPoint.X > 0) ? 0.0000001f : -0.0000001f;
             _tagPoint.Y += (_tagPoint.Y > 0) ? 0.0000001f : -0.0000001f;
 
@@ -926,8 +926,8 @@ namespace flxSharp.flxSharp
                 camera = FlxG.camera;                
             }
 
-            float x = point.X - camera.scroll.X;
-            float y = point.Y - camera.scroll.Y;
+            float x = point.X - camera.Scroll.X;
+            float y = point.Y - camera.Scroll.Y;
             getScreenXY(_tagPoint, camera);
             return (x > _tagPoint.X) && (x < _tagPoint.X + Width) && (y > _tagPoint.Y) && (y < _tagPoint.Y + Height);
         }
@@ -945,7 +945,7 @@ namespace flxSharp.flxSharp
 			}
 
 			getScreenXY(_tagPoint,camera);
-			return (_tagPoint.X + Width > 0) && (_tagPoint.X < camera.width) && (_tagPoint.Y + Height > 0) && (_tagPoint.Y < camera.height);
+			return (_tagPoint.X + Width > 0) && (_tagPoint.X < camera.Width) && (_tagPoint.Y + Height > 0) && (_tagPoint.Y < camera.Height);
 		}
 
         /// <summary>
@@ -966,8 +966,8 @@ namespace flxSharp.flxSharp
                 camera = FlxG.camera;			    
 			}
 
-			point.X = X - (camera.scroll.X * ScrollFactor.X);
-			point.Y = Y - (camera.scroll.Y * ScrollFactor.Y);
+			point.X = X - (camera.Scroll.X * ScrollFactor.X);
+			point.Y = Y - (camera.Scroll.Y * ScrollFactor.Y);
 			point.X += (point.X > 0) ? 0.0000001f : -0.0000001f;
 			point.Y += (point.Y > 0) ? 0.0000001f : -0.0000001f;
 			return point;

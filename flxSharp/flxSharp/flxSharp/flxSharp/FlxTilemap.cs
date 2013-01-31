@@ -338,8 +338,8 @@ namespace fliXNA_xbox
 
             if (camera == null)
                 camera = FlxG.camera;
-            point.X = point.X - camera.scroll.X;
-            point.Y = point.Y - camera.scroll.Y;
+            point.X = point.X - camera.Scroll.X;
+            point.Y = point.Y - camera.Scroll.Y;
             getScreenXY(_tagPoint, camera);
             return (_tileObjects[_data[(int)(((point.Y - _tagPoint.Y) / _tileHeight) * widthInTiles + (point.X - _tagPoint.X) / _tileWidth)]] as FlxTile).AllowCollisions > 0;
         }

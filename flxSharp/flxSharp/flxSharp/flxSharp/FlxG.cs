@@ -275,7 +275,7 @@ namespace flxSharp.flxSharp
                 }
                 else
                 {
-                    return FlxG.camera.bgColor;
+                    return FlxG.camera.BgColor;
                 }
             }
 
@@ -283,7 +283,7 @@ namespace flxSharp.flxSharp
             {
                 foreach (FlxCamera camera in cameras)
                 {
-                    camera.bgColor = value;
+                    camera.BgColor = value;
                 }
             }
         }
@@ -929,7 +929,7 @@ namespace flxSharp.flxSharp
         {
             FlxG.cameras.Add(newCamera);
 
-            var newViewport = new Viewport((int)newCamera.x, (int)newCamera.y, (int)newCamera.width, (int)newCamera.height);
+            var newViewport = new Viewport((int)newCamera.X, (int)newCamera.Y, (int)newCamera.Width, (int)newCamera.Height);
             FlxS.Viewports.Add(newViewport);
             
             //FlxG.log("camera is at x: " + NewCamera.x + " y: " + NewCamera.y + " width: " + NewCamera.width + " height " + NewCamera.height);
@@ -1169,7 +1169,7 @@ namespace flxSharp.flxSharp
             //    flashGfx = flashGfxSprite.graphics;
             //} 
 
-            FlxCamera.defaultZoom = zoom;
+            FlxCamera.DefaultZoom = zoom;
             //FlxG._cameraRect = new Rectangle();
             FlxG.cameras = new List<FlxCamera>();
             //FlxG.UseBufferLocking = false;
@@ -1318,8 +1318,8 @@ namespace flxSharp.flxSharp
                         cam.update();                        
                     }
 
-                    cam.FlashSprite.X = cam.x + cam.FlashOffsetX;
-                    cam.FlashSprite.Y = cam.y + cam.FlashOffsetY;
+                    cam.FlashSprite.X = cam.X + cam.FlashOffsetX;
+                    cam.FlashSprite.Y = cam.Y + cam.FlashOffsetY;
                     cam.FlashSprite.Visible = cam.Visible;
                 }
             }

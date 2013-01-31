@@ -703,8 +703,8 @@ namespace flxSharp.flxSharp
                     continue;
                 }
 
-                _tagPoint.X = X - (int)(camera.scroll.X * ScrollFactor.X) - Offset.X;
-                _tagPoint.Y = Y - (int)(camera.scroll.Y * ScrollFactor.Y) - Offset.Y;
+                _tagPoint.X = X - (int)(camera.Scroll.X * ScrollFactor.X) - Offset.X;
+                _tagPoint.Y = Y - (int)(camera.Scroll.Y * ScrollFactor.Y) - Offset.Y;
                 _tagPoint.X += (_tagPoint.X > 0) ? 0.0000001f : -0.0000001f;
                 _tagPoint.Y += (_tagPoint.Y > 0) ? 0.0000001f : -0.0000001f;
                 
@@ -1160,7 +1160,7 @@ namespace flxSharp.flxSharp
             float radius = (float)Math.Sqrt((halfWidth * halfWidth) + (halfHeight * halfHeight)) * ((absScaleX >= absScaleY) ? absScaleX : absScaleY);
             _tagPoint.X = _tagPoint.X + halfWidth;
             _tagPoint.Y = _tagPoint.Y + halfHeight;
-            return ((_tagPoint.X + radius > 0) && (_tagPoint.X - radius < camera.width) && (_tagPoint.Y + radius > 0) && (_tagPoint.Y - radius < camera.height));
+            return ((_tagPoint.X + radius > 0) && (_tagPoint.X - radius < camera.Width) && (_tagPoint.Y + radius > 0) && (_tagPoint.Y - radius < camera.Height));
         }
 
         /// <summary>
