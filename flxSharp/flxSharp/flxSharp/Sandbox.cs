@@ -42,7 +42,7 @@ namespace flxSharp
             block4.makeGraphic(100, 100, FlxColor.PINK);
             this.add(block4);
 
-            megaman = new FlxSprite(300, 300);
+            megaman = new FlxSprite(50, 50);
             //megaman.loadGraphic(FlxS.ContentManager.Load<Texture2D>("megaman_run_test"), true, false, 49, 49);
             megaman.loadGraphic(FlxS.ContentManager.Load<Texture2D>("megaman_run"), true, false, 49, 49);
             megaman.addAnimation("run", new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 }, 10);

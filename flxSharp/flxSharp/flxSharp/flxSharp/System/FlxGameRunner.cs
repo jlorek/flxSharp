@@ -128,7 +128,9 @@ namespace flxSharp.flxSharp.System
         {
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            {
+                this.Exit();                
+            }
 
             // TODO: Add your update logic here
             FlxS.GameTime = gameTime;
@@ -138,16 +140,29 @@ namespace flxSharp.flxSharp.System
             base.Update(gameTime);
         }
 
+        private void BasicDraw()
+        {
+            FlxS.GraphicsDevice.Clear(Color.CornflowerBlue);
+            FlxS.SpriteBatch.Begin(SpriteSortMode.Texture, BlendState.AlphaBlend);
+            _flxGame.draw();
+            FlxS.SpriteBatch.End();
+        }
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            //BasicDraw();
+            //base.Draw(gameTime);
+            //return;
+
             FlxS.GraphicsDevice.SetRenderTarget(FlxS.RenderTarget);
 
             // first clear the screen with the background color of your choice
             FlxS.GraphicsDevice.Clear(FlxG.bgColor); // Protip: Check BackgroundColor if nothing is visible!
+            //FlxS.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // SpriteSortMode.Texture - Check speed gain
 

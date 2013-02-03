@@ -188,10 +188,14 @@ namespace flxSharp.flxSharp
             get { return _color; }
             set
             {
+                _color = value;
+
+                /*
                 if (value == _color) return;
 
                 value.A = 0;
                 _color = value;
+                */
 
                 /*
 		        if((_alpha != 1) || (_color != 0x00ffffff))
@@ -747,7 +751,7 @@ namespace flxSharp.flxSharp
                     // flx# - use sprite effects to flip horizontal/vertical
 
                     //Color drawColor = new Color(1f, 1f, 1f, 0f);
-                    //Color drawColor = Color.White;
+                    //Color drawColor = Color.White * _alpha;
                     Color drawColor = Color * _alpha;
 
                     FlxS.SpriteBatch.Draw(
@@ -760,6 +764,15 @@ namespace flxSharp.flxSharp
                         scale,
                         SpriteEffects.None,
                         0);
+
+                    /*
+                    FlxS.SpriteBatch.Draw(
+                        _pixels,
+                        position,
+                        sourceRectangle,
+                        Color.White);
+                    */
+
                     /*
                     base.draw();
                     if (texture != null)
