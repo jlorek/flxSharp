@@ -168,11 +168,14 @@ namespace flxSharp.flxSharp.System
 
             FlxS.SpriteBatch.Begin(SpriteSortMode.Immediate,
                                    BlendState.AlphaBlend,
-                                   SamplerState.PointClamp,  //PointClamp makes sure that the tiles render properly without tearing
+                                   SamplerState.PointClamp,
+                                   //PointClamp makes sure that the tiles render properly without tearing
                                    null,
                                    null,
-                                   null,
-                                   FlxG.camera.TransformMatrix);
+                                   null);
+                                   //FlxG.camera.TransformMatrix);
+                                   // rotate + scale can be easily done in the spritebatch.draw calls
+                                   // but maybe the translation can be nicely done here...
             _flxGame.draw();
             FlxS.SpriteBatch.End();
 

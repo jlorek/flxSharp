@@ -128,6 +128,25 @@ namespace flxSharp.flxSharp
         protected float _zoom;
 
         /// <summary>
+        /// The zoom level of this camera. 1 = 1:1, 2 = 2x zoom, etc.
+        /// flx# - Negative zoom will flip image
+        /// </summary>
+        public float Zoom
+        {
+            get { return _zoom; }
+            set
+            {
+                if (value == 0)
+                {
+                    value = DefaultZoom;
+                }
+
+                _zoom = value;
+                //setScale(_zoom,_zoom);
+            }
+        }
+
+        /// <summary>
         /// Internal, to help avoid costly allocations.
         /// </summary>
         protected FlxPoint _point;
@@ -135,7 +154,68 @@ namespace flxSharp.flxSharp
         /// <summary>
         /// Internal, help with color transforming the flash bitmap.
         /// </summary>
-        protected uint _color;
+        protected Color _color;
+
+        /// <summary>
+        /// The alpha value of this camera display (a Number between 0.0 and 1.0).
+        /// </summary>
+        public float Alpha
+        {
+            get { throw new NotImplementedException(); } // return _flashBitmap.alpha;
+            set { throw new NotImplementedException(); } // _flashBitmap.alpha = Alpha;
+        }
+
+        /// <summary>
+        /// The angle of the camera display (in degrees).
+        /// Currently yields weird display results,
+        /// since cameras aren't nested in an extra display object yet.
+        /// </summary>
+        public float Angle
+        {
+            get { throw new NotImplementedException(); } // return _flashSprite.rotation;
+            set { throw new NotImplementedException(); } // _flashSprite.rotation = Angle;
+        }
+
+        /// <summary>
+        /// The color tint of the camera display.
+        /// </summary>
+        public Color Color
+        {
+            get { return _color; }
+            set
+            {
+                _color = value;
+
+                /*
+			    var colorTransform:ColorTransform = _flashBitmap.transform.colorTransform;
+			    colorTransform.redMultiplier = (_color>>16)*0.00392;
+			    colorTransform.greenMultiplier = (_color>>8&0xff)*0.00392;
+			    colorTransform.blueMultiplier = (_color&0xff)*0.00392;
+			    _flashBitmap.transform.colorTransform = colorTransform;
+                */
+            }
+        }
+
+        /// <summary>
+        /// Whether the camera display is smooth and filtered, or chunky and pixelated.
+        /// Default behavior is chunky-style.
+        /// </summary>
+        public bool Antialiasing
+        {
+            get { throw new NotImplementedException(); } // return _flashBitmap.smoothing;
+            set { throw new NotImplementedException(); } // _flashBitmap.smoothing = Antialiasing;
+        }
+
+        /// <summary>
+        /// The scale of the camera object, irrespective of zoom.
+        /// Currently yields weird display results,
+        /// since cameras aren't nested in an extra display object yet.
+        /// </summary>
+        public FlxPoint Scale
+        {
+            get { throw new NotSupportedException(); }
+            set { throw new NotSupportedException(); }
+        }
 
         /**
 		 * Internal, used to render buffer to screen space.
@@ -170,7 +250,7 @@ namespace flxSharp.flxSharp
         ///<summary>
         /// Internal, used to control the "flash" special effect.
         ///</summary>
-        protected uint fxFlashColor;
+        protected Color fxFlashColor;
         
         ///<summary>
         /// Internal, used to control the "flash" special effect.
@@ -190,7 +270,7 @@ namespace flxSharp.flxSharp
         ///<summary>
         /// Internal, used to control the "fade" special effect.
         ///</summary>
-        protected uint fxFadeColor;
+        protected Color fxFadeColor;
         
         ///<summary>
         /// Internal, used to control the "fade" special effect.
@@ -239,7 +319,8 @@ namespace flxSharp.flxSharp
 
         // flx# stuff
         public Matrix transform;
-        protected float angle;
+
+
         public FlxObject FlashSprite;
         public float FlashOffsetX;
         public float FlashOffsetY;
@@ -269,7 +350,9 @@ namespace flxSharp.flxSharp
             screen.setOriginToCorner();
             //Buffer = screen.Pixels;
             BgColor = FlxG.bgColor;
-            _color = 0xffffffff;
+
+            _color = Color.White;
+            //_color = 0xffffffff;
 
             /*
 			_flashBitmap = new Bitmap(buffer);
@@ -291,12 +374,12 @@ namespace flxSharp.flxSharp
 			_flashPoint = new Point();
             */
 
-            fxFlashColor = 0;
+            fxFlashColor = Color.Black;
             fxFlashDuration = 0.0f;
             fxFlashComplete = null;
             fxFlashAlpha = 0.0f;
 
-            fxFadeColor = 0;
+            fxFadeColor = Color.Black;
             fxFadeDuration = 0.0f;
             fxFadeComplete = null;
             fxFadeAlpha = 0.0f;
@@ -312,7 +395,7 @@ namespace flxSharp.flxSharp
             // flx#
             DefaultZoom = 1.0f;
             rotating = 0.0f;
-            zooming = zoom;
+            Zoom = zoom;
             FlashSprite = new FlxObject();
             //BgColor = Color.Black;
         }
@@ -550,55 +633,199 @@ namespace flxSharp.flxSharp
         }
 
         /// <summary>
-        /// Shake the screen
+        /// The screen is filled with this color and gradually returns to normal.
         /// </summary>
-        /// <param name="Intensity"></param>
-        /// <param name="Duration"></param>
-        /// <param name="OnComplete"></param>
-        /// <param name="Force"></param>
-        /// <param name="Direction"></param>
-        public void shake(float Intensity = 0.05f, float Duration = 0.5f, Action OnComplete=null, bool Force=true, uint Direction=ShakeBothAxes)
+        /// <param name="color">The color you want to use.</param>
+        /// <param name="duration">How long it takes for the flash to fade.</param>
+        /// <param name="onComplete">A function you want to run when the flash finishes.</param>
+        /// <param name="force">Force the effect to reset.</param>
+        public void Flash(Color color, float duration = 1, Action onComplete = null, bool force = false)
         {
-            if (!Force && ((fxShakeOffset.X != 0) || (fxShakeOffset.Y != 0)))
+            if (!force && (fxFlashAlpha > 0))
+            {
                 return;
-            fxShakeIntensity = Intensity;
-            fxShakeDuration = Duration;
-            fxShakeComplete = OnComplete;
-            fxShakeDirection = Direction;
+            }
+
+            fxFlashColor = color;
+
+            // flx# - orly?
+            if (duration <= 0)
+            {
+                duration = float.MinValue;
+            }
+
+            fxFlashDuration = duration;
+            fxFlashComplete = onComplete;
+            fxFlashAlpha = 1.0f;
+        }
+
+        /// <summary>
+        /// The screen is gradually filled with this color.
+        /// </summary>
+        /// <param name="color">The color you want to use.</param>
+        /// <param name="duration">How long it takes for the fade to finish.</param>
+        /// <param name="onComplete">A function you want to run when the fade finishes.</param>
+        /// <param name="force">Force the effect to reset.</param>
+        public void Fade(Color color, float duration = 1, Action onComplete = null, bool force = false)
+        {
+            if (!force && (fxFadeAlpha > 0))
+            {
+                return;
+            }
+
+            // flx# - orly?
+            if (duration <= 0)
+            {
+                duration = float.MinValue;
+            }
+
+            fxFadeDuration = duration;
+            fxFadeComplete = onComplete;
+            fxFadeAlpha = 0; // Number.MIN_VALUE;
+        }
+
+        /// <summary>
+        /// A simple screen-shake effect.
+        /// </summary>
+        /// <param name="intensity">Percentage of screen size representing the maximum distance that the screen can move while shaking.</param>
+        /// <param name="duration">The length in seconds that the shaking effect should last.</param>
+        /// <param name="onComplete">A function you want to run when the shake effect finishes.</param>
+        /// <param name="force">Force the effect to reset (default = true, unlike flash() and fade()!).</param>
+        /// <param name="direction">Whether to shake on both axes, just up and down, or just side to side (use class constants SHAKE_BOTH_AXES, SHAKE_VERTICAL_ONLY, or SHAKE_HORIZONTAL_ONLY).</param>
+        public void shake(float intensity = 0.05f, float duration = 0.5f, Action onComplete = null, bool force = true, uint direction = ShakeBothAxes)
+        {
+            if (!force && ((fxShakeOffset.X != 0) || (fxShakeOffset.Y != 0)))
+            {
+                return;                
+            }
+
+            fxShakeIntensity = intensity;
+            fxShakeDuration = duration;
+            fxShakeComplete = onComplete;
+            fxShakeDirection = direction;
             fxShakeOffset.make();
         }
 
         /// <summary>
-        /// Internal function for stopping any effects, can be called manually
+        /// Just turns off all the camera effects instantly.
         /// </summary>
         public void stopFX()
         {
+            fxFlashAlpha = 0;
+            fxFadeAlpha = 0;
             fxShakeDuration = 0;
+            FlashSprite.X = X + (Width * 0.5f);
+            FlashSprite.Y = Y + (Height * 0.5f);
         }
-
-
-
-
-
-
 
         /// <summary>
-        /// Get/Set for the zoom of the camera
+        /// Copy the bounds, focus object, and deadzone info from an existing camera.
         /// </summary>
-        public float zooming
+        /// <param name="camera">The camera you want to copy from.</param>
+        /// <returns>A reference to this <code>FlxCamera</code> object.</returns>
+        public FlxCamera copyFrom(FlxCamera camera)
         {
-            get { return _zoom; }
-            set { _zoom = value; if (_zoom < 0.1f) _zoom = DefaultZoom; } // Negative zoom will flip image
+            if (camera.Bounds == null)
+            {
+                this.Bounds = null;
+            }
+            else
+            {
+                if (this.Bounds == null)
+                {
+                    this.Bounds = new FlxRect();
+                }
+                this.Bounds.copyFrom(camera.Bounds);
+            }
+
+            this.Target = camera.Target;
+
+            if (this.Target != null)
+            {
+                if (camera.Deadzone == null)
+                {
+                    this.Deadzone = null;
+                }
+                else
+                {
+                    if (this.Deadzone == null)
+                    {
+                        this.Deadzone = new FlxRect();
+                    }
+                    this.Deadzone.copyFrom(camera.Deadzone);
+                }
+            }
+
+            return this;
         }
+
+        /// <summary>
+        /// Fetches a reference to the Flash <code>Sprite</code> object
+        /// that contains the camera display in the Flash display list.
+        /// Uses include 3D projection, advanced display list modification, and more.
+        /// NOTE: We don't recommend modifying this directly unless you are
+        /// fairly experienced.  For simple changes to the camera display,
+        /// like scaling, rotation, and color tinting, we recommend
+        /// using the existing <code>FlxCamera</code> variables.
+        /// </summary>
+        /// <returns>A Flash <code>Sprite</code> object containing the camera display.</returns>
+        public object getContainerSprite()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Fill the camera with the specified color.
+        /// </summary>
+        /// <param name="color">The color to fill with in 0xAARRGGBB hex format.</param>
+        /// <param name="blendAlpha">Whether to blend the alpha value or just wipe the previous contents. Default is true.</param>
+        public void Fill(Color color, bool blendAlpha = true)
+        {
+            // flx# - we need some different approach here
+            // i think a camera size stretched 2dsprite that is tinted will do the job
+
+            /*
+			_fill.fillRect(_flashRect,Color);
+			buffer.copyPixels(_fill,_flashRect,_flashPoint,null,null,BlendAlpha); 
+            */
+        }
+
+        /// <summary>
+        /// Internal helper function, handles the actual drawing of all the special effects.
+        /// </summary>
+        internal void drawFX()
+        {
+            /*
+			var alphaComponent:Number;
+			
+			//Draw the "flash" special effect onto the buffer
+			if(_fxFlashAlpha > 0.0)
+			{
+				alphaComponent = _fxFlashColor>>24;
+				fill((uint(((alphaComponent <= 0)?0xff:alphaComponent)*_fxFlashAlpha)<<24)+(_fxFlashColor&0x00ffffff));
+			}
+			
+			//Draw the "fade" special effect onto the buffer
+			if(_fxFadeAlpha > 0.0)
+			{
+				alphaComponent = _fxFadeColor>>24;
+				fill((uint(((alphaComponent <= 0)?0xff:alphaComponent)*_fxFadeAlpha)<<24)+(_fxFadeColor&0x00ffffff));
+			}
+            */
+
+            if ((fxShakeOffset.X != 0) || (fxShakeOffset.Y != 0))
+            {
+                FlashSprite.X = X + FlashOffsetX + fxShakeOffset.X;
+                FlashSprite.Y = Y + FlashOffsetY + fxShakeOffset.Y;
+            }
+        }
+
+        // flx# stuff below
 
         /// <summary>
         /// Get/Set for the rotation of the camera
         /// </summary>
-        public float rotating
-        {
-            get { return angle; }
-            set { angle = value; }
-        }
+        public float rotating { get; set; }
 
         /// <summary>
         /// Get/Set for the position of the camera
@@ -617,21 +844,21 @@ namespace flxSharp.flxSharp
         {
             get
             {
-                if(Target!=null)
-                    return Matrix.CreateTranslation(-Target.X, -Target.Y, 0) * Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-Scroll.X, -Scroll.Y, 0) * Matrix.CreateTranslation(Target.X, Target.Y, 0);
-                else
-                    return Matrix.CreateRotationZ(rotating) * Matrix.CreateScale(new Vector3(zooming, zooming, 1)) * Matrix.CreateTranslation(-Scroll.X, -Scroll.Y, 0);
+                if (Target != null)
+                {
+                    return
+                        Matrix.CreateTranslation(-Target.X, -Target.Y, 0) *
+                        Matrix.CreateRotationZ(rotating) *
+                        Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
+                        Matrix.CreateTranslation(-Scroll.X, -Scroll.Y, 0) *
+                        Matrix.CreateTranslation(Target.X, Target.Y, 0);                    
+                }
+                
+                return
+                    Matrix.CreateRotationZ(rotating) *
+                    Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
+                    Matrix.CreateTranslation(-Scroll.X, -Scroll.Y, 0);
             }
-        }
-
-        public void Flash(Color color, float duration, Action onComplete, bool force)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Fade(Color color, float duration, Action onComplete, bool force)
-        {
-            throw new NotImplementedException();
         }
     }
 }

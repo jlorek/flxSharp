@@ -9,7 +9,7 @@ namespace flxSharp
         /// </summary>
         static void Main(string[] args)
         {
-            using (var gameRunner = new FlxGameRunner(640, 480, new Sandbox(), 1.5f))
+            using (var gameRunner = new FlxGameRunner(640, 480, new Sandbox(), 2.0f))
             {
                 gameRunner.Run();
             }
