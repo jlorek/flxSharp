@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using System;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -325,6 +326,8 @@ namespace flxSharp.flxSharp
         public float FlashOffsetX;
         public float FlashOffsetY;
 
+        private Texture2D _flashTexture;
+
         /// <summary>
         /// Instantiates a new camera at the specified location, with the specified size and zoom level.
         /// </summary>
@@ -398,6 +401,9 @@ namespace flxSharp.flxSharp
             Zoom = zoom;
             FlashSprite = new FlxObject();
             //BgColor = Color.Black;
+
+            _flashTexture = new Texture2D(FlxS.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            _flashTexture.SetData(new[] { Color.White });
         }
 
         /// <summary>
@@ -795,6 +801,19 @@ namespace flxSharp.flxSharp
         /// </summary>
         internal void drawFX()
         {
+            FlxS.SpriteBatch.Draw(
+                _flashTexture,
+                new Rectangle(0, 0, (int) Width, (int) Height),
+                Color.Black * fxFlashAlpha);
+
+            Debug.WriteLine(fxFlashAlpha);
+
+            /*
+            FlxSprite fadeSprite = new FlxSprite(0, 0);
+            fadeSprite.makeGraphic((uint) Width, (uint) Height, Color.Black);
+            fadeSprite.draw();
+            */
+
             /*
 			var alphaComponent:Number;
 			
@@ -844,6 +863,8 @@ namespace flxSharp.flxSharp
         {
             get
             {
+                return Matrix.Identity;
+
                 if (Target != null)
                 {
                     return

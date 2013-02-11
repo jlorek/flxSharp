@@ -99,7 +99,9 @@ namespace flxSharp.flxSharp
                     foreach (FlxBasic m in members)
                     {
                         if (m.Visible)
-                            m.draw();
+                        {
+                            m.draw();                            
+                        }
                     }
                 }
             }

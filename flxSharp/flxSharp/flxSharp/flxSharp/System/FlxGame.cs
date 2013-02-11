@@ -575,10 +575,10 @@ namespace flxSharp.flxSharp.System
         {
 			//var mark:uint = getTimer();
 			
-            //FlxG.lockCameras(); // Boom!
+            FlxG.lockCameras(); // Nothing happens here...
 			State.draw();
 			FlxG.drawPlugins();
-			//FlxG.unlockCameras(); // Bäng!
+			FlxG.unlockCameras(); // Draw camera FX
 
 			//if(_debuggerUp)
 			//	_debugger.perf.flixelDraw(getTimer()-mark);

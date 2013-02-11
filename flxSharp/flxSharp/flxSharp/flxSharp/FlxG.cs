@@ -1260,7 +1260,7 @@ namespace flxSharp.flxSharp
         /// </summary>
         internal static void lockCameras()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
 
             /*
 			var cam:FlxCamera;
@@ -1285,7 +1285,17 @@ namespace flxSharp.flxSharp
         /// </summary>
         internal static void unlockCameras()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+
+            foreach (FlxCamera camera in FlxG.cameras)
+            {
+                if (!camera.Exists || !camera.Visible)
+                {
+                    continue;
+                }
+
+                camera.drawFX();
+            }
 
             /*
 			var cam:FlxCamera;
