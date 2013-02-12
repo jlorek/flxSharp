@@ -56,7 +56,17 @@ namespace flxSharp
             //FlxG.playMusic(FlxS.ContentManager.Load<SoundEffect>("applause"));
             //FlxG.play(FlxS.ContentManager.Load<SoundEffect>("background")); // change content processor to soundeffect
 
-            DoFlash();
+            //DoFlash();
+            DoQuake();
+        }
+
+        private void DoQuake()
+        {
+            FlxG.camera.shake(
+                intensity: 0.01f,
+                duration: 2f,
+                onComplete: DoFlash,
+                direction: FlxCamera.ShakeBothAxes);
         }
 
         private void DoFlash()
@@ -66,7 +76,7 @@ namespace flxSharp
 
         private void DoFade()
         {
-            FlxG.camera.Fade(Color.Black, 0.5f, DoFlash); 
+            FlxG.camera.Fade(Color.Black, 0.5f, DoQuake); 
         }
 
         public override void update()

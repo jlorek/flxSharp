@@ -96,11 +96,11 @@ namespace flxSharp.flxSharp
             {
                 if (members.Count != 0)
                 {
-                    foreach (FlxBasic m in members)
+                    foreach (FlxBasic member in members)
                     {
-                        if (m.Visible)
+                        if (member.Visible)
                         {
-                            m.draw();                            
+                            member.draw();                            
                         }
                     }
                 }

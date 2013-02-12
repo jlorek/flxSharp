@@ -56,29 +56,61 @@ namespace flxSharp.flxSharp
         /// While you can alter the zoom of each camera after the fact,
         /// this variable determines what value the camera will start at when created.
         /// </summary>
-        static public float DefaultZoom = 1.0f;
+        static public float DefaultZoom;
 
         /// <summary>
         /// The X position of this camera's display.  Zoom does NOT affect this number.
         /// Measured in pixels from the left side of the flash window.
         /// </summary>
-        public float X;
+        public float X
+        {
+            get { return _x; }
+            set
+            {
+                _x = value;
+                UpdateHelpers();
+            }
+        }
 
         /// <summary>
         /// The Y position of this camera's display.  Zoom does NOT affect this number.
         /// Measured in pixels from the top of the flash window.
         /// </summary>
-        public float Y;
+        public float Y
+        {
+            get { return _y; }
+            set
+            {
+                _y = value;
+                UpdateHelpers();
+            }
+        }
 
         /// <summary>
         /// How wide the camera display is, in game pixels.
         /// </summary>
-        public float Width;
+        public float Width
+        {
+            get { return _width; }
+            set
+            {
+                _width = value;
+                UpdateHelpers();
+            }
+        }
 
         /// <summary>
         /// How tall the camera display is, in game pixels.
         /// </summary>
-        public float Height;
+        public float Height
+        {
+            get { return _height; }
+            set
+            {
+                _height = value;
+                UpdateHelpers();
+            }
+        }
 
         /// <summary>
         /// Tells the camera to follow this <code>FlxObject</code> object around.
@@ -329,11 +361,21 @@ namespace flxSharp.flxSharp
         private Texture2D _fxHelperTexture;
 
         private Texture2D _fillTexture;
+        private float _x;
+        private float _y;
+        private float _width;
+        private float _height;
 
         /// <summary>
         /// A camera sized rectangle, used to draw special FX.
         /// </summary>
-        private Rectangle _cameraRect;
+        public Rectangle CameraRect { get; protected set; }
+
+        /// <summary>
+        /// The <code>_cameraRect</code> multiplied with the current zoom
+        /// results in the final size of this camera on the screen.
+        /// </summary>
+        public Rectangle ScreenRect { get; protected set; }
 
         /// <summary>
         /// Instantiates a new camera at the specified location, with the specified size and zoom level.
@@ -403,19 +445,19 @@ namespace flxSharp.flxSharp
             //_fill = new BitmapData(width,height,true,0);
             
             // flx#
-            DefaultZoom = 1.0f;
+            //DefaultZoom = 1.0f;
             rotating = 0.0f;
             Zoom = zoom;
             FlashSprite = new FlxObject();
             //BgColor = Color.Black;
-
-            _cameraRect = new Rectangle(0, 0, width, height);
 
             _fxHelperTexture = new Texture2D(FlxS.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             _fxHelperTexture.SetData(new[] { Color.White });
 
             _fillTexture = new Texture2D(FlxS.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             _fillTexture.SetData(new[] { Color.White });
+
+            UpdateHelpers();
         }
 
         /// <summary>
@@ -543,7 +585,7 @@ namespace flxSharp.flxSharp
                 }
             }
 
-            //Update the "shake" special effect
+            // Update the "shake" special effect
             if (fxShakeDuration > 0)
             {
                 fxShakeDuration -= FlxG.elapsed;
@@ -739,6 +781,10 @@ namespace flxSharp.flxSharp
             fxShakeDuration = 0;
             FlashSprite.X = X + (Width * 0.5f);
             FlashSprite.Y = Y + (Height * 0.5f);
+
+            // flx#
+            fxShakeOffset.X = 0;
+            fxShakeOffset.Y = 0;
         }
 
         /// <summary>
@@ -807,6 +853,8 @@ namespace flxSharp.flxSharp
             // flx# - we need some different approach here
             // i think a camera size stretched 2dsprite that is tinted will do the job
 
+            // a camera specific rendertarget whould also do a nice job here...
+
             /*
 			_fill.fillRect(_flashRect,Color);
 			buffer.copyPixels(_fill,_flashRect,_flashPoint,null,null,BlendAlpha); 
@@ -818,37 +866,39 @@ namespace flxSharp.flxSharp
         /// </summary>
         internal void drawFX()
         {
+            // Draw the "flash" special effect onto the buffer
             if (fxFlashAlpha > 0)
             {
                 FlxS.SpriteBatch.Draw(
                    _fxHelperTexture,
-                   _cameraRect,
+                   CameraRect,
                    fxFlashColor * fxFlashAlpha);
 
                 Debug.WriteLine("FlashAlpha = " + fxFlashAlpha);   
             }
 
+            /*
+			var alphaComponent:Number;
+			
+			if(_fxFlashAlpha > 0.0)
+			{
+				alphaComponent = _fxFlashColor>>24;
+				fill((uint(((alphaComponent <= 0)?0xff:alphaComponent)*_fxFlashAlpha)<<24)+(_fxFlashColor&0x00ffffff));
+			}
+			*/
+
+			// Draw the "fade" special effect onto the buffer
             if ((fxFadeAlpha > 0.0) && (fxFadeAlpha < 1.0))
             {
                 FlxS.SpriteBatch.Draw(
                     _fxHelperTexture,
-                    _cameraRect,
+                    CameraRect,
                     fxFadeColor * fxFadeAlpha);
 
                 Debug.WriteLine("FadeAlpha = " + fxFadeAlpha);
             }
 
             /*
-			var alphaComponent:Number;
-			
-			//Draw the "flash" special effect onto the buffer
-			if(_fxFlashAlpha > 0.0)
-			{
-				alphaComponent = _fxFlashColor>>24;
-				fill((uint(((alphaComponent <= 0)?0xff:alphaComponent)*_fxFlashAlpha)<<24)+(_fxFlashColor&0x00ffffff));
-			}
-			
-			//Draw the "fade" special effect onto the buffer
 			if(_fxFadeAlpha > 0.0)
 			{
 				alphaComponent = _fxFadeColor>>24;
@@ -864,6 +914,21 @@ namespace flxSharp.flxSharp
         }
 
         // flx# stuff below
+
+        private void UpdateHelpers()
+        {
+            CameraRect = new Rectangle(
+                (int) X,
+                (int) Y,
+                (int) Width,
+                (int) Height);
+
+            ScreenRect = new Rectangle(
+                (int)(CameraRect.X * Zoom),
+                (int)(CameraRect.Y * Zoom),
+                (int)(CameraRect.Width * Zoom),
+                (int)(CameraRect.Height * Zoom));
+        }
 
         /// <summary>
         /// Get/Set for the rotation of the camera
@@ -883,10 +948,12 @@ namespace flxSharp.flxSharp
         /// Internal function for camera stuff
         /// </summary>
         /// <returns></returns>
-        internal Matrix TransformMatrix
+        internal Matrix FxMatrix
         {
             get
             {
+                return Matrix.CreateTranslation(fxShakeOffset.X, fxShakeOffset.Y, 0);
+
                 return Matrix.Identity;
 
                 if (Target != null)

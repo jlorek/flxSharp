@@ -48,7 +48,7 @@ namespace flxSharp.flxSharp
                                        null,
                                        null,
                                        null,
-                                       FlxG.cameras[i].TransformMatrix);
+                                       FlxG.cameras[i].FxMatrix);
                 base.draw();
                 
                 FlxS.SpriteBatch.End();

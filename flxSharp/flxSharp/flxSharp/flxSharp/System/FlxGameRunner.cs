@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -20,6 +19,8 @@ namespace flxSharp.flxSharp.System
         private readonly int _flashFramerate;
         private readonly bool _useSystemCursor;
         private FlxGame _flxGame;
+
+        private Texture2D _fxHelperTexture;
 
 
         /// <summary>
@@ -96,7 +97,9 @@ namespace flxSharp.flxSharp.System
                 DepthFormat.None,
                 0,
                 RenderTargetUsage.DiscardContents);
-
+            
+            _fxHelperTexture = new Texture2D(FlxS.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            _fxHelperTexture.SetData(new [] { Color.White });
 
             FlxS.SpriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -173,9 +176,11 @@ namespace flxSharp.flxSharp.System
                                    null,
                                    null,
                                    null,
-                                   FlxG.camera.TransformMatrix);
+                                   Matrix.Identity);
+                                   //FlxG.camera.FxMatrix);
                                    // rotate + scale can be easily done in the spritebatch.draw calls
                                    // but maybe the translation can be nicely done here...
+            
             _flxGame.draw();
             FlxS.SpriteBatch.End();
 
@@ -188,17 +193,38 @@ namespace flxSharp.flxSharp.System
             }
             */
 
-            FlxS.GraphicsDevice.Clear(Color.White);
+            FlxS.GraphicsDevice.Clear(Color.Black);
 
-            FlxS.SpriteBatch.Begin(SpriteSortMode.Deferred,
-                                   BlendState.NonPremultiplied,
-                                   SamplerState.PointClamp,
-                                   null,
-                                   null);
+            foreach (FlxCamera camera in FlxG.cameras)
+            {
+                FlxS.SpriteBatch.Begin(
+                    SpriteSortMode.Deferred,
+                    BlendState.NonPremultiplied,
+                    SamplerState.PointClamp,
+                    null,
+                    null,
+                    null, // suitable place for post processing effects
+                    camera.FxMatrix);
+                    //Matrix.Identity);
 
-            FlxS.SpriteBatch.Draw(FlxS.RenderTarget, _outputWindowSize, Color.White);
+                // Draw camera background
+                FlxS.SpriteBatch.Draw(
+                    _fxHelperTexture,
+                    camera.ScreenRect,
+                    camera.BgColor);
 
-            FlxS.SpriteBatch.End();
+                // Draw (and scale) backbuffer to screen
+                FlxS.SpriteBatch.Draw(
+                    FlxS.RenderTarget,
+                    camera.ScreenRect,
+                    camera.CameraRect,
+                    Color.White);
+
+                FlxS.SpriteBatch.End();
+
+            }
+
+            //FlxS.SpriteBatch.Draw(FlxS.RenderTarget, _outputWindowSize, Color.White);
 
             base.Draw(gameTime);
         }

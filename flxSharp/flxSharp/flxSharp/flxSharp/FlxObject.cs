@@ -1,8 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using fliXNA_xbox;
+﻿using fliXNA_xbox;
 using flxSharp.flxSharp.System;
+using Microsoft.Xna.Framework;
+using System;
 
 namespace flxSharp.flxSharp
 {
