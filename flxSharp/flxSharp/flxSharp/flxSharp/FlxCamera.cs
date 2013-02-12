@@ -326,7 +326,14 @@ namespace flxSharp.flxSharp
         public float FlashOffsetX;
         public float FlashOffsetY;
 
-        private Texture2D _flashTexture;
+        private Texture2D _fxHelperTexture;
+
+        private Texture2D _fillTexture;
+
+        /// <summary>
+        /// A camera sized rectangle, used to draw special FX.
+        /// </summary>
+        private Rectangle _cameraRect;
 
         /// <summary>
         /// Instantiates a new camera at the specified location, with the specified size and zoom level.
@@ -402,8 +409,13 @@ namespace flxSharp.flxSharp
             FlashSprite = new FlxObject();
             //BgColor = Color.Black;
 
-            _flashTexture = new Texture2D(FlxS.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            _flashTexture.SetData(new[] { Color.White });
+            _cameraRect = new Rectangle(0, 0, width, height);
+
+            _fxHelperTexture = new Texture2D(FlxS.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            _fxHelperTexture.SetData(new[] { Color.White });
+
+            _fillTexture = new Texture2D(FlxS.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            _fillTexture.SetData(new[] { Color.White });
         }
 
         /// <summary>
@@ -506,19 +518,24 @@ namespace flxSharp.flxSharp
             if (fxFlashAlpha > 0.0)
             {
                 fxFlashAlpha -= FlxG.elapsed / fxFlashDuration;
-                if ((fxFlashAlpha <= 0) && (fxFlashComplete != null))
+                if (fxFlashAlpha <= 0)
                 {
-                    fxFlashComplete();                    
+                    fxFlashAlpha = 0;
+                    if (fxFlashComplete != null)
+                    {
+                        fxFlashComplete();                           
+                    }
                 }
             }
 
-            //Update the "fade" special effect
+            // Update the "fade" special effect
             if ((fxFadeAlpha > 0.0) && (fxFadeAlpha < 1.0))
             {
                 fxFadeAlpha += FlxG.elapsed / fxFadeDuration;
                 if (fxFadeAlpha >= 1.0)
                 {
-                    fxFadeAlpha = 1.0f;
+                    //fxFadeAlpha = 1.0f;
+                    fxFadeAlpha = 0;
                     if (fxFadeComplete != null)
                     {
                         fxFadeComplete();                        
@@ -652,14 +669,13 @@ namespace flxSharp.flxSharp
                 return;
             }
 
-            fxFlashColor = color;
-
             // flx# - orly?
             if (duration <= 0)
             {
                 duration = float.MinValue;
             }
 
+            fxFlashColor = color;
             fxFlashDuration = duration;
             fxFlashComplete = onComplete;
             fxFlashAlpha = 1.0f;
@@ -685,9 +701,10 @@ namespace flxSharp.flxSharp
                 duration = float.MinValue;
             }
 
+            fxFadeColor = color;
             fxFadeDuration = duration;
             fxFadeComplete = onComplete;
-            fxFadeAlpha = 0; // Number.MIN_VALUE;
+            fxFadeAlpha = float.Epsilon; // Number.MIN_VALUE;
         }
 
         /// <summary>
@@ -801,18 +818,25 @@ namespace flxSharp.flxSharp
         /// </summary>
         internal void drawFX()
         {
-            FlxS.SpriteBatch.Draw(
-                _flashTexture,
-                new Rectangle(0, 0, (int) Width, (int) Height),
-                Color.Black * fxFlashAlpha);
+            if (fxFlashAlpha > 0)
+            {
+                FlxS.SpriteBatch.Draw(
+                   _fxHelperTexture,
+                   _cameraRect,
+                   fxFlashColor * fxFlashAlpha);
 
-            Debug.WriteLine(fxFlashAlpha);
+                Debug.WriteLine("FlashAlpha = " + fxFlashAlpha);   
+            }
 
-            /*
-            FlxSprite fadeSprite = new FlxSprite(0, 0);
-            fadeSprite.makeGraphic((uint) Width, (uint) Height, Color.Black);
-            fadeSprite.draw();
-            */
+            if ((fxFadeAlpha > 0.0) && (fxFadeAlpha < 1.0))
+            {
+                FlxS.SpriteBatch.Draw(
+                    _fxHelperTexture,
+                    _cameraRect,
+                    fxFadeColor * fxFadeAlpha);
+
+                Debug.WriteLine("FadeAlpha = " + fxFadeAlpha);
+            }
 
             /*
 			var alphaComponent:Number;

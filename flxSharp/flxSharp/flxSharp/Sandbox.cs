@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using flxSharp.flxSharp;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -55,7 +56,17 @@ namespace flxSharp
             //FlxG.playMusic(FlxS.ContentManager.Load<SoundEffect>("applause"));
             //FlxG.play(FlxS.ContentManager.Load<SoundEffect>("background")); // change content processor to soundeffect
 
-            FlxG.camera.Flash(Color.Black, 2);
+            DoFlash();
+        }
+
+        private void DoFlash()
+        {
+            FlxG.camera.Flash(Color.White, 0.2f, DoFade);
+        }
+
+        private void DoFade()
+        {
+            FlxG.camera.Fade(Color.Black, 0.5f, DoFlash); 
         }
 
         public override void update()
