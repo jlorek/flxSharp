@@ -788,7 +788,7 @@ namespace flxSharp.flxSharp
 			{
 				bool results = false;
 			    var group = objectOrGroup as FlxGroup;
-			    foreach (FlxBasic member in group.members)
+			    foreach (FlxBasic member in group.Members)
 			    {
 			        if (overlaps(member, inScreenSpace, camera))
 			        {
@@ -856,7 +856,7 @@ namespace flxSharp.flxSharp
             {
                 bool results = false;
                 var group = objectOrGroup as FlxGroup;
-                foreach (FlxBasic member in group.members)
+                foreach (FlxBasic member in group.Members)
                 {
                     if (overlapsAt(x, y, member, inScreenSpace, camera))
                     {

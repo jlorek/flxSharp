@@ -218,7 +218,7 @@ namespace fliXNA_xbox
                 FlxBasic basic;
                 int i = 0;
                 List<FlxBasic> members = new List<FlxBasic>();
-                members = (objectOrGroup as FlxGroup).members;
+                members = (objectOrGroup as FlxGroup).Members;
                 while (i < members.Count)
                 {
                     basic = members[i++] as FlxBasic;
