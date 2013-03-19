@@ -485,10 +485,8 @@ namespace flxSharp.flxSharp
         /// <param name="startIndex">Optional offset off the front of the array. Default value is 0, or the beginning of the array.</param>
         /// <param name="length">Optional restriction on the number of values you want to randomly select from.</param>
         /// <returns>The random object that was selected.</returns>
-        public static object getRandom(Array objects, uint startIndex = 0, uint length = 0)
+        public static object GetRandom(Array objects, int startIndex = 0, int length = 0)
         {
-            throw new NotImplementedException();
-
             /*
 			if(Objects != null)
 			{
@@ -500,6 +498,23 @@ namespace flxSharp.flxSharp
 			}
 			return null;
             */
+
+            if (objects != null)
+            {
+                int l = length;
+                if ((length == 0) || (l < objects.Length - startIndex))
+                {
+                    length = objects.Length - startIndex;
+                }
+
+                if (length > 0)
+                {
+                    return objects.GetValue(
+                        startIndex + (int) (FlxG.random() * length));
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace flxSharp.flxSharp
 {
@@ -95,14 +96,13 @@ namespace flxSharp.flxSharp
         /// </summary>
         public override void destroy()
         {
-            base.destroy();
-
-            foreach (FlxBasic m in Members)
+            foreach (FlxBasic flxBasic in Members)
             {
-                m.destroy();
+                flxBasic.destroy();
             }
 
             _sortIndex = null;
+            base.destroy();
         }
 
         /// <summary>
@@ -164,23 +164,6 @@ namespace flxSharp.flxSharp
 
             Members.Add(flxBasic);
             return flxBasic;
-        }
-
-        /// <summary>
-        /// Kill all objects in the group
-        /// </summary>
-        override public void kill()
-        {
-            if (Members.Count != 0)
-            {
-                foreach (FlxBasic m in Members)
-                {
-                    if (m.Visible)
-                    {
-                        m.kill();
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -257,32 +240,228 @@ namespace flxSharp.flxSharp
         /// <code>FlxState.update()</code> override.  To sort all existing objects after
         /// a big explosion or bomb attack, you might call <code>myGroup.sort("exists",DESCENDING)</code>.
         /// </summary>
-        /// <param name="order">A <code>FlxGroup</code> constant that defines the sort order. Possible values are <code>ASCENDING</code> and <code>DESCENDING</code>.  Default value is <code>ASCENDING</code>.</param>
-        public void Sort(int order = Ascending)
+        /// <param name="propertyName">The <code>String</code> name of the member variable you want to sort on.  Default value is "y".</param>
+        /// <param name="order">A <code>FlxGroup</code> constant that defines the sort order. Possible values are <code>ASCENDING</code> and <code>DESCENDING</code>. Default value is <code>ASCENDING</code>.</param>
+        public void Sort(string propertyName = "y", int order = Ascending)
         {
+            Func<FlxBasic, object> propertySelector = flxBasic =>
+            {
+                Type type = flxBasic.GetType();
+                PropertyInfo propertyInfo = type.GetProperty(propertyName);
+                MethodInfo getMethod = propertyInfo.GetGetMethod();
+                return getMethod.Invoke(flxBasic, null);
+            };
+
             if (order == Ascending)
             {
-                Members = Members.OrderBy(obj => obj.Exists
-                     ).ToList();
+                Members = Members.OrderBy(propertySelector).ToList();
             }
             else
             {
-                Members = Members.OrderByDescending(obj => obj.Exists).ToList();
+                Members = Members.OrderByDescending(propertySelector).ToList();
             }
         }
 
-        public FlxBasic getFirstAvailable(Object ObjectClass)
+        /// <summary>
+        /// Go through and set the specified variable to the specified value on all members of the group.
+        /// </summary>
+        /// <param name="propertyName">The string representation of the variable name you want to modify, for example "visible" or "scrollFactor".</param>
+        /// <param name="value">The value you want to assign to that variable.</param>
+        /// <param name="recurse">Default value is true, meaning if <code>setAll()</code> encounters a member that is a group, it will call <code>setAll()</code> on that group rather than modifying its variable.</param>
+        public void SetAll(string propertyName, object value, bool recurse = true)
         {
-            FlxBasic basic;
-            //Object _oc = ObjectClass;
-            uint i = 0;
-            while (i < length)
+            foreach (FlxBasic flxBasic in Members)
             {
-                basic = Members[(int)i++] as FlxBasic;
-                if ((basic != null) && !basic.Exists && ((ObjectClass == null) || (basic is FlxBasic)))
-                    return basic;
+                if (recurse && (flxBasic is FlxGroup))
+                {
+                    (flxBasic as FlxGroup).SetAll(propertyName, value, recurse);
+                }
+                else
+                {
+                    Type type = flxBasic.GetType();
+                    PropertyInfo propertyInfo = type.GetProperty(propertyName);
+                    MethodInfo setMethod = propertyInfo.GetSetMethod();
+                    setMethod.Invoke(flxBasic, new[] {value});
+                }
             }
+        }
+
+        /// <summary>
+        /// Go through and call the specified function on all members of the group.
+        /// Currently only works on functions that have no required parameters.
+        /// </summary>
+        /// <param name="methodName">The string representation of the function you want to call on each object, for example "kill()" or "init()".</param>
+        /// <param name="recurse">Default value is true, meaning if <code>callAll()</code> encounters a member that is a group, it will call <code>callAll()</code> on that group rather than calling the group's function.</param>
+        public void CallAll(string methodName, bool recurse = true)
+        {
+            foreach (FlxBasic flxBasic in Members)
+            {
+                if (recurse && (flxBasic is FlxGroup))
+                {
+                    (flxBasic as FlxGroup).CallAll(methodName, recurse);
+                }
+                else
+                {
+                    Type type = flxBasic.GetType();
+                    MethodInfo method = type.GetMethod(methodName);
+                    method.Invoke(flxBasic, null);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Call this function to retrieve the first object with exists == false in the group.
+        /// This is handy for recycling in general, e.g. respawning enemies.
+        /// </summary>
+        /// <param name="objectClass">An optional parameter that lets you narrow the results to instances of this particular class.</param>
+        /// <returns>A <code>FlxBasic</code> currently flagged as not existing.</returns>
+        public FlxBasic GetFirstAvailable(Type objectClass)
+        {
+            foreach (FlxBasic flxBasic in Members)
+            {
+                if ((flxBasic != null) &&
+                    !flxBasic.Exists &&
+                    ((objectClass == null) || (flxBasic.GetType() == objectClass)))
+                {
+                    return flxBasic;
+                }
+            }
+
             return null;
+        }
+
+        /// <summary>
+        /// Call this function to retrieve the first index set to 'null'.
+        /// Returns -1 if no index stores a null object.
+        /// </summary>
+        /// <returns>An <code>int</code> indicating the first null slot in the group.</returns>
+        public int GetFirstNull()
+        {
+            for (int i = 0; i < Members.Count; ++i)
+            {
+                if (Members[i] == null)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Call this function to retrieve the first object with exists == true in the group.
+        /// This is handy for checking if everything's wiped out, or choosing a squad leader, etc.
+        /// </summary>
+        /// <returns>A <code>FlxBasic</code> currently flagged as existing.</returns>
+        public FlxBasic GetFirstExtant()
+        {
+            /*
+            foreach (FlxBasic flxBasic in Members)
+            {
+                if ((flxBasic != null) &&
+                    flxBasic.Exists)
+                {
+                    return flxBasic;
+                }
+            }
+
+            return null;
+            */
+
+            return Members.FirstOrDefault(
+                flxBasic => (flxBasic != null) && flxBasic.Exists);
+        }
+
+        /// <summary>
+        /// Call this function to retrieve the first object with dead == false in the group.
+        /// This is handy for checking if everything's wiped out, or choosing a squad leader, etc.
+        /// </summary>
+        /// <returns>A <code>FlxBasic</code> currently flagged as not dead.</returns>
+        public FlxBasic GetFirstAlive()
+        {
+            return Members.FirstOrDefault(
+                flxBasic => (flxBasic != null) && flxBasic.Exists && flxBasic.Alive);
+        }
+
+        /// <summary>
+        /// Call this function to retrieve the first object with dead == true in the group.
+        /// This is handy for checking if everything's wiped out, or choosing a squad leader, etc.
+        /// </summary>
+        /// <returns>A <code>FlxBasic</code> currently flagged as dead.</returns>
+        public FlxBasic GetFirstDead()
+        {
+            return Members.FirstOrDefault(
+                flxBasic => (flxBasic != null) && !flxBasic.Alive);
+        }
+
+        /// <summary>
+        /// Call this function to find out how many members of the group are not dead.
+        /// </summary>
+        /// <returns>The number of <code>FlxBasic</code>s flagged as not dead.  Returns -1 if group is empty.</returns>
+        public int CountLiving()
+        {
+            if (!Members.Any(flxBasic => flxBasic != null))
+            {
+                return -1;
+            }
+
+            return Members.Count(flxBasic => flxBasic.Exists && flxBasic.Alive);
+        }
+
+        /// <summary>
+        /// Call this function to find out how many members of the group are dead.
+        /// </summary>
+        /// <returns>The number of <code>FlxBasic</code>s flagged as dead.  Returns -1 if group is empty.</returns>
+        public int CountDead()
+        {
+            if (!Members.Any(flxBasic => flxBasic != null))
+            {
+                return -1;
+            }
+
+            return Members.Count(flxBasic => !flxBasic.Alive);
+        }
+
+        /// <summary>
+        /// Returns a member at random from the group.
+        /// </summary>
+        /// <param name="startIndex"></param>
+        /// <param name="selectLength"></param>
+        /// <returns></returns>
+        public FlxBasic GetRandom(int startIndex = 0, int selectLength = 0)
+        {
+            if (selectLength == 0)
+            {
+                selectLength = Members.Count;
+            }
+
+            return FlxG.GetRandom(
+                this.ToArray(), startIndex, selectLength) as FlxBasic;
+        }
+
+        /// <summary>
+        /// Remove all instances of <code>FlxBasic</code> subclass (FlxSprite, FlxBlock, etc) from the list.
+        /// WARNING: does not destroy() or kill() any of these objects!
+        /// </summary>
+        public void Clear()
+        {
+            Members.Clear();
+        }
+
+        /// <summary>
+        /// Calls kill on the group's members and then on the group itself.
+        /// </summary>
+        public override void kill()
+        {
+            foreach (FlxBasic flxBasic in Members)
+            {
+                if ((flxBasic != null) && flxBasic.Exists)
+                {
+                    flxBasic.kill();
+                }
+            }
+
+            base.kill();
         }
 
         /// <summary>

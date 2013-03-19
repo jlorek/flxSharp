@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using fliXNA_xbox;
 
 namespace flxSharp.flxSharp
 {
