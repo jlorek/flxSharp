@@ -411,7 +411,7 @@ namespace flxSharp.flxSharp
             Last.X = X;
             Last.Y = Y;
 
-            if ((Path != null) && (PathSpeed != 0) && (Path.nodes[_pathNodeIndex] != null))
+            if ((Path != null) && (PathSpeed != 0) && (Path.Nodes[_pathNodeIndex] != null))
             {
                 updatePathMotion();
             }
@@ -543,7 +543,7 @@ namespace flxSharp.flxSharp
         /// <param name="autoRotate">Automatically point the object toward the next node.  Assumes the graphic is pointing upward.  Default behavior is false, or no automatic rotation.</param>
         public void followPath(FlxPath path, float speed = 100, uint mode = PathForward, bool autoRotate = false)
         {
-            if (path.nodes.Count <= 0)
+            if (path.Nodes.Count <= 0)
             {
                 FlxG.log("WARNING: Paths need at least one node in them to be followed.");
                 return;
@@ -557,7 +557,7 @@ namespace flxSharp.flxSharp
             // get starting node
             if ((_pathMode == PathBackward) || (_pathMode == PathLoopBackward)) // flx# - no bitmask?
             {
-                _pathNodeIndex = Path.nodes.Count - 1;
+                _pathNodeIndex = Path.Nodes.Count - 1;
                 _pathInc = -1;
             }
             else
@@ -591,7 +591,7 @@ namespace flxSharp.flxSharp
 		{
 			if(snap)
 			{
-				FlxPoint oldNode = Path.nodes[_pathNodeIndex];
+				FlxPoint oldNode = Path.Nodes[_pathNodeIndex];
 				if(oldNode != null)
 				{
 					if ((_pathMode & PathVerticalOnly) == 0)
@@ -618,7 +618,7 @@ namespace flxSharp.flxSharp
 			}
 			else if((_pathMode & PathLoopForward) > 0)
 			{
-				if (_pathNodeIndex >= Path.nodes.Count)
+				if (_pathNodeIndex >= Path.Nodes.Count)
 				{
                     _pathNodeIndex = 0;				    
 				}
@@ -627,7 +627,7 @@ namespace flxSharp.flxSharp
 			{
 				if(_pathNodeIndex < 0)
 				{
-					_pathNodeIndex = Path.nodes.Count - 1;
+					_pathNodeIndex = Path.Nodes.Count - 1;
 					if (_pathNodeIndex < 0)
 					{
                         _pathNodeIndex = 0;					    
@@ -638,9 +638,9 @@ namespace flxSharp.flxSharp
 			{
 				if(_pathInc > 0)
 				{
-                    if (_pathNodeIndex >= Path.nodes.Count)
+                    if (_pathNodeIndex >= Path.Nodes.Count)
 					{
-                        _pathNodeIndex = Path.nodes.Count - 2;
+                        _pathNodeIndex = Path.Nodes.Count - 2;
 						if (_pathNodeIndex < 0)
 						{
                             _pathNodeIndex = 0;						    
@@ -651,9 +651,9 @@ namespace flxSharp.flxSharp
 				else if(_pathNodeIndex < 0)
 				{
 					_pathNodeIndex = 1;
-                    if (_pathNodeIndex >= Path.nodes.Count)
+                    if (_pathNodeIndex >= Path.Nodes.Count)
                     {
-                        _pathNodeIndex = Path.nodes.Count - 1;                        
+                        _pathNodeIndex = Path.Nodes.Count - 1;                        
                     }
 
 					if (_pathNodeIndex < 0)
@@ -665,14 +665,14 @@ namespace flxSharp.flxSharp
 			}
 			else
 			{
-                if (_pathNodeIndex >= Path.nodes.Count)
+                if (_pathNodeIndex >= Path.Nodes.Count)
 				{
-                    _pathNodeIndex = Path.nodes.Count - 1;
+                    _pathNodeIndex = Path.Nodes.Count - 1;
 					PathSpeed = 0;
 				}
 			}
 
-			return Path.nodes[_pathNodeIndex];
+			return Path.Nodes[_pathNodeIndex];
 		}
 
         /// <summary>
@@ -686,7 +686,7 @@ namespace flxSharp.flxSharp
 			// first check if we need to be pointing at the next node yet
 			_tagPoint.X = X + Width * 0.5f;
 			_tagPoint.Y = Y + Height * 0.5f;
-			FlxPoint node = Path.nodes[_pathNodeIndex];
+			FlxPoint node = Path.Nodes[_pathNodeIndex];
 			float deltaX = node.X - _tagPoint.X;
 			float deltaY = node.Y - _tagPoint.Y;
 

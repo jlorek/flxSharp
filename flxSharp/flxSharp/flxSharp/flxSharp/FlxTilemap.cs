@@ -447,7 +447,7 @@ namespace fliXNA_xbox
 			{
 				node = points[i--] as FlxPoint;
 				if(node != null)
-					path.addPoint(node,true);
+					path.AddPoint(node,true);
 			}
 			return path;
 		}
